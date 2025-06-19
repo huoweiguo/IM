@@ -7,7 +7,7 @@
           <div class="my-page__header__info">
             <div class="my-page__header__info__name">
               <span>请叫我女王</span>
-              <el-button type="primary" :icon="Edit" size="small" round>编辑资料</el-button>
+              <el-button type="primary" :icon="Edit" size="small" round @click="handleEditUserInfo">编辑资料</el-button>
             </div>
             <div class="my-page__header__info__coin">
               <img src="../assets/coin.png" />剩余300圈币
@@ -150,6 +150,18 @@ const handleVoucherCenter = () => {
       height: 720,
       title: '充值',
       url: `${import.meta.env.VITE_API_BASE_URL}/#/my/voucherCenter`
+    })
+  } else {
+    console.warn('Electron API 不可用，可能在浏览器环境中运行')
+  }
+}
+const handleEditUserInfo = () => {
+  if (window.electronAPI) {
+    window.electronAPI.openNewSecondWindow({
+      width: 375,
+      height: 720,
+      title: '编辑资料',
+      url: `${import.meta.env.VITE_API_BASE_URL}/#/my/editUserInfo`
     })
   } else {
     console.warn('Electron API 不可用，可能在浏览器环境中运行')

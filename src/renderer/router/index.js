@@ -16,11 +16,13 @@ import Help from '../src/views/Help.vue'
 import AllQuestion from '../src/views/AllQuestion.vue'
 import Feedback from '../src/views/Feedback.vue'
 import TipOff from '../src/views/TipOff.vue'
+import TipOffUser from '../src/views/TipOffUser.vue'
 import FocusMe from '../src/views/FocusMe.vue'
 import Posting from '../src/views/Posting.vue'
 import MyPublish from '../src/views/MyPublish.vue'
 import Fans from '../src/views/Fans.vue'
 import My from '../src/views/My.vue'
+import EditUserInfo from '../src/views/my/EditInfo.vue'
 import Know from '../src/views/Know.vue'
 import UserInfo from '../src/views/UserInfo.vue'
 import Calender from '../src/views/my/calender.vue'
@@ -165,6 +167,15 @@ const routes = [
     }
   },
   {
+    path: '/tipOffUser',
+    name: 'TipOffUser',
+    component: TipOffUser,
+    meta: {
+      requiresAuth: false,
+      title: '举报用户'
+    }
+  },
+  {
     path: '/focusme',
     name: 'focusme',
     component: FocusMe,
@@ -225,6 +236,15 @@ const routes = [
     meta: {
       requiresAuth: false,
       title: '日历'
+    }
+  },
+  {
+    path: '/my/editUserInfo',
+    name: 'EditUserInfo',
+    component: EditUserInfo,
+    meta: {
+      requiresAuth: false,
+      title: '编辑用户信息'
     }
   },
   {
