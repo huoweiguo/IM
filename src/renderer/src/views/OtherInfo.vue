@@ -25,7 +25,7 @@
           <img src="../assets/sm.png" alt="实名认证" />
           <span>实名认证</span>
         </div>
-        <div class="cert-item">
+        <div class="cert-item" @click="handleSchoolAuth">
           <img src="../assets/xx.png" alt="学校认证" />
           <span>学校认证</span>
         </div>
@@ -91,6 +91,19 @@ const otherInfo = reactive({
   blacklist: false,
   isFollow: false
 })
+
+const handleSchoolAuth = () => {
+  if (window.electronAPI) {
+    window.electronAPI.openNewSecondWindow({
+      width: 375,
+      height: 800,
+      title: '学校认证',
+      url: `${import.meta.env.VITE_API_BASE_URL}/#/schoolAuth?id=111`
+    })
+  } else {
+    console.warn('Electron API 不可用，可能在浏览器环境中运行')
+  }
+}
 </script>
 
 <style scoped>
@@ -225,7 +238,8 @@ const otherInfo = reactive({
 .footer-btns {
   display: flex;
   justify-content: space-between;
-  margin-top: 24px;
+  padding: 0 16px;
+  margin-top: 10px;
 }
 .chat-btn {
   width: 290px;
