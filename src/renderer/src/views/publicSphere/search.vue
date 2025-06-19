@@ -50,9 +50,35 @@
       </el-tab-pane>
       <el-tab-pane label="分组" name="group">
         <!-- 分组内容 -->
+         <div class="group-list">
+          <el-tree :data="treeData" :props="defaultProps" node-key="id">
+            <!-- 使用 scoped slot 自定义节点内容 -->
+            <template #default="{ node, data }">
+              <div class="custom-tree-node">
+                <!-- 图片 -->
+                <img v-if="data.icon" :src="data.icon" class="node-icon" />
+                <!-- 标签 -->
+                <span class="node-label">{{ node.label }}</span>
+              </div>
+            </template>
+          </el-tree>
+         </div>
       </el-tab-pane>
       <el-tab-pane label="群组" name="groupList">
         <!-- 群组内容 -->
+         <div class="group-list">
+          <el-tree :data="groupList" :props="defaultProps" node-key="id">
+            <!-- 使用 scoped slot 自定义节点内容 -->
+            <template #default="{ node, data }">
+              <div class="custom-tree-node">
+                <!-- 图片 -->
+                <img v-if="data.icon" :src="data.icon" class="node-icon" />
+                <!-- 标签 -->
+                <span class="node-label">{{ node.label }}</span>
+              </div>
+            </template>
+          </el-tree>
+         </div>
       </el-tab-pane>
     </el-tabs>
   </div>
@@ -73,6 +99,110 @@ import gy6 from '../../assets/gy6.png'
 import gy7 from '../../assets/gy7.png'
 const activeTab = ref('findUser')
 const search = ref('')
+const treeData = ref([
+  {
+    id: 1,
+    label: "分组一",
+    children: [
+      {
+        id: 4,
+        label: "爱探险的朵拉",
+        icon: usr1
+      },
+      {
+        id: 3,
+        label: "爱探险的朵拉",
+        icon: usr1
+      }
+    ]
+  },
+  {
+    id: 2,
+    label: "分组二",
+    children: [
+      {
+        id: 2,
+        label: "爱探险的朵拉",
+        icon: usr1
+      },
+      {
+        id: 6,
+        label: "爱探险的朵拉",
+        icon: usr1
+      }
+    ]
+  }
+])
+const defaultProps = ref({
+  children: "children",
+  label: "label"
+})
+const groupList = ref([
+  {
+    id: 1,
+    label: "我创建的群",
+    children: [
+      {
+        id: 4,
+        label: "爱探险的朵拉",
+        icon: usr1
+      },
+      {
+        id: 3,
+        label: "爱探险的朵拉",
+        icon: usr1
+      }
+    ]
+  },
+  {
+    id: 2,
+    label: "我管理的群",
+    children: [
+      {
+        id: 2,
+        label: "爱探险的朵拉",
+        icon: usr1
+      },
+      {
+        id: 6,
+        label: "爱探险的朵拉",
+        icon: usr1
+      }
+    ]
+  },
+  {
+    id: 3,
+    label: "我加入的私域群",
+    children: [
+      {
+        id: 2,
+        label: "爱探险的朵拉",
+        icon: usr1
+      },
+      {
+        id: 6,
+        label: "爱探险的朵拉",
+        icon: usr1
+      }
+    ]
+  },
+  {
+    id: 4,
+    label: "我加入的公域群",
+    children: [
+      {
+        id: 2,
+        label: "爱探险的朵拉",
+        icon: usr1
+      },
+      {
+        id: 6,
+        label: "爱探险的朵拉",
+        icon: usr1
+      }
+    ]
+  }
+])
 // 找群
 const findGroupKey = ref(false)
 const users = ref([
@@ -304,5 +434,32 @@ const handleFindGroup = () => {
   border-radius: 8px;
   font-size: 14px;
   padding: 4px 16px;
+}
+.group-list {
+  :deep(.el-tree-node__content) {
+    display: flex;
+    align-items: center;
+    height: auto;
+    padding-left: 0 !important;
+    margin-bottom: 10px;
+  }
+  :deep(.el-tree>.el-tree-node) {
+    margin-bottom: 20px;
+  }
+}
+.custom-tree-node {
+  display: flex;
+  align-items: center;
+}
+.node-icon {
+  width: 43px;
+  height: 43px;
+  margin-right: 10px;
+  display: block;
+}
+.node-label {
+  font-size: 14px;
+  color: #333;
+  font-family: Source Han Sans CN-Medium;
 }
 </style>
