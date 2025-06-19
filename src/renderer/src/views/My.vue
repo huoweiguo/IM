@@ -62,7 +62,7 @@
               <span>查看日程安排</span>
             </div>
           </li>
-          <li>
+          <li @click="handleMyPublish">
             <img src="../assets/my_item3.png" alt="" />
             <div>
               <h2>发圈</h2>
@@ -88,7 +88,7 @@
           <img src="../assets/like_icon.png" alt="" />
           我的关注
         </li>
-        <li>
+        <li @click="handleMyFans">
           <img src="../assets/every_icon.png" alt="" />
           我的粉丝
         </li>
@@ -143,6 +143,33 @@ const handleCalender = () => {
     console.warn('Electron API 不可用，可能在浏览器环境中运行')
   }
 }
+const handleMyPublish = (id) => {
+  if (window.electronAPI) {
+    window.electronAPI.openNewSecondWindow({
+      width: 375,
+      height: 720,
+      title: '我的发布',
+      url: `${import.meta.env.VITE_API_BASE_URL}/#/myPublish?id=${id}`
+    })
+  } else {
+    console.warn('Electron API 不可用，可能在浏览器环境中运行')
+  }
+}
+
+const handleMyFans = () => {
+  // 检查是否在 Electron 环境中
+  if (window.electronAPI) {
+    window.electronAPI.openNewSecondWindow({
+      width: 375,
+      height: 720,
+      title: '我的粉丝',
+      url: `${import.meta.env.VITE_API_BASE_URL}/#/fans?id=1`
+    })
+  } else {
+    console.warn('Electron API 不可用，可能在浏览器环境中运行')
+  }
+}
+
 const handleVoucherCenter = () => {
   if (window.electronAPI) {
     window.electronAPI.openNewSecondWindow({

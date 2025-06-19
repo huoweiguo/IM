@@ -28,7 +28,7 @@
         </li>
         <li v-for="(item, index) in messageInfo" :key="index" :class="{ 'active': index + 2 === activeIndex }"
           @click="changeActive(index + 2, item)">
-          <img :src="item.icon" class="user-icon" />
+          <img :src="item.icon" class="user-icon" @click="openOtherInfo(item)" />
           <div class="user-info">
             <div class="user-name">
               <h2>{{ item.name }}</h2><span>{{ item.time }}</span>
@@ -264,6 +264,20 @@ const changeActive = (index, item) => {
   chatTitle.value = item.name
   isGroup.value = item.isGroup
 }
+
+const openOtherInfo = () => {
+  if (window.electronAPI) {
+    window.electronAPI.openNewWindow({
+      width: 375,
+      height: 820,
+      title: '用户信息',
+      url: `${import.meta.env.VITE_API_BASE_URL}/#/otherInfo?id=1`
+    })
+  } else {
+    console.warn('Electron API 不可用，可能在浏览器环境中运行')
+  }
+}
+
 const openFansWindow = (index) => {
   activeIndex.value = index
   // 检查是否在 Electron 环境中

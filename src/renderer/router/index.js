@@ -29,6 +29,8 @@ import Calender from '../src/views/my/calender.vue'
 import VoucherCenter from '../src/views/my/VoucherCenter.vue'
 import Bill from '../src/views/my/Bill.vue'
 import GroupSetting from '../src/views/GroupSetting.vue'
+import OtherInfo from '../src/views/OtherInfo.vue'
+import SchoolAuth from '../src/views/SchoolAuth.vue'
 
 const routes = [
   {
@@ -276,12 +278,30 @@ const routes = [
     }
   },
   {
+    path: '/otherInfo',
+    name: 'OtherInfo',
+    component: OtherInfo,
+    meta: {
+      requiresAuth: false,
+      title: '他人信息'
+    }
+  },
+  {
     path: '/groupSetting',
     name: 'GroupSetting',
     component: GroupSetting,
     meta: {
       requiresAuth: false,
       title: '群设置'
+    }
+  },
+  {
+    path: '/schoolAuth',
+    name: 'SchoolAuth',
+    component: SchoolAuth,
+    meta: {
+      requiresAuth: false,
+      title: '学校认证'
     }
   },
   ...login, // 登录
