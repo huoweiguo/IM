@@ -110,7 +110,7 @@
           <img src="../assets/earth_icon.png" alt="" />
           语言
         </li>
-        <li>
+        <li @click="handleSettings">
           <img src="../assets/setting_icon.png" alt="" />
           设置
         </li>
@@ -189,6 +189,18 @@ const handleEditUserInfo = () => {
       height: 720,
       title: '编辑资料',
       url: `${import.meta.env.VITE_API_BASE_URL}/#/my/editUserInfo`
+    })
+  } else {
+    console.warn('Electron API 不可用，可能在浏览器环境中运行')
+  }
+}
+const handleSettings = () => {
+  if (window.electronAPI) {
+    window.electronAPI.openNewSecondWindow({
+      width: 375,
+      height: 720,
+      title: '设置',
+      url: `${import.meta.env.VITE_API_BASE_URL}/#/my/settings`
     })
   } else {
     console.warn('Electron API 不可用，可能在浏览器环境中运行')

@@ -31,6 +31,8 @@ import Bill from '../src/views/my/Bill.vue'
 import GroupSetting from '../src/views/GroupSetting.vue'
 import OtherInfo from '../src/views/OtherInfo.vue'
 import SchoolAuth from '../src/views/SchoolAuth.vue'
+import IdAuth from '../src/views/IdAuth.vue'
+import Settings from '../src/views/my/settings.vue'
 
 const routes = [
   {
@@ -240,6 +242,16 @@ const routes = [
       title: '日历'
     }
   },
+
+  {
+    path: '/my/settings',
+    name: 'mySettings',
+    component: Settings,
+    meta: {
+      requiresAuth: false,
+      title: '设置'
+    }
+  },
   {
     path: '/my/editUserInfo',
     name: 'EditUserInfo',
@@ -302,6 +314,15 @@ const routes = [
     meta: {
       requiresAuth: false,
       title: '学校认证'
+    }
+  },
+  {
+    path: '/idAuth',
+    name: 'IdAuth',
+    component: IdAuth,
+    meta: {
+      requiresAuth: false,
+      title: '实名认证'
     }
   },
   ...login, // 登录

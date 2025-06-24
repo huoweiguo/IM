@@ -21,7 +21,7 @@
           <img src="../assets/sj.png" alt="手机认证" />
           <span>手机认证</span>
         </div>
-        <div class="cert-item">
+        <div class="cert-item" @click="handleIdAuth">
           <img src="../assets/sm.png" alt="实名认证" />
           <span>实名认证</span>
         </div>
@@ -91,7 +91,18 @@ const otherInfo = reactive({
   blacklist: false,
   isFollow: false
 })
-
+const handleIdAuth = () => {
+  if (window.electronAPI) {
+    window.electronAPI.openNewSecondWindow({
+      width: 375,
+      height: 800,
+      title: '实名认证',
+      url: `${import.meta.env.VITE_API_BASE_URL}/#/idAuth?id=111`
+    })
+  } else {
+    console.warn('Electron API 不可用，可能在浏览器环境中运行')
+  }
+}
 const handleSchoolAuth = () => {
   if (window.electronAPI) {
     window.electronAPI.openNewSecondWindow({
@@ -169,6 +180,7 @@ const handleSchoolAuth = () => {
   align-items: center;
   font-size: 13px;
   color: #666;
+  cursor: pointer;
 }
 .cert-item img {
   width: 48px;

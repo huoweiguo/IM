@@ -17,6 +17,7 @@
     </div>
 
     <div class="tipoff__content">
+      <div class="tipoff__content-title">举报理由</div>
       <el-input v-model="textarea" maxlength="200" class="textarea-input" placeholder="请输入举报理由， 最少5个字" show-word-limit
         type="textarea" />
     </div>
@@ -137,6 +138,12 @@ const handlePictureCardPreview = (uploadFile) => {
 
   .tipoff__content {
     margin-bottom: 12px;
+
+    .tipoff__content-title {
+      font-size: 14px;
+      color: #333333;
+      font-weight: 500;
+    }
   }
 
   .tipoff__upload {
