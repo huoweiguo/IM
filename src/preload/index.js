@@ -1,5 +1,6 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
+import { EventEmitter } from 'events'
 
 // Custom APIs for renderer
 const api = {}
@@ -18,6 +19,11 @@ if (process.contextIsolated) {
   window.electron = electronAPI
   window.api = api
 }
+
+// 安全地暴露Node.js API到渲染进程
+contextBridge.exposeInMainWorld('nodeEvents', {
+  EventEmitter: EventEmitter
+})
 
 contextBridge.exposeInMainWorld('electronAPI', {
   openNewWindow: ({ width, height, url, title }) =>

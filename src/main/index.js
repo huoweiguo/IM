@@ -14,7 +14,10 @@ function createWindow() {
     autoHideMenuBar: true,
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
+      // 配置preload脚本路径
       preload: path.join(__dirname, '../preload/index.js'),
+      contextIsolation: true, // 必须开启上下文隔离
+      nodeIntegration: false, // 禁用节点集成
       sandbox: false,
       devTools: true // 确保开启开发者工具
     }
@@ -38,7 +41,7 @@ function createWindow() {
   }
 
   // 打开主进程调试
-  // mainWindow.webContents.openDevTools({ mode: 'detach' })
+  mainWindow.webContents.openDevTools({ mode: 'detach' })
 }
 
 ipcMain.on('open-new-window', (event, { width, height, url, title = '新窗口' }) => {

@@ -72,7 +72,6 @@ export default class ConferenceInviteMessageContent extends MessageContent {
             this.pin = obj.p;
             this.password = obj.pwd;
             this.callExtra = obj.ce;
-
         }
         this.callId = payload.content;
     }

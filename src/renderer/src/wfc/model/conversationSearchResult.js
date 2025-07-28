@@ -15,7 +15,7 @@ export default class ConversationSearchResult {
     static fromProtoConversationSearchResult(obj) {
         let conversationSearchResult = new ConversationSearchResult();
         if (obj.conversation) {
-            conversationSearchResult.conversation = new Conversation(obj.conversation.conversationType !== undefined ? obj.conversation.conversationType : obj.conversation.type, obj.conversation.target, obj.conversation.line);
+        	conversationSearchResult.conversation = new Conversation(obj.conversation.conversationType !== undefined ? obj.conversation.conversationType : obj.conversation.type, obj.conversation.target, obj.conversation.line);
         } else {
             conversationSearchResult.conversation = new Conversation(obj.conversationType, obj.target, obj.line);
         }

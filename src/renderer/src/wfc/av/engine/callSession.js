@@ -18,7 +18,6 @@ export default class CallSession {
     startMsgUid
 
     callId
-
     // conference 相关
     pin
     defaultAudience = false;
@@ -37,17 +36,6 @@ export default class CallSession {
      * 本地附加信息，主要用于主窗口向音视频通话窗口传递额外信息
      */
     extra;
-
-    /**
-     * 远程控制状态，单人视频通话时有效
-     * 0，idle
-     * 1，outgoing inviting，发送远程协助邀请
-     * 2, incoming inviting，收到远程协助邀请
-     * 3, outgoing request，发出远程控制请求
-     * 4, incoming request，收到远程控制请求
-     * 5, connected，远程协助/远程控制中
-     */
-    rcStatus = 0;
 
     /**
      * 默认成员的视频流类型
@@ -158,7 +146,7 @@ export default class CallSession {
      *       maxHeight: 720,
      *       idealHeight: 720,
      *       frameRate: 15,
-     }} desktopShareOptions，sourceId 仅 pc 端有效，web 端无效；其他参数对应 getDisplayMedia(options) options.video，具体可以参考：https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getDisplayMedia
+             }} desktopShareOptions，sourceId 仅 pc 端有效，web 端无效；其他参数对应 getDisplayMedia(options) options.video，具体可以参考：https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getDisplayMedia
      * 开始屏幕共享
      */
     async startScreenShare(desktopShareOptions) {
@@ -206,7 +194,6 @@ export default class CallSession {
     getSelfProfile() {
 
     }
-
 
     /**
      * 仅会议时有效
@@ -275,7 +262,7 @@ export default class CallSession {
      * 设置输入 MediaStream
      * @param {MediaStream} stream
      */
-    setInputStream(stream) {
+    setInputStream(stream){
 
     }
 
@@ -323,7 +310,6 @@ export default class CallSession {
      * @param {VideoType} videoType 视频流类型
      */
     setParticipantVideoType(userId, isScreenSharing, videoType) {
-
     }
 
     /**
@@ -331,65 +317,6 @@ export default class CallSession {
      * 正常不需要调用，仅当将通话界面直接渲染在当前界面时，需要调用
      */
     forceEndMedia() {
-
-    }
-
-    // 远程控制，依赖于高级版音视频，只支持单人视频通话
-    // 远程控制，主动方发起
-    // 远程协助，被控方发起
-
-    /**
-     *
-     * 邀请对方远程协助
-     */
-    inviteRemoteControl() {
-
-    }
-
-    /**
-     * 接受远程协助邀请
-     */
-    acceptRemoteControlInvite() {
-
-    }
-
-    /**
-     * 拒绝远程协助邀请
-     */
-    rejectRemoteControlInvite() {
-
-    }
-
-    /**
-     * 请求远程控制对方的桌面
-     */
-    requestRemoteControl() {
-
-    }
-
-    /**
-     * 接受远程桌面控制请求
-     */
-    acceptRemoteControlRequest() {
-
-    }
-
-    /**
-     * 拒绝远程桌面控制请求
-     */
-    rejectRemoteControlRequest() {
-
-    }
-
-    /**
-     * 结束远程控制或远程协助
-     * @param reason
-     */
-    endRemoteControl(reason) {
-
-    }
-
-    sendRemoteControlInputEvent(data) {
 
     }
 }

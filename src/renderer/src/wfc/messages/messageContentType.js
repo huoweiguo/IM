@@ -26,8 +26,6 @@ export default class MessageContentType {
     static Streaming_Text_Generating = 14;
     //流式文本消息
     static Streaming_Text_Generated = 15;
-
-
     static Mark_Unread_Sync = 31;
 
     static StartSecretChat_Notification = 40;
@@ -79,6 +77,7 @@ export default class MessageContentType {
 
     static ModifyGroupExtra_Notification = 122;
     static ModifyGroupMemberExtra_Notification = 123;
+
     static ModifyGroupSetting_Notification = 124;
 
     static VOIP_CONTENT_TYPE_START = 400;
@@ -97,15 +96,8 @@ export default class MessageContentType {
     static VOIP_Multi_Call_Ongoing = 416;
     static VOIP_Join_Call_Request = 417;
 
-    static VOIP_REMOTE_CONTROL_INVITE = 430;
-    static VOIP_REMOTE_CONTROL_REQUEST = 431;
-    static VOIP_REMOTE_CONTROL_ACCEPT_INVITE = 432;
-    static VOIP_REMOTE_CONTROL_ACCEPT_REQUEST = 433;
-    static VOIP_REMOTE_CONTROL_END = 434;
-
     static MESSAGE_CONTENT_TYPE_FEED = 501;
     static MESSAGE_CONTENT_TYPE_COMMENT = 502;
-
     static MESSAGE_CONTENT_TYPE_MIX_MULTI_MEDIA_TEXT= 510;
     static MESSAGE_CONTENT_TYPE_MIX_FILE_TEXT= 511;
 }

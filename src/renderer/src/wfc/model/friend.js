@@ -8,3 +8,4 @@ export default class Friend {
     extra;
     timestamp;
 }
+

@@ -78,6 +78,7 @@ export default class ConferenceCommandMessageContent extends MessageContent {
         FOCUS: 11,
         // 取消设置焦点用户
         CANCEL_FOCUS: 12,
+
         //全体静音，只有主持人可以操作，结果写入conference profile中。带有参数是否允许成员自主解除静音。
         MUTE_ALL_VIDEO: 13,
         //取消全体静音，只有主持人可以操作，结果写入conference profile中。带有参数是否邀请成员解除静音。

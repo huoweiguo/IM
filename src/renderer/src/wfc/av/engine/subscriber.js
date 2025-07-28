@@ -17,7 +17,8 @@ export default class Subscriber {
     // 单向，只能用来对方发送来的数据，需要向其他人发送数据时，需要使用 publisherImpl.dataChannel
     dataChannel
 
-    constructor(userId) {
+    constructor (userId) {
         this.userId = userId;
     }
+
 }

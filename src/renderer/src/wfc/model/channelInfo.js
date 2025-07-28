@@ -13,7 +13,6 @@ export default class ChannelInfo {
     extra;
     updateDt;
     menus;
-
     //第0位表示是否允许查看用户所有信息，还是只允许看用户id，用户名称，用户昵称和用户头像
     static StatusMaskFullInfo = 0x01;
     //第1位表示是否允许查看非订阅用户信息

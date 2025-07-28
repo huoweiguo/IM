@@ -10,7 +10,14 @@ export default defineConfig({
     plugins: [externalizeDepsPlugin()]
   },
   preload: {
-    plugins: [externalizeDepsPlugin()]
+    plugins: [externalizeDepsPlugin()],
+    build: {
+      outDir: 'dist/preload/',
+      // 确保预加载脚本正确打包
+      rollupOptions: {
+        input: 'src/preload/index.js'
+      }
+    }
   },
   renderer: {
     resolve: {
