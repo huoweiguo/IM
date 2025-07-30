@@ -1,5 +1,5 @@
-// import {EventEmitter} from "events";
-const { EventEmitter } = window.nodeEvents
+// import { EventEmitter } from 'events'
+const createEventEmitter = window.createEventEmitter
 import wfc from '../../client/wfc'
 import PttClientImpl from '../internal/ptt.min'
 import PttErrorCode from './pttErrorCode'
@@ -56,7 +56,7 @@ export class PttClient {
    * 事件通知，{@link PttEventType}中定义的事件，都会采用本{@link eventEmitter} 通知
    * @type {module:events.internal.EventEmitter}
    */
-  eventEmitter = new EventEmitter()
+  eventEmitter = createEventEmitter()
   deltaTime
   conversationPttStatusMap = new Map()
 
@@ -71,8 +71,6 @@ export class PttClient {
     this.deltaTime = wfc.getServerDeltaTime()
     this.pttClientImpl = new PttClientImpl(this.eventEmitter)
     this.pttClientImpl.init()
-
-    this._eventTest()
   }
 
   uninit() {
@@ -148,9 +146,16 @@ export class PttClient {
       if (groupExtra) {
         try {
           let obj = JSON.parse(groupExtra)
-          maxSpeakerCount = !PttClient.ENABLE_PRIORITY_MODE && obj.hasOwnProperty('n') ? obj.n : 1
-          sendVoiceMessage = obj.hasOwnProperty('s') ? obj.s : sendVoiceMessage
-          maxDurationMillis = obj.hasOwnProperty('t') ? obj.t : PttClient.GROUP_CHAT_MAX_SPEAK_TIME
+          maxSpeakerCount =
+            !PttClient.ENABLE_PRIORITY_MODE && Object.prototype.hasOwnProperty.call(obj, 'n')
+              ? obj.n
+              : 1
+          sendVoiceMessage = Object.prototype.hasOwnProperty.call(obj, 's')
+            ? obj.s
+            : sendVoiceMessage
+          maxDurationMillis = Object.prototype.hasOwnProperty.call(obj, 't')
+            ? obj.t
+            : PttClient.GROUP_CHAT_MAX_SPEAK_TIME
           maxDurationMillis = maxDurationMillis * 1000
         } catch (e) {
           console.error('parse groupExtra error', e)
@@ -176,7 +181,7 @@ export class PttClient {
               talkingCallback
             )
           },
-          (err) => {
+          () => {
             talkingCallback.onRequestFail(conversation, PttErrorCode.OCCUPIED)
           }
         )
@@ -200,7 +205,7 @@ export class PttClient {
     if (!this.pttClientImpl) {
       return
     }
-    this.pttClientImpl.stopRecord()
+    this.pttClientImpl.stopRecord(conversation)
   }
 
   /**
@@ -209,7 +214,9 @@ export class PttClient {
   getMaxSpeakCount(conversation) {
     if (conversation.type === ConversationType.Group) {
       let extra = this._getGroupExtra(conversation.target)
-      return extra.hasOwnProperty('n') ? extra.n : PttClient.GROUP_CHAT_MAX_SPEAKER_COUNT
+      return Object.prototype.hasOwnProperty.call(extra, 'n')
+        ? extra.n
+        : PttClient.GROUP_CHAT_MAX_SPEAKER_COUNT
     } else {
       return PttClient.SINGLE_CHAT_MAX_SPEAKER_COUNT
     }
@@ -218,7 +225,9 @@ export class PttClient {
   isSendVoiceMessage(conversation) {
     if (conversation.type === ConversationType.Group) {
       let extra = this._getGroupExtra(conversation.target)
-      return extra.hasOwnProperty('s') ? extra.s : PttClient.GROUP_CHAT_SEND_VOICE_MESSAGE
+      return Object.prototype.hasOwnProperty.call(extra, 's')
+        ? extra.s
+        : PttClient.GROUP_CHAT_SEND_VOICE_MESSAGE
     } else {
       return PttClient.SINGLE_CHAT_SEND_VOICE_MESSAGE
     }
@@ -227,7 +236,9 @@ export class PttClient {
   getMaxSpeakTime(conversation) {
     if (conversation.type === ConversationType.Group) {
       let extra = this._getGroupExtra(conversation.target)
-      return extra.hasOwnProperty('t') ? extra.t : PttClient.GROUP_CHAT_MAX_SPEAK_TIME
+      return Object.prototype.hasOwnProperty.call(extra, 't')
+        ? extra.t
+        : PttClient.GROUP_CHAT_MAX_SPEAK_TIME
     } else {
       return PttClient.SINGLE_CHAT_MAX
     }
@@ -297,7 +308,7 @@ export class PttClient {
   }
 
   setEnablePtt(conversation, enable) {
-    if (!conversation) {
+    if (conversation) {
       this.conversationPttStatusMap.set(this._conversationKey(conversation), enable)
     }
   }
@@ -331,39 +342,6 @@ export class PttClient {
       null,
       successCB,
       failCB
-    )
-  }
-
-  _eventTest() {
-    // //某人开始在频道中讲话
-    // // function (conversation, userId) {}
-    // static userStartTalking = 'userStartTalking'
-    //
-    // //某人结束在频道中讲话
-    // // function (conversation, userId) {}
-    // static userEndTalking = 'userEndTalking'
-    //
-    // //接收到用户自定义数据
-    // // function (conversation, userId, data) {}
-    // static receiveData = 'receiveData';
-    //
-    // //用户说话音量大小回调
-    // // function (conversation, userId, averageAmplitude) {}
-    // static userAmplitudeUpdate = 'userAmplitudeUpdate';
-    this.eventEmitter.on(PttEventType.userStartTalking, (conversation, userId) => {
-      console.log('userStartTalking', conversation, userId)
-    })
-    this.eventEmitter.on(PttEventType.userEndTalking, (conversation, userId) => {
-      console.log('userEndTalking', conversation, userId)
-    })
-    this.eventEmitter.on(PttEventType.receiveData, (conversation, userId, data) => {
-      console.log('receiveData', conversation, userId, data)
-    })
-    this.eventEmitter.on(
-      PttEventType.userAmplitudeUpdate,
-      (conversation, userId, averageAmplitude) => {
-        console.log('userAmplitudeUpdate', conversation, userId, averageAmplitude)
-      }
     )
   }
 }
