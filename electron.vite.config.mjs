@@ -12,7 +12,7 @@ export default defineConfig({
   preload: {
     plugins: [externalizeDepsPlugin()],
     build: {
-      outDir: 'dist/preload/',
+      outDir: 'out/preload/', // 修改这里从 'dist/preload/' 到 'out/preload/'
       // 确保预加载脚本正确打包
       rollupOptions: {
         input: 'src/preload/index.js'
