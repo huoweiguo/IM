@@ -1,8 +1,7 @@
 <template>
-
   <div class="group-chat-outer">
     <div class="group-chat-nav">
-      <a @click="router.push('/login')">登录</a>
+      <a @click="router.push('/passwordLogin')">登录</a>
       <a>私聊</a>
       <a>私域群</a>
       <a class="active">公域群</a>
@@ -20,16 +19,19 @@
               <el-dropdown-menu>
                 <el-dropdown-item @click="openChatWindow">
                   <el-icon>
-                    <UserFilled />
-                  </el-icon>发起群聊
+                    <UserFilled /> </el-icon
+                  >发起群聊
                 </el-dropdown-item>
-                <el-dropdown-item @click="openScanWindow"><el-icon>
-                    <StarFilled />
-                  </el-icon>关注我</el-dropdown-item>
+                <el-dropdown-item @click="openScanWindow"
+                  ><el-icon>
+                    <StarFilled /> </el-icon
+                  >关注我</el-dropdown-item
+                >
                 <el-dropdown-item @click="openHelpWindow">
                   <el-icon>
                     <QuestionFilled />
-                  </el-icon> 帮助
+                  </el-icon>
+                  帮助
                 </el-dropdown-item>
               </el-dropdown-menu>
             </template>
@@ -38,9 +40,14 @@
         </div>
         <div class="community-list">
           <ul>
-            <li v-for="item in list" :key="item.id" :class="{ 'activeItem': activeId === item.id }"
-              @click="toCommunity(item.id)">
-              {{ item.name }}</li>
+            <li
+              v-for="item in list"
+              :key="item.id"
+              :class="{ activeItem: activeId === item.id }"
+              @click="toCommunity(item.id)"
+            >
+              {{ item.name }}
+            </li>
           </ul>
         </div>
       </div>

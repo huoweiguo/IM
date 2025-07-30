@@ -8,9 +8,14 @@
     <button class="other-login" @click="handleOtherLogin">其他手机号登录</button>
 
     <div class="agreement">
-      <input type="checkbox" id="agree" v-model="agreed">
-      <label for="agree">我已阅读并同意<a href="#" @click.prevent="showUserAgreement">《用户协议》</a>和<a href="#"
-          @click.prevent="showPrivacyPolicy">《隐私政策》</a></label>
+      <input type="checkbox" id="agree" v-model="agreed" />
+      <label for="agree"
+        >我已阅读并同意<a href="#" @click.prevent="showUserAgreement">《用户协议》</a>和<a
+          href="#"
+          @click.prevent="showPrivacyPolicy"
+          >《隐私政策》</a
+        ></label
+      >
     </div>
   </div>
 </template>

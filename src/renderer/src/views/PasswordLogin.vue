@@ -7,26 +7,44 @@
 
     <div class="input-container">
       <div class="input-field">
-        <input id="phone" type="tel" v-model="phoneNumber" maxlength="11" placeholder="请输入手机号码">
+        <input
+          id="phone"
+          type="tel"
+          v-model="phoneNumber"
+          maxlength="11"
+          placeholder="请输入手机号码"
+        />
       </div>
 
       <div class="input-field password-input">
-        <input id="password" :type="showPassword ? 'text' : 'password'" v-model="password" placeholder="请输入密码">
+        <input
+          id="password"
+          :type="showPassword ? 'text' : 'password'"
+          v-model="password"
+          placeholder="请输入密码"
+        />
         <span class="forget-password" @click="handleForgetPassword">忘记密码</span>
       </div>
     </div>
 
     <div class="login-options">
-      <span class="no-account">还没有账号？<span class="register" @click="switchToRegister">注册账号</span></span>
-      <span class="code-login" @click="switchToCodeLogin">验证码登录</span>
+      <span class="no-account"
+        >还没有账号？<span class="register" @click="switchToRegister">注册账号</span></span
+      >
+      <!-- <span class="code-login" @click="switchToCodeLogin">验证码登录</span> -->
     </div>
 
     <button class="login-btn" @click="handleLogin">登录</button>
 
     <div class="agreement">
-      <input type="checkbox" id="agree" v-model="agreed">
-      <label for="agree">我已阅读并同意<a href="#" @click.prevent="showUserAgreement">《用户协议》</a>和<a href="#"
-          @click.prevent="showPrivacyPolicy">《隐私政策》</a></label>
+      <input type="checkbox" id="agree" v-model="agreed" />
+      <label for="agree"
+        >我已阅读并同意<a href="#" @click.prevent="showUserAgreement">《用户协议》</a>和<a
+          href="#"
+          @click.prevent="showPrivacyPolicy"
+          >《隐私政策》</a
+        ></label
+      >
     </div>
   </div>
 </template>
@@ -35,6 +53,11 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import TopNav from '../../components/TopNav.vue'
+import { loginAccount } from '../api/index.js'
+import { ElMessage } from 'element-plus'
+import { useStore } from '../stores/store.js'
+
+const store = useStore()
 
 const router = useRouter()
 
@@ -47,22 +70,37 @@ const showPassword = ref(false)
 
 const handleLogin = () => {
   if (!agreed.value) {
-    alert('请先阅读并同意用户协议和隐私政策')
+    ElMessage.warning('请先阅读并同意用户协议和隐私政策')
     return
   }
 
   if (!phoneNumber.value || !password.value) {
-    alert('请输入手机号和密码')
+    ElMessage.warning('请输入手机号和密码')
     return
   }
 
-  console.log('登录信息:', {
-    phone: phoneNumber.value,
-    password: password.value
-  })
+  loginAccount({
+    account: phoneNumber.value,
+    clientId: 'anLIsjT2tdGJ',
+    code: '',
+    password: password.value,
+    scene: 1, // 登录方式: [1-账号密码 2-手机验证码 4-手机号一键登录]
+    terminal: 4 // 终端 登录渠道: [1-iOS 2-Android 3-Windows 4-OSX 5-WEB 6-小程序 7-linux]
+  }).then((res) => {
+    console.log(res)
 
-  // 这里添加实际登录逻辑
-  // router.push('/home')
+    if (res.code !== 0) {
+      ElMessage.error(res.msg || '登录失败，请重试')
+      return
+    }
+
+    console.log('登录成功:', res)
+    ElMessage.success('登录成功')
+    // 登录成功后可以存储用户信息或 token
+    store.setUserInfo(res.data)
+    // 跳转到首页或其他页面
+    router.push('/chat')
+  })
 }
 
 const handleForgetPassword = () => {

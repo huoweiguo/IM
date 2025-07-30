@@ -6,11 +6,17 @@
     <div class="welcome-text">{{ welcomeText }}</div>
     <div class="input-container">
       <div class="input-field">
-        <input id="phone" type="tel" v-model="phoneNumber" maxlength="11" placeholder="请输入手机号码">
+        <input
+          id="phone"
+          type="tel"
+          v-model="phoneNumber"
+          maxlength="11"
+          placeholder="请输入手机号码"
+        />
       </div>
 
       <div class="input-field verification-code">
-        <input id="code" type="text" v-model="verificationCode" placeholder="请输入验证码">
+        <input id="code" type="text" v-model="verificationCode" placeholder="请输入验证码" />
         <button class="send-code-btn" @click="sendVerificationCode" :disabled="isCountingDown">
           {{ countdown > 0 ? `${countdown}秒后重发` : '发送验证码' }}
         </button>
@@ -25,9 +31,14 @@
     <button class="login-btn" @click="handleLogin">登录</button>
 
     <div class="agreement">
-      <input type="checkbox" id="agree" v-model="agreed">
-      <label for="agree">我已阅读并同意<a href="#" @click.prevent="showUserAgreement">《用户协议》</a>和<a href="#"
-          @click.prevent="showPrivacyPolicy">《隐私政策》</a></label>
+      <input type="checkbox" id="agree" v-model="agreed" />
+      <label for="agree"
+        >我已阅读并同意<a href="#" @click.prevent="showUserAgreement">《用户协议》</a>和<a
+          href="#"
+          @click.prevent="showPrivacyPolicy"
+          >《隐私政策》</a
+        ></label
+      >
     </div>
   </div>
 </template>
@@ -36,6 +47,8 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import TopNav from '../../components/TopNav.vue'
+import { loginAccount } from '../api/index.js'
+import { ElMessage } from 'element-plus'
 
 const router = useRouter()
 
@@ -84,8 +97,24 @@ const handleLogin = () => {
     code: verificationCode.value
   })
 
-  // 这里添加实际登录逻辑
-  // router.push('/home')
+  loginAccount({
+    account: phoneNumber.value,
+    clientId: 'string',
+    code: verificationCode.value,
+    password: 'string',
+    scene: 0,
+    terminal: 0
+  })
+    .then((response) => {
+      console.log('登录成功:', response)
+
+      ElMessage.success('登录成功')
+      router.push('/home')
+    })
+    .catch((error) => {
+      console.error('登录失败:', error)
+      ElMessage.error('登录失败，请检查手机号和验证码')
+    })
 }
 
 const switchToPasswordLogin = () => {

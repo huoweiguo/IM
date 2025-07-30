@@ -7,6 +7,7 @@ import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import zhCn from 'element-plus/es/locale/lang/zh-cn'
 import router from '../router'
 import App from './App.vue'
+import * as Pinia from 'pinia'
 import { isElectron } from './platform'
 import wfc from './wfc/client/wfc'
 import CustomMessageConfig from './wfc_custom_message/customMessageConfig'
@@ -42,4 +43,5 @@ app.use(router)
 app.use(ElementPlus, {
   locale: zhCn // 设置为中文
 })
+app.use(Pinia.createPinia())
 app.mount('#app')
