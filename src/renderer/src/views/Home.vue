@@ -8,5 +8,11 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { useStore } from '../stores/store.js'
 const router = useRouter()
+const store = useStore()
+
+if (!store.isLogin) {
+  router.push('/passwordLogin')
+}
 </script>
