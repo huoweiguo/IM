@@ -46,11 +46,11 @@ export default class Config {
   static APP_SERVER = 'http://119.3.154.38:8803'
 
   // 语音转文字服务地址，如果没有部署语音转文字服务，或者不需要语音转文字的话，可置为 null
-  static ASR_SERVER = 'https://app.wildfirechat.net/asr/api/recognize'
+  static ASR_SERVER = null
 
   // 组织结构服务地址，如果没有部署组织结构服务，或者不需要组织结构的话，可置为 null
   // 组织结构项目：https://github.com/wildfirechat/organization-platform 或 https://gitee.com/wfchat/organization-platform
-  static ORGANIZATION_SERVER = 'https://org.wildfirechat.cn'
+  static ORGANIZATION_SERVER = null
   // 野火二维码 scheme，不要修改，如果需要修改的话，所有端都需要一起修改
   static QR_CODE_PREFIX_PC_SESSION = 'wildfirechat://pcsession/'
 
@@ -66,7 +66,7 @@ export default class Config {
   static MESSAGE_ROAMING = 1
 
   // AI 入口地址，如果不需要 AI 功能，置为 null 即可
-  static AI_PORTAL_URL = 'https://static.wildfirechat.cn/chatbox-web/index.html'
+  static AI_PORTAL_URL = null
 
   /**
    * web/wx 端有效

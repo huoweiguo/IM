@@ -56,6 +56,7 @@ import TopNav from '../../components/TopNav.vue'
 import { loginAccount } from '../api/index.js'
 import { ElMessage } from 'element-plus'
 import { useStore } from '../stores/store.js'
+import wfc from '../wfc/client/wfc'
 
 const store = useStore()
 
@@ -63,10 +64,11 @@ const router = useRouter()
 
 const appName = '这是一个名字'
 const welcomeText = '你好，欢迎来到'
-const phoneNumber = ref('')
-const password = ref('')
+const phoneNumber = ref('18685029094')
+const password = ref('123456')
 const agreed = ref(false)
 const showPassword = ref(false)
+const clientId = wfc.getClientId()
 
 const handleLogin = () => {
   if (!agreed.value) {
@@ -81,7 +83,7 @@ const handleLogin = () => {
 
   loginAccount({
     account: phoneNumber.value,
-    clientId: 'anLIsjT2tdGJ',
+    clientId: clientId,
     code: '',
     password: password.value,
     scene: 1, // 登录方式: [1-账号密码 2-手机验证码 4-手机号一键登录]
@@ -98,6 +100,13 @@ const handleLogin = () => {
     ElMessage.success('登录成功')
     // 登录成功后可以存储用户信息或 token
     store.setUserInfo(res.data)
+
+    // 连接 WebSocket
+    const firstTimeConnect = wfc.connect(res.data.id, res.data.token)
+    console.log('WebSocket 连接状态:', res.data?.id, res.data?.token, firstTimeConnect)
+    const conversationList = wfc.getConversationList([0, 1, 2], [0, 1])
+    console.log('会话列表:', conversationList)
+
     // 跳转到首页或其他页面
     router.push('/chat')
   })
