@@ -49,6 +49,10 @@ import { useRouter } from 'vue-router'
 import TopNav from '../../components/TopNav.vue'
 import { loginAccount } from '../api/index.js'
 import { ElMessage } from 'element-plus'
+import { useStore } from '../stores/store.js'
+import wfc from '../wfc/client/wfc'
+
+const store = useStore()
 
 const router = useRouter()
 
@@ -59,6 +63,7 @@ const verificationCode = ref('')
 const agreed = ref(false)
 const countdown = ref(0)
 const isCountingDown = ref(false)
+const clientId = wfc.getClientId()
 
 const sendVerificationCode = () => {
   if (!phoneNumber.value || !/^1[3-9]\d{9}$/.test(phoneNumber.value)) {
@@ -99,22 +104,31 @@ const handleLogin = () => {
 
   loginAccount({
     account: phoneNumber.value,
-    clientId: 'string',
+    clientId: clientId,
     code: verificationCode.value,
-    password: 'string',
-    scene: 0,
-    terminal: 0
-  })
-    .then((response) => {
-      console.log('登录成功:', response)
+    password: '',
+    scene: 2, // 登录方式: [1-账号密码 2-手机验证码 4-手机号一键登录]
+    terminal: window.electronAPI.platform === 'Windows' ? 3 : 4 // 终端 登录渠道: [1-iOS 2-Android 3-Windows 4-OSX 5-WEB 6-小程序 7-linux]
+  }).then((res) => {
+    if (res.code !== 0) {
+      ElMessage.error(res.msg || '登录失败，请重试')
+      return
+    }
 
-      ElMessage.success('登录成功')
-      router.push('/home')
-    })
-    .catch((error) => {
-      console.error('登录失败:', error)
-      ElMessage.error('登录失败，请检查手机号和验证码')
-    })
+    console.log('登录成功:', res)
+    ElMessage.success('登录成功')
+    // 登录成功后可以存储用户信息或 token
+    store.setUserInfo(res.data)
+
+    // 连接 WebSocket
+    const firstTimeConnect = wfc.connect(res.data.id, res.data.token)
+    console.log('WebSocket 连接状态:', res.data?.id, res.data?.token, firstTimeConnect)
+    const conversationList = wfc.getConversationList([0, 1, 2], [0, 1])
+    console.log('1会话列表:', conversationList)
+
+    // 跳转到首页或其他页面
+    router.push('/chat')
+  })
 }
 
 const switchToPasswordLogin = () => {

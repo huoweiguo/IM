@@ -7,9 +7,9 @@ export function loginAccount(data) {
 }
 
 // 退出登录
-export function logoutAccount(data) {
+export async function logoutAccount() {
   loginout()
-  return POST('/api/login/logout', data)
+  await POST('/api/login/logout')
 }
 
 // 注册账号

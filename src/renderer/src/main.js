@@ -10,8 +10,12 @@ import App from './App.vue'
 import * as Pinia from 'pinia'
 import wfc from './wfc/client/wfc'
 import CustomMessageConfig from './wfc_custom_message/customMessageConfig'
+import { useStore } from './stores/store'
 
 const app = createApp(App)
+app.use(Pinia.createPinia())
+const store = useStore()
+store.init()
 
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
   app.component(key, component)
@@ -26,5 +30,4 @@ app.use(router)
 app.use(ElementPlus, {
   locale: zhCn // 设置为中文
 })
-app.use(Pinia.createPinia())
 app.mount('#app')
