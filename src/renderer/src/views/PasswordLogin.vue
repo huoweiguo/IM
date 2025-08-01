@@ -100,13 +100,6 @@ const handleLogin = () => {
     ElMessage.success('登录成功')
     // 登录成功后可以存储用户信息或 token
     store.setUserInfo(res.data)
-
-    // 连接 WebSocket
-    const firstTimeConnect = wfc.connect(res.data.id, res.data.token)
-    console.log('WebSocket 连接状态:', res.data?.id, res.data?.token, firstTimeConnect)
-    const conversationList = wfc.getConversationList([0, 1, 2], [0, 1])
-    console.log('2会话列表:', conversationList)
-
     // 跳转到首页或其他页面
     router.push('/chat')
   })

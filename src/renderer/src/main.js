@@ -9,22 +9,20 @@ import router from '../router'
 import App from './App.vue'
 import * as Pinia from 'pinia'
 import wfc from './wfc/client/wfc'
-import CustomMessageConfig from './wfc_custom_message/customMessageConfig'
 import { useStore } from './stores/store'
 
 const app = createApp(App)
+
+wfc.init()
+
 app.use(Pinia.createPinia())
+
 const store = useStore()
 store.init()
 
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
   app.component(key, component)
 }
-
-// init
-wfc.init()
-CustomMessageConfig.registerCustomMessages()
-// init end
 
 app.use(router)
 app.use(ElementPlus, {
