@@ -1,111 +1,128 @@
 <template>
   <div class="password-reset-container">
-    <TopNav title="忘记密码" />
-
-    <div class="app-name">{{ appName }}</div>
-    <div class="welcome-text">{{ welcomeText }}</div>
+    <div class="app-name">忘记密码</div>
 
     <div class="input-container">
       <div class="input-field">
-        <input id="phone" type="tel" v-model="phoneNumber" maxlength="11" placeholder="请输入手机号码">
+        <input
+          id="phone"
+          type="tel"
+          v-model="phoneNumber"
+          maxlength="11"
+          placeholder="请输入手机号码"
+        />
       </div>
 
       <div class="input-field verification-code">
-        <input id="code" type="text" v-model="verificationCode" placeholder="请输入验证码">
+        <input id="code" type="text" v-model="verificationCode" placeholder="请输入验证码" />
         <button class="get-code-btn" @click="getVerificationCode" :disabled="isCountingDown">
           {{ countdown > 0 ? `${countdown}秒后重发` : '获取验证码' }}
         </button>
       </div>
 
       <div class="input-field">
-        <input id="new-password" :type="showPassword ? 'text' : 'password'" v-model="newPassword" placeholder="请输入新密码">
-        <span class="toggle-password" @click="showPassword = !showPassword" :class="{ 'visible': showPassword }">
+        <input
+          id="new-password"
+          :type="showPassword ? 'text' : 'password'"
+          v-model="newPassword"
+          placeholder="请输入新密码"
+        />
+        <span
+          class="toggle-password"
+          @click="showPassword = !showPassword"
+          :class="{ visible: showPassword }"
+        >
           {{ showPassword ? '👁️' : '👁️‍🗨️' }}
         </span>
       </div>
     </div>
+    <div class="login-options">
+      <span class="password-login" @click="switchToPasswordLogin">密码登录</span>
+    </div>
 
     <button class="reset-btn" @click="handleReset">重置密码</button>
-
-    <div class="agreement">
-      <input type="checkbox" id="agree" v-model="agreed">
-      <label for="agree">我已阅读并同意<a href="#" @click.prevent="showUserAgreement">《用户协议》</a>和<a href="#"
-          @click.prevent="showPrivacyPolicy">《隐私政策》</a></label>
-    </div>
   </div>
 </template>
 
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import TopNav from '../../components/TopNav.vue'
+import { forgotPassword, sendSmsCode } from '../api/index.js'
+import { ElMessage } from 'element-plus'
 
 const router = useRouter()
 
-const appName = '这是一个名字'
-const welcomeText = '你好，欢迎来到'
 const phoneNumber = ref('')
 const verificationCode = ref('')
 const newPassword = ref('')
-const agreed = ref(false)
 const showPassword = ref(false)
 const countdown = ref(0)
 const isCountingDown = ref(false)
 
 const getVerificationCode = () => {
-  if (!phoneNumber.value || !/^1[3-9]\d{9}$/.test(phoneNumber.value)) {
-    alert('请输入正确的手机号码')
+  if (isCountingDown.value) {
+    ElMessage.error('请稍后再获取验证码')
     return
   }
 
-  // 模拟发送验证码
-  console.log('发送验证码到:', phoneNumber.value)
+  if (!phoneNumber.value || !/^1[3-9]\d{9}$/.test(phoneNumber.value)) {
+    ElMessage.error('请输入正确的手机号码')
+    return
+  }
 
-  // 开始倒计时
-  isCountingDown.value = true
-  countdown.value = 60
-  const timer = setInterval(() => {
-    countdown.value--
-    if (countdown.value <= 0) {
-      clearInterval(timer)
-      isCountingDown.value = false
+  sendSmsCode({
+    mobile: phoneNumber.value,
+    scene: 'ZHDLMM'
+  }).then((res) => {
+    if (res.code !== 0) {
+      ElMessage.error(res.msg || '发送验证码失败，请重试')
+      return
     }
-  }, 1000)
+
+    ElMessage.success('验证码发送成功')
+
+    // 开始倒计时
+    isCountingDown.value = true
+    countdown.value = 60
+    const timer = setInterval(() => {
+      countdown.value--
+      if (countdown.value <= 0) {
+        clearInterval(timer)
+        isCountingDown.value = false
+      }
+    }, 1000)
+  })
 }
 
 const handleReset = () => {
-  if (!agreed.value) {
-    alert('请先阅读并同意用户协议和隐私政策')
-    return
-  }
-
   if (!phoneNumber.value || !verificationCode.value || !newPassword.value) {
-    alert('请填写完整信息')
+    ElMessage.error('请填写完整信息')
     return
   }
 
   if (newPassword.value.length < 6) {
-    alert('密码长度不能少于6位')
+    ElMessage.error('密码长度不能少于6位')
     return
   }
 
-  console.log('重置密码信息:', {
-    phone: phoneNumber.value,
+  forgotPassword({
     code: verificationCode.value,
-    newPassword: newPassword.value
+    mobile: phoneNumber.value,
+    password: newPassword.value
+  }).then((res) => {
+    if (res.code !== 0) {
+      ElMessage.error(res.msg || '重置密码失败，请重试')
+      return
+    }
+
+    ElMessage.success('重置密码成功')
+    // 跳转到首页或其他页面
+    switchToPasswordLogin()
   })
-
-  // 这里添加实际重置密码逻辑
-  // 成功后可以跳转到登录页面
-  // router.push('/login')
 }
 
-const showUserAgreement = () => {
-  router.push('/user-agreement')
-}
-
-const showPrivacyPolicy = () => {
-  router.push('/privacy-policy')
+const switchToPasswordLogin = () => {
+  router.push('/passwordLogin') // 假设有密码登录路由
 }
 </script>
 
@@ -117,7 +134,6 @@ const showPrivacyPolicy = () => {
   width: 500px;
   height: 100vh;
   padding-top: 60px;
-  background-color: #f5f5f5;
   box-sizing: border-box;
 }
 
@@ -169,7 +185,6 @@ const showPrivacyPolicy = () => {
 .input-container .input-field:last-child input {
   border-bottom: 0;
 }
-
 
 .verification-code {
   position: relative;
@@ -234,5 +249,15 @@ const showPrivacyPolicy = () => {
 .agreement a {
   color: #1890ff;
   text-decoration: none;
+}
+
+.login-options {
+  width: 100%;
+  max-width: 500px;
+  margin-top: 12px;
+  font-size: 14px;
+  color: #1890ff;
+  cursor: pointer;
+  text-align: right;
 }
 </style>

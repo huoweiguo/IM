@@ -47,7 +47,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import TopNav from '../../components/TopNav.vue'
-import { loginAccount } from '../api/index.js'
+import { loginAccount, sendSmsCode } from '../api/index.js'
 import { ElMessage } from 'element-plus'
 import { useStore } from '../stores/store.js'
 import wfc from '../wfc/client/wfc'
@@ -66,24 +66,37 @@ const isCountingDown = ref(false)
 const clientId = wfc.getClientId()
 
 const sendVerificationCode = () => {
+  if (isCountingDown.value) {
+    ElMessage.error('请稍后再获取验证码')
+    return
+  }
+
   if (!phoneNumber.value || !/^1[3-9]\d{9}$/.test(phoneNumber.value)) {
     alert('请输入正确的手机号码')
     return
   }
-
-  // 模拟发送验证码
-  console.log('发送验证码到:', phoneNumber.value)
-
-  // 开始倒计时
-  isCountingDown.value = true
-  countdown.value = 60
-  const timer = setInterval(() => {
-    countdown.value--
-    if (countdown.value <= 0) {
-      clearInterval(timer)
-      isCountingDown.value = false
+  sendSmsCode({
+    mobile: phoneNumber.value,
+    scene: 'YZMDL'
+  }).then((res) => {
+    if (res.code !== 0) {
+      ElMessage.error(res.msg || '发送验证码失败，请重试')
+      return
     }
-  }, 1000)
+
+    ElMessage.success('验证码发送成功')
+
+    // 开始倒计时
+    isCountingDown.value = true
+    countdown.value = 60
+    const timer = setInterval(() => {
+      countdown.value--
+      if (countdown.value <= 0) {
+        clearInterval(timer)
+        isCountingDown.value = false
+      }
+    }, 1000)
+  })
 }
 
 const handleLogin = () => {
@@ -152,7 +165,6 @@ const showPrivacyPolicy = () => {
   padding-top: 60px;
   width: 500px;
   height: 100vh;
-  background-color: #f5f5f5;
   box-sizing: border-box;
 }
 

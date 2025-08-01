@@ -141,7 +141,6 @@ const showPrivacyPolicy = () => {
   height: 100vh;
   width: 500px;
   padding-top: 60px;
-  background-color: #f5f5f5;
   box-sizing: border-box;
 }
 
