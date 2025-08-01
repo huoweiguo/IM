@@ -11,6 +11,7 @@ declare module 'vue' {
     ChatHomeUserGroupList: typeof import('./src/components/ChatHomeUserGroupList.vue')['default']
     ChatSilder: typeof import('./src/components/ChatSilder.vue')['default']
     ChatUser: typeof import('./src/components/ChatUser.vue')['default']
+    ChatWindow: typeof import('./src/components/ChatWindow.vue')['default']
     CommunityComp: typeof import('./src/components/CommunityComp.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']

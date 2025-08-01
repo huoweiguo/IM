@@ -1,8 +1,6 @@
 import { electronAPI } from '@electron-toolkit/preload'
 import { EventEmitter } from 'events'
 import { contextBridge, ipcRenderer } from 'electron'
-import path from 'path' // 添加这一行
-import os from 'os' // 添加 os 模块导入
 
 // Custom APIs for renderer
 const api = {}
@@ -28,8 +26,6 @@ if (process.contextIsolated) {
     contextBridge.exposeInMainWorld('electron', electronAPI)
     contextBridge.exposeInMainWorld('api', api)
     contextBridge.exposeInMainWorld('__dirname', __dirname)
-    contextBridge.exposeInMainWorld('path', path)
-    contextBridge.exposeInMainWorld('os', os) // 暴露 os 模块
     // 在隔离模式下通过 contextBridge 暴露 EventEmitter
     contextBridge.exposeInMainWorld('createEventEmitter', () => new EventEmitter())
     contextBridge.exposeInMainWorld('electronAPI', {
@@ -49,8 +45,6 @@ if (process.contextIsolated) {
   }
 } else {
   window.__dirname = __dirname
-  window.path = path // 添加这一行
-  window.os = os // 添加 os 模块
   window.electron = electronAPI
   window.api = api
   // 在非隔离模式下直接设置到 window 对象

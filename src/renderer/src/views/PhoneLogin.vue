@@ -6,13 +6,7 @@
     <div class="welcome-text">{{ welcomeText }}</div>
     <div class="input-container">
       <div class="input-field">
-        <input
-          id="phone"
-          type="tel"
-          v-model="phoneNumber"
-          maxlength="11"
-          placeholder="请输入手机号码"
-        />
+        <input id="phone" type="tel" v-model="phoneNumber" maxlength="11" placeholder="请输入手机号码" />
       </div>
 
       <div class="input-field verification-code">
@@ -32,13 +26,8 @@
 
     <div class="agreement">
       <input type="checkbox" id="agree" v-model="agreed" />
-      <label for="agree"
-        >我已阅读并同意<a href="#" @click.prevent="showUserAgreement">《用户协议》</a>和<a
-          href="#"
-          @click.prevent="showPrivacyPolicy"
-          >《隐私政策》</a
-        ></label
-      >
+      <label for="agree">我已阅读并同意<a href="#" @click.prevent="showUserAgreement">《用户协议》</a>和<a href="#"
+          @click.prevent="showPrivacyPolicy">《隐私政策》</a></label>
     </div>
   </div>
 </template>
@@ -50,7 +39,7 @@ import TopNav from '../../components/TopNav.vue'
 import { loginAccount, sendSmsCode } from '../api/index.js'
 import { ElMessage } from 'element-plus'
 import { useStore } from '../stores/store.js'
-import wfc from '../wfc/client/wfc'
+// import wfc from '../wfc/client/wfc'
 
 const store = useStore()
 
@@ -63,7 +52,7 @@ const verificationCode = ref('')
 const agreed = ref(false)
 const countdown = ref(0)
 const isCountingDown = ref(false)
-const clientId = wfc.getClientId()
+// const clientId = wfc.getClientId()
 
 const sendVerificationCode = () => {
   if (isCountingDown.value) {
@@ -117,7 +106,7 @@ const handleLogin = () => {
 
   loginAccount({
     account: phoneNumber.value,
-    clientId: clientId,
+    // clientId: clientId,
     code: verificationCode.value,
     password: '',
     scene: 2, // 登录方式: [1-账号密码 2-手机验证码 4-手机号一键登录]
