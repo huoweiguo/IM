@@ -1,6 +1,6 @@
 <template>
   <div class="group-chat-nav">
-    <a @click="router.push('/passwordLogin')">登录</a>
+    <!-- <a @click="router.push('/passwordLogin')">登录</a> -->
     <a>私域</a>
     <a>私域群</a>
     <a class="active" @click="openPublicWindow">公域群</a>

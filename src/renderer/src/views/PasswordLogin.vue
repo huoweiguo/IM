@@ -31,7 +31,7 @@
       <span class="no-account"
         >还没有账号？<span class="register" @click="switchToRegister">注册账号</span></span
       >
-      <!-- <span class="code-login" @click="switchToCodeLogin">验证码登录</span> -->
+      <span class="code-login" @click="switchToCodeLogin">验证码登录</span>
     </div>
 
     <button class="login-btn" @click="handleLogin">登录</button>
@@ -87,7 +87,7 @@ const handleLogin = () => {
     code: '',
     password: password.value,
     scene: 1, // 登录方式: [1-账号密码 2-手机验证码 4-手机号一键登录]
-    terminal: 4 // 终端 登录渠道: [1-iOS 2-Android 3-Windows 4-OSX 5-WEB 6-小程序 7-linux]
+    terminal: window.electronAPI.platform === 'Windows' ? 3 : 4 // 终端 登录渠道: [1-iOS 2-Android 3-Windows 4-OSX 5-WEB 6-小程序 7-linux]
   }).then((res) => {
     console.log(res)
 
@@ -100,13 +100,6 @@ const handleLogin = () => {
     ElMessage.success('登录成功')
     // 登录成功后可以存储用户信息或 token
     store.setUserInfo(res.data)
-
-    // 连接 WebSocket
-    const firstTimeConnect = wfc.connect(res.data.id, res.data.token)
-    console.log('WebSocket 连接状态:', res.data?.id, res.data?.token, firstTimeConnect)
-    const conversationList = wfc.getConversationList([0, 1, 2], [0, 1])
-    console.log('会话列表:', conversationList)
-
     // 跳转到首页或其他页面
     router.push('/chat')
   })
@@ -141,7 +134,6 @@ const showPrivacyPolicy = () => {
   height: 100vh;
   width: 500px;
   padding-top: 60px;
-  background-color: #f5f5f5;
   box-sizing: border-box;
 }
 

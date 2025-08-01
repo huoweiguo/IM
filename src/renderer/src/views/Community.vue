@@ -1,7 +1,7 @@
 <template>
   <div class="group-chat-outer">
     <div class="group-chat-nav">
-      <a @click="router.push('/passwordLogin')">登录</a>
+      <!-- <a @click="router.push('/passwordLogin')">登录</a> -->
       <a>私聊</a>
       <a>私域群</a>
       <a class="active">公域群</a>
@@ -18,14 +18,10 @@
             <template #dropdown>
               <el-dropdown-menu>
                 <el-dropdown-item @click="openChatWindow">
-                  <el-icon>
-                    <UserFilled /> </el-icon
-                  >发起群聊
+                  <el-icon> <UserFilled /> </el-icon>发起群聊
                 </el-dropdown-item>
                 <el-dropdown-item @click="openScanWindow"
-                  ><el-icon>
-                    <StarFilled /> </el-icon
-                  >关注我</el-dropdown-item
+                  ><el-icon> <StarFilled /> </el-icon>关注我</el-dropdown-item
                 >
                 <el-dropdown-item @click="openHelpWindow">
                   <el-icon>
@@ -59,11 +55,9 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref } from 'vue'
 import ChatSilder from '../components/ChatSilder.vue'
 import CommunityComp from '../components/CommunityComp.vue'
-const router = useRouter()
 const activeId = ref(1)
 const list = ref([
   { name: 'A22社区群', id: 1 },
