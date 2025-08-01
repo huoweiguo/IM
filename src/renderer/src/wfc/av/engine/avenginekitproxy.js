@@ -23,6 +23,7 @@ export class AvEngineKitProxy {
     wfc;
     queueEvents = [];
     callWin;
+    callWindowId;
     isVoipWindowReady = false;
     type;
 
@@ -179,6 +180,7 @@ export class AvEngineKitProxy {
             console.log('only pc support remote control');
             return;
         }
+
         let now = (new Date()).valueOf();
         let delta = wfc.getServerDeltaTime();
         if (now - (numberValue(msg.timestamp) - delta) >= 90 * 1000) {
@@ -191,7 +193,7 @@ export class AvEngineKitProxy {
             console.log('in conference, ignore all other msg');
             return;
         }
-        if(content.notLoaded){
+        if (content.notLoaded) {
             console.log('message not loaded, ignore');
             return;
         }
@@ -220,21 +222,29 @@ export class AvEngineKitProxy {
                 || content.type === MessageContentType.VOIP_CONTENT_TYPE_ADD_PARTICIPANT
                 || content.type === MessageContentType.VOIP_CONTENT_TYPE_MUTE_VIDEO
                 || content.type === MessageContentType.VOIP_Join_Call_Request
+                || content.type === MessageContentType.VOIP_REMOTE_CONTROL_INPUT_EVENT
                 || content.type === MessageContentType.CONFERENCE_CONTENT_TYPE_KICKOFF_MEMBER
                 || content.type === MessageContentType.CONFERENCE_CONTENT_TYPE_CHANGE_MODE
                 || content.type === MessageContentType.CONFERENCE_CONTENT_TYPE_COMMAND
+                || content.type === MessageContentType.VOIP_REMOTE_CONTROL_INVITE
+                || content.type === MessageContentType.VOIP_REMOTE_CONTROL_ACCEPT_INVITE
+                || content.type === MessageContentType.VOIP_REMOTE_CONTROL_REQUEST
+                || content.type === MessageContentType.VOIP_REMOTE_CONTROL_ACCEPT_REQUEST
+                || content.type === MessageContentType.VOIP_REMOTE_CONTROL_END
             ) {
                 console.log("receive voip message", msg.messageContent.type, msg.messageContent.callId, msg.messageUid.toString(), msg);
                 if (msg.direction === 0
                     && content.type !== MessageContentType.VOIP_CONTENT_TYPE_END
                     && content.type !== MessageContentType.VOIP_CONTENT_TYPE_ACCEPT
-                    && content.type !== MessageContentType.VOIP_CONTENT_TYPE_ACCEPT) {
+                    && content.type !== MessageContentType.VOIP_CONTENT_TYPE_ACCEPT
+                    && content.type !== MessageContentType.VOIP_REMOTE_CONTROL_ACCEPT_INVITE
+                    && content.type !== MessageContentType.VOIP_REMOTE_CONTROL_ACCEPT_REQUEST) {
                     return;
                 }
 
                 let participantUserInfos = [];
                 let selfUserInfo = wfc.getUserInfo(wfc.getUserId());
-                if (content.type === MessageContentType.VOIP_CONTENT_TYPE_START) {
+                if (content.type === MessageContentType.VOIP_CONTENT_TYPE_START || content.type === MessageContentType.VOIP_REMOTE_CONTROL_REQUEST) {
                     this.conversation = msg.conversation;
                     this.callId = content.callId;
                     this.inviteMessageUid = msg.messageUid;
@@ -257,7 +267,10 @@ export class AvEngineKitProxy {
                             msg.timestamp = longValue(numberValue(msg.timestamp) - delta)
                             this.showCallUI(msg.conversation, false, {
                                 event: 'message',
-                                args: msg
+                                args: {
+                                    ...msg,
+                                    remoteControl: content.type === MessageContentType.VOIP_REMOTE_CONTROL_REQUEST
+                                },
                             });
                         } else {
                             console.log('call ended')
@@ -309,7 +322,7 @@ export class AvEngineKitProxy {
                 if (this.callWin) {
                     let ignore = false;
                     // start,add消息，显示 ui 的时候，会传过去，这儿就不用再次传了
-                    if (MessageContentType.VOIP_CONTENT_TYPE_START === msg.messageContent.type) {
+                    if (MessageContentType.VOIP_CONTENT_TYPE_START === msg.messageContent.type || MessageContentType.VOIP_REMOTE_CONTROL_REQUEST === msg.messageContent.type) {
                         ignore = true
                     } else if (MessageContentType.VOIP_CONTENT_TYPE_ADD_PARTICIPANT === msg.messageContent.type && content.participants.indexOf(wfc.getUserId()) >= 0) {
                         ignore = true
@@ -370,6 +383,18 @@ export class AvEngineKitProxy {
     };
 
     /**
+     *  请求远程控制，仅高级版音视频 SDK 支持
+     * @param {Conversation} conversation 会话，支持单聊
+     */
+    requestRemoteControl(conversation) {
+        if (conversation.type !== ConversationType.Single) {
+            this.onVoipCallErrorCallback && this.onVoipCallErrorCallback(-1);
+            return
+        }
+        this._startCall(conversation, false, [conversation.target], '', true)
+    }
+
+    /**
      * 发起音视频通话
      * @param {Conversation} conversation 会话
      * @param {Boolean} audioOnly 是否是音频通话
@@ -377,6 +402,10 @@ export class AvEngineKitProxy {
      * @param {string} callExtra 通话附加信息，会议版有效
      */
     startCall(conversation, audioOnly, participants, callExtra = '') {
+        this._startCall(conversation, audioOnly, participants, callExtra, false);
+    }
+
+    _startCall(conversation, audioOnly, participants, callExtra = '', remoteControl = false) {
         if (this.callWin) {
             console.log('voip call is ongoing');
             this.onVoipCallErrorCallback && this.onVoipCallErrorCallback(-1);
@@ -416,6 +445,7 @@ export class AvEngineKitProxy {
                 groupMemberUserInfos: groupMemberUserInfos,
                 participantUserInfos: participantUserInfos,
                 callExtra: callExtra,
+                remoteControl: remoteControl
             }
         });
     }
@@ -538,8 +568,15 @@ export class AvEngineKitProxy {
         });
     }
 
-    showCallUI(conversation, isConference, options) {
-        let type = isConference ? 'conference' : (conversation.type === ConversationType.Single ? 'single' : 'multi');
+    async showCallUI(conversation, isConference, options) {
+        if (options.args.remoteControl && !isElectron()) {
+            console.warn('web 端，不支持远程协助');
+            return
+        } else if (process && process.platform === 'linux' && options.args.remoteControl) {
+            console.warn('远程协助功能，目前只支持 Windows 和 macOS');
+            return
+        }
+        let type = isConference ? 'conference' : (options.args.remoteControl ? 'single-rc' : (conversation.type === ConversationType.Single ? 'single' : 'multi'));
         this.type = type;
 
         let width = 360;
@@ -550,6 +587,12 @@ export class AvEngineKitProxy {
             case 'single':
                 width = 360;
                 height = 640;
+                break;
+            case 'single-rc':
+                width = 960;
+                height = 600;
+                minWidth = 800;
+                minHeight = 480;
                 break;
             case 'multi':
             case 'conference':
@@ -562,42 +605,8 @@ export class AvEngineKitProxy {
                 break;
         }
         if (isElectron()) {
-            let win = new BrowserWindow(
-                {
-                    width: width,
-                    height: height,
-                    minWidth: minWidth,
-                    minHeight: minHeight,
-                    resizable: true,
-                    maximizable: true,
-                    transparent: !!isConference,
-                    frame: !isConference,
-                    webPreferences: {
-                        scrollBounce: false,
-                        nativeWindowOpen: true,
-                        nodeIntegration: true,
-                        contextIsolation: false,
-                    },
-                }
-            );
-            this.callWin = win;
-            this.isVoipWindowReady = false;
-            // const remoteMain = require("@electron/remote").require("@electron/remote/main");
-            const remoteMain = remote.require("@electron/remote/main");
-            remoteMain.enable(win.webContents);
 
-            win.webContents.on('did-finish-load', () => {
-                this.onVoipWindowReady();
-            });
-
-            if (localStorage.getItem("enable_voip_debug")) {
-                win.webContents.openDevTools();
-            }
-            win.on('close', () => {
-                this.onVoipWindowClose();
-            });
-
-            // win.loadURL(path.join('file://', AppPath, 'src/index.html?' + type));
+            // Load URL through main process
             let hash = window.location.hash;
             let url = window.location.origin;
             if (hash) {
@@ -606,11 +615,49 @@ export class AvEngineKitProxy {
                 url += "/voip"
             }
             url += '/' + type + '?t=' + new Date().getTime()
-            win.loadURL(url);
+            let windowOptions = {
+                width: width,
+                height: height,
+                minWidth: minWidth,
+                minHeight: minHeight,
+                resizable: true,
+                maximizable: true,
+                transparent: !!isConference,
+                frame: !isConference,
+                url: url,
+                webPreferences: {
+                    scrollBounce: false,
+                    nativeWindowOpen: true,
+                    nodeIntegration: true,
+                    contextIsolation: false,
+                },
+            };
+
+            console.log('create-voip-window')
             console.log('voip windows url', url)
-            win.show();
-            win.removeMenu();
-            this.emitToVoip(options.event, options.args);
+            // We're now sending a request to the main process to create the window
+            this.callWin = await BrowserWindow.new(windowOptions);
+
+            this.isVoipWindowReady = false;
+
+            if (localStorage.getItem("enable_voip_debug")) {
+                this.callWin.webContents.openDevTools();
+            }
+
+            // this.callWin.show();
+            // this.callWin.removeMenu();
+            // this.emitToVoip(options.event, options.args);
+
+            // Set up listener for window close
+            ipcRenderer.once(`voip-window-closed`, () => {
+                this.onVoipWindowClose();
+            });
+
+            ipcRenderer.once(`voip-window-webContents-did-finish-load`, () => {
+                this.emitToVoip(options.event, options.args);
+                this.onVoipWindowReady();
+            });
+
         } else {
             this.callWin = window;
             console.log('windowEmitter subscribe events');
@@ -679,16 +726,23 @@ export class AvEngineKitProxy {
             ipcRenderer.on('conference-request', this.sendConferenceRequestListener);
             ipcRenderer.on('update-call-start-message', this.updateCallStartMessageContentListener)
             ipcRenderer.on(/*IPCEventType.START_SCREEN_SHARE*/'start-screen-share', (event, args) => {
+                console.log('start-screen-share args', args, this.callWin);
                 if (this.callWin) {
                     let screenWidth = args.width;
                     this.callWin.resizable = true;
                     this.callWin.closable = true;
-                    this.callWin.maximizable = false;
+                    this.callWin.maximizable = !!args.rc;
                     this.callWin.transparent = true;
-                    this.callWin.setMinimumSize(800, 800);
-                    this.callWin.setSize(800, 800);
+                    let mw = args.rc ? 800 : 800
+                    let mh = args.rc ? 200 : 800
+                    this.callWin.setMinimumSize(mw, mh);
+                    this.callWin.setSize(mw, mh);
                     // console.log('screen width', screen, screen.width);
-                    this.callWin.setPosition((screenWidth - 800) / 2, 0, true);
+                    if (args.rc) {
+                        this.callWin.minimize()
+                    } else {
+                        this.callWin.setPosition((screenWidth - 800) / 2, 0, true);
+                    }
                 }
             });
             ipcRenderer.on(/*IPCEventType.STOP_SCREEN_SHARE*/'stop-screen-share', (event, args) => {

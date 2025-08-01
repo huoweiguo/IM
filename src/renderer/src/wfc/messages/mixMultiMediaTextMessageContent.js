@@ -57,6 +57,7 @@ export default class MixMultiMediaTextMessageContent extends MessageContent {
         if (payload.binaryContent && payload.binaryContent.length > 0) {
             let muStr = wfc.b64_to_utf8(payload.binaryContent)
             this.multiMedias = JSON.parse(muStr).ms
+
             let mm = this.multiMedias[0];
             try {
                 atob(mm.thumbnail)

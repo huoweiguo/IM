@@ -11,6 +11,7 @@ import MessagePayload from "../messages/messagePayload";
 import SoundMessageContent from "../messages/soundMessageContent";
 import Long from "long";
 import UnknownMessageContent from "../messages/unknownMessageContent";
+
 import Config from '../../config'
 import {eq} from "../util/longUtil";
 
@@ -92,6 +93,7 @@ export default class FavItem {
                 let compositeContent = message.messageContent;
                 favItem.title = compositeContent.title;
                 let payload = compositeContent.encode();
+
                 if (payload.remoteMediaUrl) {
                     let str = wfc.b64_to_utf8(payload.binaryContent);
                     let obj = JSON.parse(str)
@@ -99,6 +101,7 @@ export default class FavItem {
                     str = JSON.stringify(obj);
                     payload.binaryContent = wfc.utf8_to_b64(str);
                 }
+
                 favItem.data = payload.binaryContent;
                 break;
             case MessageContentType.Voice:

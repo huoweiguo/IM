@@ -16,13 +16,18 @@ export default defineConfig({
       // 确保预加载脚本正确打包
       rollupOptions: {
         input: 'src/preload/index.js'
+      },
+      // 允许CommonJS模块
+      commonjsOptions: {
+        include: [/wfc/, /node_modules/]
       }
     }
   },
   renderer: {
     resolve: {
       alias: {
-        '@renderer': resolve('src/renderer/src')
+        '@renderer': resolve('src/renderer/src'),
+        '@wfc': resolve('src/renderer/src/wfc')
       }
     },
     plugins: [
