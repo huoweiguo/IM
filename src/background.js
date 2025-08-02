@@ -28,7 +28,7 @@ import proto from '../marswrapper.node';
 import pkg from '../package.json';
 import IPCEventType from "./ipcEventType";
 import nodePath from 'path'
-import {init as initProtoMain} from "./wfc/proto/proto_main";
+import { init as initProtoMain } from "./wfc/proto/proto_main";
 import createProtocol from "./createProtocol";
 
 console.log('start crash report', app.getPath('crashDumps'))
@@ -48,7 +48,7 @@ crashReporter.start({
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
-    {scheme: 'app', privileges: {secure: true, standard: true, bypassCSP: true}}
+    { scheme: 'app', privileges: { secure: true, standard: true, bypassCSP: true } }
 ])
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
@@ -436,7 +436,7 @@ const downloadHandler = (event, item, webContents) => {
     // 设置保存路径,使Electron不提示保存对话框。
     // item.setSavePath('/tmp/save.pdf')
     let fileName = downloadFileMap.get(item.getURL()).fileName;
-    item.setSaveDialogOptions({defaultPath: fileName})
+    item.setSaveDialogOptions({ defaultPath: fileName })
 
     item.on('updated', (event, state) => {
         try {
@@ -450,10 +450,10 @@ const downloadHandler = (event, item, webContents) => {
                     let downloadFile = downloadFileMap.get(item.getURL());
                     let messageUid = downloadFile.messageUid;
                     webContents.send('file-download-progress', {
-                            messageUid: messageUid,
-                            receivedBytes: item.getReceivedBytes(),
-                            totalBytes: item.getTotalBytes()
-                        }
+                        messageUid: messageUid,
+                        receivedBytes: item.getReceivedBytes(),
+                        totalBytes: item.getTotalBytes()
+                    }
                     );
                 }
             }
@@ -471,9 +471,9 @@ const downloadHandler = (event, item, webContents) => {
             let messageUid = downloadFile.messageUid
             if (state === 'completed') {
                 console.log('Download successfully')
-                webContents.send('file-downloaded', {messageUid: messageUid, filePath: item.getSavePath()});
+                webContents.send('file-downloaded', { messageUid: messageUid, filePath: item.getSavePath() });
             } else {
-                webContents.send('file-download-failed', {messageUid: messageUid});
+                webContents.send('file-download-failed', { messageUid: messageUid });
                 console.log(`Download failed: ${state}`)
             }
             downloadFileMap.delete(item.getURL());
@@ -499,7 +499,7 @@ const createMainWindow = async () => {
         minHeight: 600,
         opacity: 0,
         titleBarStyle: 'hidden',
-        trafficLightPosition: {x: 4, y: 8},
+        trafficLightPosition: { x: 4, y: 8 },
         maximizable: false,
         resizable: false,
         backgroundColor: 'none',
@@ -513,10 +513,10 @@ const createMainWindow = async () => {
             nativeWindowOpen: true,
             webSecurity: false,
             webviewTag: true,
-            zoomFactor: 1.0
+            zoomFactor: 1.0,
 
             // 如果想打包之后的版本，不能打开调试控制台，请取消下面的注释
-            // devTools: !app.isPackaged,
+            devTools: !app.isPackaged,
         },
         frame: !isWin,
     });
@@ -564,7 +564,7 @@ const createMainWindow = async () => {
     mainWindow.webContents.setWindowOpenHandler(details => {
         console.log('main windowOpenHandler', details)
         shell.openExternal(details.url);
-        return {action: 'deny'}
+        return { action: 'deny' }
     });
 
     mainWindow.on('close', e => {
@@ -608,7 +608,7 @@ const createMainWindow = async () => {
     ipcMain.on(IPCEventType.START_SCREEN_SHARE, (event, args) => {
         let pointer = screen.getCursorScreenPoint();
         let display = screen.getDisplayNearestPoint(pointer)
-        mainWindow.webContents.send(IPCEventType.START_SCREEN_SHARE, {width: display.size.width, ...args});
+        mainWindow.webContents.send(IPCEventType.START_SCREEN_SHARE, { width: display.size.width, ...args });
     });
 
     ipcMain.on(IPCEventType.STOP_SCREEN_SHARE, (event, args) => {
@@ -648,7 +648,7 @@ const createMainWindow = async () => {
     });
 
     ipcMain.on(IPCEventType.FILE_PASTE, (event) => {
-        let args = {hasImage: false};
+        let args = { hasImage: false };
 
         if (process.platform !== 'linux') {
             const clipboardEx = require('electron-clipboard-ex')
@@ -706,7 +706,7 @@ const createMainWindow = async () => {
         let messageUid = args.messageUid;
         let windowId = args.windowId;
         remotePath = remotePath.replace(':80', '');
-        downloadFileMap.set(encodeURI(remotePath), {messageUid: messageUid, fileName: args.fileName, windowId: windowId});
+        downloadFileMap.set(encodeURI(remotePath), { messageUid: messageUid, fileName: args.fileName, windowId: windowId });
 
         let windows = BrowserWindow.getAllWindows();
         windows.forEach(w => {
@@ -807,8 +807,8 @@ const createMainWindow = async () => {
         let _webContents = webContents.fromId(id)
         _webContents.setWindowOpenHandler(details => {
             console.log('workspace windowOpenHandler', details)
-            mainWindow.webContents.send(IPCEventType.WORKSPACE_ADD_NEW_TAB, {url: encodeURI(details.url), frameName: details.frameName})
-            return {action: 'deny'}
+            mainWindow.webContents.send(IPCEventType.WORKSPACE_ADD_NEW_TAB, { url: encodeURI(details.url), frameName: details.frameName })
+            return { action: 'deny' }
         });
     });
 
@@ -858,10 +858,10 @@ const createMainWindow = async () => {
             win.on('close', () => {
                 conversationWindowMap.delete(key);
                 mainWindow.send('floating-conversation-window-closed', {
-                        type: args.type,
-                        target: args.target,
-                        line: args.line
-                    }
+                    type: args.type,
+                    target: args.target,
+                    line: args.line
+                }
                 );
             });
             win.show();
@@ -1097,79 +1097,79 @@ function registerLocalResourceProtocol() {
 }
 
 app.on('ready', () => {
-        initProtoMain(proto);
-        // initRCMain(rcProto);
+    initProtoMain(proto);
+    // initRCMain(rcProto);
 
-        createMainWindow();
+    createMainWindow();
 
-        regShortcut();
+    regShortcut();
 
-        registerLocalResourceProtocol();
+    registerLocalResourceProtocol();
 
-        screenshots = new Screenshots({
-            // logger: console.log
-            singleWindow: true,
-        })
+    screenshots = new Screenshots({
+        // logger: console.log
+        singleWindow: true,
+    })
 
-        const onScreenShotEnd = (result) => {
-            console.log('onScreenShotEnd', isMainWindowFocusedWhenStartScreenshot, screenShotWindowId);
-            if (isMainWindowFocusedWhenStartScreenshot) {
+    const onScreenShotEnd = (result) => {
+        console.log('onScreenShotEnd', isMainWindowFocusedWhenStartScreenshot, screenShotWindowId);
+        if (isMainWindowFocusedWhenStartScreenshot) {
+            if (result) {
+                mainWindow.webContents.send('screenshots-ok', result);
+            }
+            mainWindow.show();
+            isMainWindowFocusedWhenStartScreenshot = false;
+        } else if (screenShotWindowId) {
+            let windows = BrowserWindow.getAllWindows();
+            let tms = windows.filter(win => win.webContents.id === screenShotWindowId);
+            if (tms.length > 0) {
                 if (result) {
-                    mainWindow.webContents.send('screenshots-ok', result);
+                    tms[0].webContents.send('screenshots-ok', result);
                 }
-                mainWindow.show();
-                isMainWindowFocusedWhenStartScreenshot = false;
-            } else if (screenShotWindowId) {
-                let windows = BrowserWindow.getAllWindows();
-                let tms = windows.filter(win => win.webContents.id === screenShotWindowId);
-                if (tms.length > 0) {
-                    if (result) {
-                        tms[0].webContents.send('screenshots-ok', result);
-                    }
-                    tms[0].show();
-                }
-                screenShotWindowId = 0;
+                tms[0].show();
             }
+            screenShotWindowId = 0;
         }
-
-        // 点击确定按钮回调事件
-        screenshots.on('ok', (e, buffer, bounds) => {
-            let filename = tmp.tmpNameSync() + '.png';
-            let image = NativeImage.createFromBuffer(buffer);
-            fs.writeFileSync(filename, image.toPNG());
-
-            console.log('screenshots ok', e)
-            onScreenShotEnd({filePath: filename});
-        })
-
-        // 点击取消按钮回调事件
-        screenshots.on('cancel', e => {
-            // 执行了preventDefault
-            // 点击取消不会关闭截图窗口
-            // e.preventDefault()
-            // console.log('capture', 'cancel2')
-            console.log('screenshots cancel', e)
-            onScreenShotEnd()
-        })
-        // 点击保存按钮回调事件
-        screenshots.on('save', (e, {viewer}) => {
-            console.log('screenshots save', e)
-            onScreenShotEnd()
-        })
-        session.defaultSession.webRequest.onBeforeSendHeaders(
-            (details, callback) => {
-                // 可根据实际需求，配置 Origin，默认置为空
-                // details.requestHeaders.Origin = '';
-                callback({cancel: false, requestHeaders: details.requestHeaders});
-            }
-        );
-        try {
-            updateTray()
-        } catch (e) {
-            // do nothing
-        }
-
     }
+
+    // 点击确定按钮回调事件
+    screenshots.on('ok', (e, buffer, bounds) => {
+        let filename = tmp.tmpNameSync() + '.png';
+        let image = NativeImage.createFromBuffer(buffer);
+        fs.writeFileSync(filename, image.toPNG());
+
+        console.log('screenshots ok', e)
+        onScreenShotEnd({ filePath: filename });
+    })
+
+    // 点击取消按钮回调事件
+    screenshots.on('cancel', e => {
+        // 执行了preventDefault
+        // 点击取消不会关闭截图窗口
+        // e.preventDefault()
+        // console.log('capture', 'cancel2')
+        console.log('screenshots cancel', e)
+        onScreenShotEnd()
+    })
+    // 点击保存按钮回调事件
+    screenshots.on('save', (e, { viewer }) => {
+        console.log('screenshots save', e)
+        onScreenShotEnd()
+    })
+    session.defaultSession.webRequest.onBeforeSendHeaders(
+        (details, callback) => {
+            // 可根据实际需求，配置 Origin，默认置为空
+            // details.requestHeaders.Origin = '';
+            callback({ cancel: false, requestHeaders: details.requestHeaders });
+        }
+    );
+    try {
+        updateTray()
+    } catch (e) {
+        // do nothing
+    }
+
+}
 );
 
 // app.on('window-all-closed', () => {
@@ -1218,7 +1218,7 @@ function execBlink(flag, _interval) {
     let interval = _interval ? _interval : 500;
     if (!blinkIcons) {
         blinkIcons = [NativeImage.createFromPath(`${workingDir}/images/tray.png`),
-            NativeImage.createFromPath(`${workingDir}/images/Remind_icon.png`)];
+        NativeImage.createFromPath(`${workingDir}/images/Remind_icon.png`)];
     }
 
     let count = 0;
@@ -1305,7 +1305,7 @@ function startOpenPlatformServer(port) {
         return
     }
     const WebSocket = require('ws');
-    const wss = new WebSocket.Server({port: port ? port : 7983});
+    const wss = new WebSocket.Server({ port: port ? port : 7983 });
 
     console.log('starting websocket server...');
     wss.on('connection', (ws) => {
