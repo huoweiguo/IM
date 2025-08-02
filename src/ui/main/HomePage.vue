@@ -355,11 +355,11 @@ export default {
     display: flex;
     flex-direction: column;
     align-items: center;
-    /*background: linear-gradient(180deg, #292a2c 0%, #483a3a 100%);*/
-    background: #E0E0DF;
+    background: linear-gradient(180deg, #292a2c 0%, #483a3a 100%);
+    /* background: #E0E0DF; */
     border-top-left-radius: var(--main-border-radius);
     border-bottom-left-radius: var(--main-border-radius);
-    padding: var(--home-menu-padding-top) 0 20px 0;
+    padding-top: 40px;
     -webkit-app-region: drag;
 }
 
@@ -387,6 +387,7 @@ export default {
     margin: 10px;
     height: 40px;
     line-height: 50px;
+    text-align: center;
 }
 
 .menu ul li:last-of-type {

@@ -1,6 +1,6 @@
 import axios from "axios";
 import Config from "../config";
-import {getItem, setItem} from "../ui/util/storageHelper";
+import { getItem, setItem } from "../ui/util/storageHelper";
 import wfc from "../wfc/client/wfc";
 import OrganizationServerError from "./organizationServerError";
 import UserInfo from "../wfc/model/userInfo";
@@ -16,8 +16,8 @@ export class OrganizationServerApi {
     login() {
         return new Promise((resolve, reject) => {
             //        int ApplicationType_Robot = 0;
-//        int ApplicationType_Channel = 1;
-//        int ApplicationType_Admin = 2;
+            //        int ApplicationType_Channel = 1;
+            //        int ApplicationType_Admin = 2;
             if (!Config.ORGANIZATION_SERVER) {
                 reject(this.serviceUnavailbelError)
                 return
@@ -56,40 +56,40 @@ export class OrganizationServerApi {
     }
 
     getRelationShip(employeeId) {
-        return this._post('/api/relationship/employee', {employeeId});
+        return this._post('/api/relationship/employee', { employeeId });
     }
 
     getOrganizationEx(orgId) {
-        return this._post('/api/organization/query_ex', {id: orgId});
+        return this._post('/api/organization/query_ex', { id: orgId });
     }
 
     getOrganizations(orgIds) {
-        return this._post('/api/organization/query_list', {ids: orgIds});
+        return this._post('/api/organization/query_list', { ids: orgIds });
     }
 
     async getOrganizationEmployees(orgIds) {
-        let employeeIds = await this._post('/api/organization/batch_employees', {ids: orgIds});
+        let employeeIds = await this._post('/api/organization/batch_employees', { ids: orgIds });
         return this.getEmployeeList(employeeIds);
     }
 
     getOrgEmployees(orgId) {
-        return this._post('/api/organization/employees', {ids: orgId});
+        return this._post('/api/organization/employees', { ids: orgId });
     }
 
     getEmployee(employeeId) {
-        return this._post('/api/employee/query', {employeeId});
+        return this._post('/api/employee/query', { employeeId });
     }
 
     getEmployeeEx(employeeId) {
-        return this._post('/api/employee/query_ex', {employeeId});
+        return this._post('/api/employee/query_ex', { employeeId });
     }
 
     getEmployeeList(employeeIds) {
-        return this._post('/api/employee/query_list', {employeeIds: employeeIds})
+        return this._post('/api/employee/query_list', { employeeIds: employeeIds })
     }
 
     searchEmployee(orgId, keyword) {
-        return this._post('/api/employee/search', {organizationId: orgId, keyword: keyword});
+        return this._post('/api/employee/search', { organizationId: orgId, keyword: keyword });
     }
 
     async getOrganizationPath(organizationId) {

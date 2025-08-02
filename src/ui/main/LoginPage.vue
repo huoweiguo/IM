@@ -80,9 +80,9 @@
                 <button class="login-button" :disabled="mobile === '' || authCode === ''" ref="loginWithAuthCodeButton" @click="loginWithAuthCode">{{ loginStatus === 3 ? '数据同步中，可能需要数分钟...' : '登录' }}</button>
                 <ClipLoader v-if="loginStatus === 3" style="margin-top: 10px" class="syncing" :color="'4168e0'" :height="'80px'" :width="'80px'"/>
             </div>
-            <div v-if="loginStatus === 0" class="switch-login-type-container">
+            <!-- <div v-if="loginStatus === 0" class="switch-login-type-container">
                 <p class="tip" @click="switchLoginType( loginType === 0 ? 1 : 0)">{{ loginType === 0 ? '使用密码/验证码登录' : '扫码登录' }}</p>
-            </div>
+            </div> -->
 
             <p class="diagnose" @click="diagnose">诊断</p>
         </div>
@@ -126,7 +126,7 @@ export default {
             qrCodeTimer: null,
             appToken: '',
             lastAppToken: '',
-            loginType: 0, // 0 扫码登录，1 密码登录，2 验证码登录
+            loginType: 1, // 0 扫码登录，1 密码登录，2 验证码登录
             enableAutoLogin: Config.ENABLE_AUTO_LOGIN,
             mobile: '',
             password: '',
@@ -162,7 +162,7 @@ export default {
             }
         } else {
             isElectron() && ipcRenderer.send(IpcEventType.RESIZE_LOGIN_WINDOW);
-            this.refreshQrCode();
+            // this.refreshQrCode();
         }
     },
 
@@ -220,7 +220,12 @@ export default {
             this.loginStatus = 3;
             appServerApi.loinWithPassword(this.mobile, this.password)
                 .then(res => {
-                    const {userId, token, portrait} = res
+                    console.log(123, res);
+
+                    const userId = res.data.serviceId;
+                    const token = res.data.serviceToken;
+                    const portrait = res.data.id;
+
                     this.firstTimeConnect = wfc.connect(userId, token);
                     setItem('userId', userId);
                     setItem('token', token);

@@ -1,4 +1,4 @@
-import {isElectron} from './platform'
+import { isElectron } from './platform'
 import wfc from "./wfc/client/wfc";
 
 export default class Config {
@@ -22,14 +22,15 @@ export default class Config {
     // 默认的app server使用端口是8888，注意端口号别忘记了。
     // 上线建议使用https，使用https更安全。
     //static APP_SERVER = 'http://app.wildfirechat.net:8888';
-    static APP_SERVER = 'https://app.wildfirechat.net';
+    // static APP_SERVER = 'https://app.wildfirechat.net';
+    static APP_SERVER = 'http://119.3.154.38:8803';
 
     // 语音转文字服务地址，如果没有部署语音转文字服务，或者不需要语音转文字的话，可置为 null
     static ASR_SERVER = 'https://app.wildfirechat.net/asr/api/recognize';
 
     // 组织结构服务地址，如果没有部署组织结构服务，或者不需要组织结构的话，可置为 null
     // 组织结构项目：https://github.com/wildfirechat/organization-platform 或 https://gitee.com/wfchat/organization-platform
-    static ORGANIZATION_SERVER = 'https://org.wildfirechat.cn';
+    static ORGANIZATION_SERVER = null;
 
     // 野火二维码 scheme，不要修改，如果需要修改的话，所有端都需要一起修改
     static QR_CODE_PREFIX_PC_SESSION = "wildfirechat://pcsession/";
@@ -64,17 +65,17 @@ export default class Config {
 
     static SECRET_CHAT_MEDIA_DECODE_SERVER_PORT = 7982;
     // 如果不支持工作台，将其置空即可
-    static OPEN_PLATFORM_WORK_SPACE_URL = 'https://open.wildfirechat.cn/work.html';
+    static OPEN_PLATFORM_WORK_SPACE_URL = null;
     static OPEN_PLATFORM_SERVE_PORT = 7983;
 
     // AI 入口地址，如果不需要 AI 功能，置为 null 即可
-    static AI_PORTAL_URL = 'https://static.wildfirechat.cn/chatbox-web/index.html'
+    static AI_PORTAL_URL = null
 
     // 允许主动加入多人音视频通话
     static ENABLE_MULTI_CALL_AUTO_JOIN = false;
 
     // 需要专业版 im-server 才支持，是否打开语音对讲功能，和对讲机类似的功能，不是发送语音消息
-    static ENABLE_PTT = true;
+    static ENABLE_PTT = false;
 
     // 是否支持图文混排、文件文本混排，目前之后 pc 端支持，故默认关闭
     static ENABLE_MIX_MEDIA_MESSAGE = false;
@@ -83,7 +84,7 @@ export default class Config {
     static SEND_LOG_COMMAND = '*#marslog#';
 
     // 是否支持水印
-    static ENABLE_WATER_MARK = true
+    static ENABLE_WATER_MARK = false
 
     // 单人音视频通话页面是否显示音视频 SDK 相关提示
     static SHOW_VOIP_TIP = true

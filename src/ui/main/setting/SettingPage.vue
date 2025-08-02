@@ -47,21 +47,10 @@
                 </dropdown>
             </div>
         </div>
-        <div class="ad-container">
-            <p>
-                <a target="_blank" href="https://wildfirechat.cn/">野火IM</a>
-                ，安全可靠、运维部署简单、方便二开和对接现有系统。
-            </p>
-            <p>私有化部署，请微信联系：wildfirechat 或 wfchat </p>
-        </div>
+        
         <footer>
-            <p class="proto-version-info">{{ protoRevision() }}</p>
-            <a
-                class="button"
-                href="https://github.com/wildfirechat/vue-pc-chat/issues"
-                target="_blank">
-                问题反馈
-            </a>
+            <p class="proto-version-info">版本号：{{ protoRevision() }}</p>
+            
             <a v-if="sharedMiscState.isElectron" class="button" target="_blank" @click.prevent.stop="openLogDir">
                 打开日志目录
                 <!--        <i class="icon-ion-ios-email-outline"/>-->
@@ -83,31 +72,6 @@
                 <!--        <i class="icon-ion-ios-email-outline"/>-->
             </a>
 
-            <a
-                class="button"
-                href="https://github.com/wildfirechat/vue-pc-chat"
-                target="_blank">
-                Star on Github
-                <i class="icon-ion-social-github"/>
-            </a>
-
-            <a
-                class="button"
-                href="https://wildfirechat.cn"
-                target="_blank">
-                关于野火
-                <i class="icon-ion-home"/>
-            </a>
-
-            <a
-                v-if="!sharedMiscState.isElectron"
-                class="button"
-                href="javascript:"
-                @click="openPcChat"
-            >
-                打开野火PC端
-                <i class="icon-ion-android-desktop"/>
-            </a>
         </footer>
     </div>
 </template>

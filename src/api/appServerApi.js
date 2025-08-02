@@ -1,8 +1,8 @@
 import axios from "axios";
-import {getItem, setItem} from "../ui/util/storageHelper";
+import { getItem, setItem } from "../ui/util/storageHelper";
 import Config from "../config";
 import FavItem from "../wfc/model/favItem";
-import {stringValue} from "../wfc/util/longUtil";
+import { stringValue } from "../wfc/util/longUtil";
 import AppServerError from "./appServerError";
 import wfc from "../wfc/client/wfc";
 
@@ -11,15 +11,16 @@ export class AppServerApi {
     }
 
     requestAuthCode(mobile) {
-        return this._post('/send_code', {mobile})
+        return this._post('/send_code', { mobile })
     }
 
     loinWithPassword(mobile, password) {
         return new Promise((resolve, reject) => {
-            let responsePromise = this._post('/login_pwd', {
-                mobile,
+            let responsePromise = this._post('/api/login/account', {
+                account: mobile,
                 password,
-                platform: Config.getWFCPlatform(),
+                scene: 1,
+                terminal: Config.getWFCPlatform(),
                 clientId: wfc.getClientId()
             }, true)
             this._interceptLoginResponse(responsePromise, resolve, reject)
@@ -55,10 +56,8 @@ export class AppServerApi {
             responsePromise
                 .then(response => {
                     if (response.data.code === 0) {
-                        let appAuthToken = response.headers['authtoken'];
-                        if (!appAuthToken) {
-                            appAuthToken = response.headers['authToken'];
-                        }
+                        let appAuthToken = response.data?.data?.token;
+
 
                         if (appAuthToken) {
                             setItem('authToken-' + new URL(response.config.url).host, appAuthToken);
@@ -100,7 +99,7 @@ export class AppServerApi {
     }
 
     getGroupAnnouncement(groupId) {
-        return this._post('/get_group_announcement', {groupId: groupId})
+        return this._post('/get_group_announcement', { groupId: groupId })
     }
 
     updateGroupAnnouncement(author, groupId, announcement) {
@@ -129,7 +128,7 @@ export class AppServerApi {
     }
 
     getFavList(startId, count = 20) {
-        return this._post('/fav/list', {id: startId, count: count}, false, true)
+        return this._post('/fav/list', { id: startId, count: count }, false, true)
     }
 
     delFav(favItemId) {
@@ -140,15 +139,13 @@ export class AppServerApi {
         responsePromise
             .then(response => {
                 if (response.data.code === 0) {
-                    let appAuthToken = response.headers['authtoken'];
-                    if (!appAuthToken) {
-                        appAuthToken = response.headers['authToken'];
-                    }
+                    let appAuthToken = response.data?.data?.token;
+
 
                     if (appAuthToken) {
                         setItem('authToken-' + new URL(response.config.url).host, appAuthToken);
                     }
-                    resolve(response.data.result);
+                    resolve(response.data);
                 } else {
                     reject(new AppServerError(response.data.code, response.data.message));
                 }
@@ -173,10 +170,11 @@ export class AppServerApi {
         response = await axios.post(path, data, {
             transformResponse: rawResponseData ? [data => data] : axios.defaults.transformResponse,
             headers: {
-                'authToken': getItem('authToken-' + new URL(path).host),
+                'token': getItem('authToken-' + new URL(path).host),
             },
             withCredentials: true,
         })
+
         if (rawResponse) {
             return response;
         }
@@ -184,8 +182,9 @@ export class AppServerApi {
             if (rawResponseData) {
                 return response.data;
             }
+
             if (response.data.code === 0) {
-                return response.data.result
+                return response.data
             } else {
                 throw new AppServerError(response.data.code, response.data.message)
             }
