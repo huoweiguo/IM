@@ -37,7 +37,7 @@
                 </div>
                 <ChannelListView v-if="sharedContactState.expandChanel"/>
             </li>
-            <li>
+            <li v-if="sharedContactState?.expandOrganization">
                 <div @click="showOrganization" class="category-item-container">
                     <i class="arrow right" v-bind:class="{down: sharedContactState.expandOrganization}"></i>
                     <div class="category-item">
@@ -144,6 +144,8 @@ export default {
         }
     },
     created() {
+        console.log(111,store.state);
+        
         this.$eventBus.$on('showContactContextMenu', ([event, userInfo]) => {
             this.showContactContextMenu(event, userInfo);
         });
