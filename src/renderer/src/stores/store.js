@@ -1,11 +1,5 @@
 import { defineStore } from 'pinia'
 import wfcService from '../services/wfcService'
-import pathPolyfill from '../utils/pathPolyfill'
-
-// 确保 path polyfill 在全局可用
-if (typeof window !== 'undefined') {
-  window.path = pathPolyfill
-}
 
 export const useStore = defineStore('user', {
   persist: true,
