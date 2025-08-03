@@ -16,11 +16,10 @@ export class AppServerApi {
 
     loinWithPassword(mobile, password) {
         return new Promise((resolve, reject) => {
-            let responsePromise = this._post('/api/login/account', {
-                account: mobile,
+            let responsePromise = this._post('/login_pwd', {
+                mobile,
                 password,
-                scene: 1,
-                terminal: Config.getWFCPlatform(),
+                platform: Config.getWFCPlatform(),
                 clientId: wfc.getClientId()
             }, true)
             this._interceptLoginResponse(responsePromise, resolve, reject)
@@ -56,8 +55,10 @@ export class AppServerApi {
             responsePromise
                 .then(response => {
                     if (response.data.code === 0) {
-                        let appAuthToken = response.data?.data?.token;
-
+                        let appAuthToken = response.headers['authtoken'];
+                        if (!appAuthToken) {
+                            appAuthToken = response.headers['authToken'];
+                        }
 
                         if (appAuthToken) {
                             setItem('authToken-' + new URL(response.config.url).host, appAuthToken);
@@ -139,13 +140,15 @@ export class AppServerApi {
         responsePromise
             .then(response => {
                 if (response.data.code === 0) {
-                    let appAuthToken = response.data?.data?.token;
-
+                    let appAuthToken = response.headers['authtoken'];
+                    if (!appAuthToken) {
+                        appAuthToken = response.headers['authToken'];
+                    }
 
                     if (appAuthToken) {
                         setItem('authToken-' + new URL(response.config.url).host, appAuthToken);
                     }
-                    resolve(response.data);
+                    resolve(response.data.result);
                 } else {
                     reject(new AppServerError(response.data.code, response.data.message));
                 }
@@ -170,11 +173,10 @@ export class AppServerApi {
         response = await axios.post(path, data, {
             transformResponse: rawResponseData ? [data => data] : axios.defaults.transformResponse,
             headers: {
-                'token': getItem('authToken-' + new URL(path).host),
+                'authToken': getItem('authToken-' + new URL(path).host),
             },
             withCredentials: true,
         })
-
         if (rawResponse) {
             return response;
         }
@@ -182,9 +184,8 @@ export class AppServerApi {
             if (rawResponseData) {
                 return response.data;
             }
-
             if (response.data.code === 0) {
-                return response.data
+                return response.data.result
             } else {
                 throw new AppServerError(response.data.code, response.data.message)
             }
