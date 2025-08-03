@@ -142,6 +142,18 @@ const router = createRouter({
     history: createWebHashHistory(),
     routes: routers,
 })
+
+// 添加全局前置守卫，在路由切换时打印当前地址
+router.beforeEach((to, from, next) => {
+    console.log('路由切换:', {
+        from: from.path,
+        to: to.path,
+        fullPath: to.fullPath,
+        timestamp: new Date().toLocaleString()
+    })
+    next()
+})
+
 app.use(router)
 app.config.globalProperties.$router = router
 

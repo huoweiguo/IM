@@ -1,11 +1,10 @@
 <template>
     <section class="conversation-list-panel-container">
-        <SearchView/>
+        <SearchView />
         <div class="panel">
-            <SearchResultView v-bind:query="sharedSearchState.query"
-                              v-if="sharedSearchState.query"
-                              class="search-result-container"/>
-            <ConversationListView class="conversation-list-container"/>
+            <SearchResultView v-bind:query="sharedSearchState.query" v-if="sharedSearchState.query"
+                class="search-result-container" />
+            <ConversationListView class="conversation-list-container" />
         </div>
 
     </section>
@@ -36,7 +35,6 @@ export default {
 </script>
 
 <style lang="css" scoped>
-
 .conversation-list-panel-container {
     display: flex;
     flex-direction: column;
@@ -59,6 +57,4 @@ export default {
     height: 100%;
     width: 100%;
 }
-
-
 </style>

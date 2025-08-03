@@ -5,40 +5,31 @@
         </div>
         <div v-else class="conversation-container">
             <header>
-                <div class="title-container">
+                <div class="title-container window-move">
                     <div>
                         <h1 class="single-line" @click.stop="toggleConversationInfo">{{ conversationTitle }}</h1>
-                        <p class="single-line user-online-status" @click="clickConversationDesc">{{ targetUserOnlineStateDesc }}</p>
-                        <p v-if="isExternalDomainSingleConversation" class="single-line domain-desc">{{ domainName }}</p>
+                        <p class="single-line user-online-status" @click="clickConversationDesc">{{
+                            targetUserOnlineStateDesc }}</p>
+                        <p v-if="isExternalDomainSingleConversation" class="single-line domain-desc">{{ domainName }}
+                        </p>
                     </div>
-                    <div
-                        v-bind:style="{marginTop:sharedMiscState.isElectronWindowsOrLinux ?  '30px' : '0'}"
-                    >
+                    <div v-bind:style="{ marginTop: sharedMiscState.isElectronWindowsOrLinux ? '30px' : '0' }">
                         <a v-if="sharedMiscState.isElectron" href="#" @click.prevent>
-                            <i class="icon-ion-pin"
-                               style="display: inline-block"
-                               v-bind:class="{active : isWindowAlwaysTop}"
-                               @click.prevent="setWindowAlwaysTop"
-                            />
+                            <i class="icon-ion-pin" style="display: inline-block"
+                                v-bind:class="{ active: isWindowAlwaysTop }" @click.prevent="setWindowAlwaysTop" />
                         </a>
                         <a href="#" @click.prevent>
-                            <i class="icon-ion-ios-settings-strong"
-                               style="display: inline-block"
-                               ref="setting"
-                               v-bind:class="{active : showConversationInfo}"
-                               @click.prevent="toggleConversationInfo"
-                            />
+                            <i class="icon-ion-ios-settings-strong" style="display: inline-block" ref="setting"
+                                v-bind:class="{ active: showConversationInfo }"
+                                @click.prevent="toggleConversationInfo" />
                         </a>
                     </div>
                 </div>
             </header>
             <div ref="conversationContentContainer" class="conversation-content-container"
-                 @dragover="dragEvent($event, 'dragover')"
-                 @dragleave="dragEvent($event, 'dragleave')"
-                 @dragenter="dragEvent($event,'dragenter')"
-                 @drop="dragEvent($event, 'drop')"
-                 :dummy_just_for_reactive="currentVoiceMessage"
-            >
+                @dragover="dragEvent($event, 'dragover')" @dragleave="dragEvent($event, 'dragleave')"
+                @dragenter="dragEvent($event, 'dragenter')" @drop="dragEvent($event, 'drop')"
+                :dummy_just_for_reactive="currentVoiceMessage">
                 <div v-if="ongoingCalls && ongoingCalls.length > 0" class="ongoing-call-container">
                     <div v-for="(value, index) in ongoingCalls" :key="index" class="ongoing-call-item">
                         <p>{{ value.messageContent.digest(value) }}</p>
@@ -51,88 +42,74 @@
                     </div>
                 </div>
                 <div ref="conversationMessageList" class="conversation-message-list" v-on:scroll="onScroll"
-                     infinite-wrapper>
-                    <infinite-loading :identifier="loadingIdentifier" :distance="10" :force-use-infinite-wrapper="true" direction="top"
-                                      @infinite="infiniteHandler">
+                    infinite-wrapper>
+                    <infinite-loading :identifier="loadingIdentifier" :distance="10" :force-use-infinite-wrapper="true"
+                        direction="top" @infinite="infiniteHandler">
                         <!--            <template slot="spinner">加载中...</template>-->
                         <template #no-more>{{ $t('conversation.no_more_message') }}</template>
                         <template #no-results>{{ $t('conversation.all_message_load') }}</template>
                     </infinite-loading>
                     <div v-for="(message) in sharedConversationState.currentConversationMessageList"
-                         :ref="message.messageId"
-                         :key="message.messageId">
+                        :ref="message.messageId" :key="message.messageId">
                         <!--todo 不同的消息类型 notification in out-->
 
-                        <NotificationMessageContentView :message="message" v-if="isNotificationMessage(message)"/>
-                        <RecallNotificationMessageContentView :message="message" v-else-if="isRecallNotificationMessage(message)"/>
+                        <NotificationMessageContentView :message="message" v-if="isNotificationMessage(message)" />
+                        <RecallNotificationMessageContentView :message="message"
+                            v-else-if="isRecallNotificationMessage(message)" />
                         <ContextableNotificationMessageContentContainerView
                             v-else-if="isContextableNotificationMessage(message)"
-                            @click.native.capture="sharedConversationState.enableMessageMultiSelection? clickMessageItem($event, message) : null"
+                            @click.native.capture="sharedConversationState.enableMessageMultiSelection ? clickMessageItem($event, message) : null"
                             @openMessageContextMenu="openMessageContextMenu"
-                            @openMessageSenderContextMenu="openMessageSenderContextMenu"
-                            :message="message"
-                        />
+                            @openMessageSenderContextMenu="openMessageSenderContextMenu" :message="message" />
                         <NormalOutMessageContentView
-                            @click.native.capture="sharedConversationState.enableMessageMultiSelection? clickMessageItem($event, message) : null"
-                            :message="message"
-                            @openMessageContextMenu="openMessageContextMenu"
+                            @click.native.capture="sharedConversationState.enableMessageMultiSelection ? clickMessageItem($event, message) : null"
+                            :message="message" @openMessageContextMenu="openMessageContextMenu"
                             @openMessageSenderContextMenu="openMessageSenderContextMenu"
-                            v-else-if="message.direction === 0"/>
+                            v-else-if="message.direction === 0" />
                         <NormalInMessageContentView
                             @click.native.capture="sharedConversationState.enableMessageMultiSelection ? clickMessageItem($event, message) : null"
-                            :message="message"
-                            @openMessageContextMenu="openMessageContextMenu"
-                            @openMessageSenderContextMenu="openMessageSenderContextMenu"
-                            v-else/>
+                            :message="message" @openMessageContextMenu="openMessageContextMenu"
+                            @openMessageSenderContextMenu="openMessageSenderContextMenu" v-else />
                     </div>
                 </div>
                 <div v-if="sharedConversationState.inputtingUser" class="inputting-container">
-                    <img class="avatar" :src="sharedConversationState.inputtingUser.portrait"/>
-                    <ScaleLoader :color="'#d2d2d2'" :height="'15px'" :width="'3px'"/>
+                    <img class="avatar" :src="sharedConversationState.inputtingUser.portrait" />
+                    <ScaleLoader :color="'#d2d2d2'" :height="'15px'" :width="'3px'" />
                 </div>
                 <div v-if="unreadMessageCount > 0" class="unread-count-tip-container" @click="showUnreadMessage">
                     {{ '' + this.unreadMessageCount + '条新消息' }}
                 </div>
-                <div v-show="!sharedConversationState.enableMessageMultiSelection && !sharedContactState.showChannelMenu" v-on:mousedown="dragStart"
-                     class="divider-handler"></div>
+                <div v-show="!sharedConversationState.enableMessageMultiSelection && !sharedContactState.showChannelMenu"
+                    v-on:mousedown="dragStart" class="divider-handler"></div>
                 <MessageInputView :conversationInfo="sharedConversationState.currentConversationInfo"
-                                  v-show="!sharedConversationState.enableMessageMultiSelection"
-                                  :input-options="inputOptions"
-                                  :muted="muted"
-                                  ref="messageInputView"/>
-                <MultiSelectActionView v-show="sharedConversationState.enableMessageMultiSelection" :conversation-info="conversationInfo"/>
+                    v-show="!sharedConversationState.enableMessageMultiSelection" :input-options="inputOptions"
+                    :muted="muted" ref="messageInputView" />
+                <MultiSelectActionView v-show="sharedConversationState.enableMessageMultiSelection"
+                    :conversation-info="conversationInfo" />
                 <SingleConversationInfoView
-                    v-if="showConversationInfo &&  sharedConversationState.currentConversationInfo.conversation.type === 0"
+                    v-if="showConversationInfo && sharedConversationState.currentConversationInfo.conversation.type === 0"
                     v-v-on-click-outside="hideConversationInfo"
                     :conversation-info="sharedConversationState.currentConversationInfo"
-                    v-bind:class="{ active: showConversationInfo }"
-                    class="conversation-info-container"
-                />
+                    v-bind:class="{ active: showConversationInfo }" class="conversation-info-container" />
                 <GroupConversationInfoView
-                    v-if="showConversationInfo &&  sharedConversationState.currentConversationInfo.conversation.type === 1"
+                    v-if="showConversationInfo && sharedConversationState.currentConversationInfo.conversation.type === 1"
                     v-v-on-click-outside="hideConversationInfo"
                     :conversation-info="sharedConversationState.currentConversationInfo"
-                    v-bind:class="{ active: showConversationInfo }"
-                    class="conversation-info-container"
-                />
+                    v-bind:class="{ active: showConversationInfo }" class="conversation-info-container" />
 
                 <SecretConversationInfoView
-                    v-if="showConversationInfo &&  sharedConversationState.currentConversationInfo.conversation.type === 5"
+                    v-if="showConversationInfo && sharedConversationState.currentConversationInfo.conversation.type === 5"
                     v-v-on-click-outside="hideConversationInfo"
                     :conversation-info="sharedConversationState.currentConversationInfo"
-                    v-bind:class="{ active: showConversationInfo }"
-                    class="conversation-info-container"
-                />
+                    v-bind:class="{ active: showConversationInfo }" class="conversation-info-container" />
 
                 <ChannelConversationInfoView
-                    v-if="showConversationInfo &&  sharedConversationState.currentConversationInfo.conversation.type === 3"
+                    v-if="showConversationInfo && sharedConversationState.currentConversationInfo.conversation.type === 3"
                     v-v-on-click-outside="hideConversationInfo"
                     :conversation-info="sharedConversationState.currentConversationInfo"
-                    v-bind:class="{ active: showConversationInfo }"
-                    class="conversation-info-container"
-                />
+                    v-bind:class="{ active: showConversationInfo }" class="conversation-info-container" />
 
-                <vue-context ref="menu" v-slot="{data:message}" :close-on-scroll="true" v-on:close="onMenuClose">
+                <vue-context ref="menu" v-slot="{ data: message }" :close-on-scroll="true" v-on:close="onMenuClose">
                     <!--          更多menu item-->
                     <li v-if="isCopyable(message)">
                         <a @click.prevent="copy(message)">{{ $t('common.copy') }}</a>
@@ -174,7 +151,8 @@
                         <a @click.prevent="cancelSpeechToText(message)">{{ $t('common.cancelSpeech2text') }}</a>
                     </li>
                 </vue-context>
-                <vue-context ref="messageSenderContextMenu" v-slot="{data: message}" :close-on-scroll="true" v-on:close="onMessageSenderContextMenuClose">
+                <vue-context ref="messageSenderContextMenu" v-slot="{ data: message }" :close-on-scroll="true"
+                    v-on:close="onMessageSenderContextMenuClose">
                     <!--          更多menu item，比如添加到通讯录等-->
                     <li>
                         <a @click.prevent="mentionMessageSender(message)">{{ mentionMessageSenderTitle(message) }}</a>
@@ -198,17 +176,17 @@ import NotificationMessageContent from "../../../wfc/messages/notification/notif
 import TextMessageContent from "../../../wfc/messages/textMessageContent";
 import store from "../../../store";
 import wfc from "../../../wfc/client/wfc";
-import {numberValue} from "../../../wfc/util/longUtil";
+import { numberValue } from "../../../wfc/util/longUtil";
 import InfiniteLoading from '@imndx/vue-infinite-loading';
 import MultiSelectActionView from "../../main/conversation/MessageMultiSelectActionView";
 import ScaleLoader from 'vue-spinner/src/ScaleLoader'
 import ForwardType from "../../main/conversation/message/forward/ForwardType";
-import {fs, isElectron, shell} from "../../../platform";
+import { fs, isElectron, shell } from "../../../platform";
 import FileMessageContent from "../../../wfc/messages/fileMessageContent";
 import ImageMessageContent from "../../../wfc/messages/imageMessageContent";
-import {copyImg, copyText} from "../../util/clipboard";
+import { copyImg, copyText } from "../../util/clipboard";
 import Message from "../../../wfc/messages/message";
-import {downloadFile} from "../../../platformHelper";
+import { downloadFile } from "../../../platformHelper";
 import VideoMessageContent from "../../../wfc/messages/videoMessageContent";
 import localStorageEmitter from "../../../ipc/localStorageEmitter";
 import SoundMessageContent from "../../../wfc/messages/soundMessageContent";
@@ -227,13 +205,13 @@ import ArticlesMessageContent from "../../../wfc/messages/articlesMessageContent
 import ContextableNotificationMessageContentContainerView from "./message/ContextableNotificationMessageContentContainerView";
 import ChannelConversationInfoView from "./ChannelConversationInfoView";
 import FriendRequestView from "../contact/FriendRequestView";
-import {currentWindow, ipcRenderer} from "../../../platform";
+import { currentWindow, ipcRenderer } from "../../../platform";
 import appServerApi from "../../../api/appServerApi";
 import Config from "../../../config";
 import IPCEventType from "../../../ipcEventType";
-import {imageThumbnail} from "../../util/imageUtil";
+import { imageThumbnail } from "../../util/imageUtil";
 import GroupInfo from "../../../wfc/model/groupInfo";
-import {vOnClickOutside} from '@vueuse/components'
+import { vOnClickOutside } from '@vueuse/components'
 import WfcUtil from "../../../wfc/util/wfcUtil";
 import CallStartMessageContent from "../../../wfc/av/messages/callStartMessageContent";
 import SendMixMediaMessageView from "../view/SendMixMediaMessageView.vue";
@@ -333,13 +311,13 @@ export default {
                             conversation: this.conversationInfo.conversation,
                             files: [...e.dataTransfer.files],
                         }, null, {
-                            name: 'send-mix-multi-media-message-modal',
-                            width: 600,
-                            height: 480,
-                            clickToClose: true,
-                        }, {
-                            'before-close': null,
-                        });
+                        name: 'send-mix-multi-media-message-modal',
+                        width: 600,
+                        height: 480,
+                        clickToClose: true,
+                    }, {
+                        'before-close': null,
+                    });
 
                     return
                 }
@@ -362,7 +340,7 @@ export default {
                     // 根据后缀判断类型
                     if (dragUrl.endsWith('.png') || dragUrl.endsWith('.jpg') || dragUrl.endsWith('jpeg')) {
                         //constructor(fileOrLocalPath, remotePath, thumbnail) {
-                        let {thumbnail: it, width: iw, height: ih} = await imageThumbnail(dragUrl);
+                        let { thumbnail: it, width: iw, height: ih } = await imageThumbnail(dragUrl);
                         it = it ? it : Config.DEFAULT_THUMBNAIL_URL;
                         if (it.length > 15 * 1024) {
                             it = Config.DEFAULT_THUMBNAIL_URL;
@@ -554,7 +532,7 @@ export default {
                 return false;
             }
             return [MessageContentType.VOIP_CONTENT_TYPE_START,
-                MessageContentType.CONFERENCE_CONTENT_TYPE_INVITE].indexOf(message.messageContent.type) <= -1;
+            MessageContentType.CONFERENCE_CONTENT_TYPE_INVITE].indexOf(message.messageContent.type) <= -1;
         },
 
         isRecallable(message) {
@@ -618,11 +596,11 @@ export default {
                 return false;
             }
             return [MessageContentType.VOIP_CONTENT_TYPE_START,
-                MessageContentType.Voice,
-                MessageContentType.Video,
-                MessageContentType.Composite_Message,
-                MessageContentType.Articles,
-                MessageContentType.CONFERENCE_CONTENT_TYPE_INVITE].indexOf(message.messageContent.type) === -1;
+            MessageContentType.Voice,
+            MessageContentType.Video,
+            MessageContentType.Composite_Message,
+            MessageContentType.Articles,
+            MessageContentType.CONFERENCE_CONTENT_TYPE_INVITE].indexOf(message.messageContent.type) === -1;
         },
 
         isMulticheckable(message) {
@@ -645,7 +623,7 @@ export default {
                 copyImg(content.remotePath)
             } else if (content instanceof MediaMessageContent) {
                 if (isElectron()) {
-                    ipcRenderer.send(IPCEventType.FILE_COPY, {path: content.localPath});
+                    ipcRenderer.send(IPCEventType.FILE_COPY, { path: content.localPath });
                 }
             }
         },
@@ -703,10 +681,10 @@ export default {
                 let result = "";
 
                 while (true) {
-                    const {value, done} = await reader.read();
+                    const { value, done } = await reader.read();
                     if (done) break;
 
-                    let text = decoder.decode(value, {stream: true});
+                    let text = decoder.decode(value, { stream: true });
                     text = text.replace(/\r\n|\n|\r/g, '');
                     if (text) {
                         result += text.replaceAll('data:', '')
@@ -916,7 +894,7 @@ export default {
 
         showUnreadMessage() {
             let messageListElement = this.$refs['conversationMessageList'];
-            messageListElement.scroll({top: messageListElement.scrollHeight, left: 0, behavior: 'auto'})
+            messageListElement.scroll({ top: messageListElement.scrollHeight, left: 0, behavior: 'auto' })
             this.unreadMessageCount = 0;
         },
 
@@ -977,7 +955,7 @@ export default {
         console.log('conversationView updated', this.sharedConversationState.currentConversationInfo, this.sharedConversationState.shouldAutoScrollToBottom, this.sharedMiscState.isPageHidden)
         if (this.sharedConversationState.shouldAutoScrollToBottom && !this.sharedMiscState.isPageHidden) {
             let messageListElement = this.$refs['conversationMessageList'];
-            messageListElement.scroll({top: messageListElement.scrollHeight, left: 0, behavior: 'auto'})
+            messageListElement.scroll({ top: messageListElement.scrollHeight, left: 0, behavior: 'auto' })
             this.clearConversationUnreadStatus();
         } else {
             // 用户滑动到上面之后，收到新消息，不自动滑动到最下面
@@ -1319,4 +1297,3 @@ i.active {
     color: #3f64e4;
 }
 </style>
-

@@ -1,79 +1,68 @@
 <template>
     <div ref="message-input-container" class="message-input-container">
         <div v-if="convMuted"
-             style="width: 100%; height: 50px; margin-top: -2px; background: lightgrey; display: flex; flex-direction: row; justify-content: center; align-items: center">
+            style="width: 100%; height: 50px; margin-top: -2px; background: lightgrey; display: flex; flex-direction: row; justify-content: center; align-items: center">
             <p style="color: white">群禁言或者群已被解散</p>
         </div>
         <section v-else-if="!sharedConversationState.showChannelMenu" style="display: flex; flex-direction: column;">
             <section class="input-action-container">
-                <VEmojiPicker
-                    id="emoji"
-                    ref="emojiPicker"
-                    v-if="showEmojiDialog"
-                    labelSearch="Search"
-                    lang="pt-BR"
-                    v-v-on-click-outside="hideEmojiView"
-                    :customEmojis="emojis"
-                    :customCategories="emojiCategories"
-                    @select="onSelectEmoji"
-                />
+                <VEmojiPicker id="emoji" ref="emojiPicker" v-if="showEmojiDialog" labelSearch="Search" lang="pt-BR"
+                    v-v-on-click-outside="hideEmojiView" :customEmojis="emojis" :customCategories="emojiCategories"
+                    @select="onSelectEmoji" />
                 <ul>
                     <li v-if="!inputOptions['disableEmoji']">
-                        <i id="showEmoji" @click="toggleEmojiView" class="icon-ion-ios-heart"/>
+                        <i id="showEmoji" @click="toggleEmojiView" class="icon-ion-android-happy" />
                     </li>
                     <li v-if="!inputOptions['disableFile']">
-                        <i @click="pickFile" class="icon-ion-android-attach"/>
-                        <input ref="fileInput" multiple @change="onPickFile($event)" class="icon-ion-android-attach" type="file"
-                               style="display: none">
+                        <i @click="pickFile" class="icon-ion-android-attach" />
+                        <input ref="fileInput" multiple @change="onPickFile($event)" class="icon-ion-android-attach"
+                            type="file" style="display: none">
                     </li>
                     <li v-if="!inputOptions['disableScreenShot'] && sharedMiscState.isElectron">
                         <div style="display: inline-block; text-align: center">
-                            <i id="screenShot" @click="screenShot(false)" class="icon-ion-scissors"/>
-                            <i class="icon-ion-chevron-down" style="font-size: 10px; color: #494849; padding-left: 5px;"/>
+                            <i id="screenShot" @click="screenShot(false)" class="icon-ion-scissors" />
+                            <i class="icon-ion-chevron-down"
+                                style="font-size: 10px; color: #494849; padding-left: 5px;" />
                             <span @click="screenShot(true)" class="screen-shot-button">隐藏当前窗口截图</span>
                         </div>
                     </li>
                     <li v-if="!inputOptions['disableHistory'] && sharedMiscState.isElectron">
-                        <i id="messageHistory" @click="showMessageHistory" class="icon-ion-android-chat"/>
+                        <i id="messageHistory" @click="showMessageHistory" class="icon-ion-android-chat" />
                     </li>
                     <li v-if="enablePtt">
-                        <i id="ptt" v-bind:class="{active: isPttTalking}" @mousedown="requestPttTalk(true)"
-                           class="icon-ion-android-radio-button-on ptt-icon"/>
+                        <i id="ptt" v-bind:class="{ active: isPttTalking }" @mousedown="requestPttTalk(true)"
+                            class="icon-ion-android-radio-button-on ptt-icon" />
                     </li>
                     <li>
-                        <i id="voice" v-bind:class="{active: isRecording}" @mousedown="recordAudio(true)"
-                           class="icon-ion-android-microphone record-icon"/>
+                        <i id="voice" v-bind:class="{ active: isRecording }" @mousedown="recordAudio(true)"
+                            class="icon-ion-android-microphone record-icon" />
                     </li>
                 </ul>
                 <ul>
-                    <template v-if="!inputOptions['disableVoip']  && [0, 1, 5].indexOf(conversationInfo.conversation.type) >= 0 && sharedContactState.selfUserInfo.uid !== conversationInfo.conversation.target">
+                    <template
+                        v-if="!inputOptions['disableVoip'] && [0, 1, 5].indexOf(conversationInfo.conversation.type) >= 0 && sharedContactState.selfUserInfo.uid !== conversationInfo.conversation.target">
                         <li v-if="!inputOptions['disableAudioCall']">
-                            <i @click="startAudioCall" class="icon-ion-ios-telephone"/>
+                            <i @click="startAudioCall" class="icon-ion-ios-telephone" />
                         </li>
                         <li v-if="!inputOptions['disableVideoCall']">
-                            <i @click="startVideoCall" class="icon-ion-ios-videocam"/>
+                            <i @click="startVideoCall" class="icon-ion-ios-videocam" />
                         </li>
-                        <li v-if="false && sharedMiscState.isElectron && !inputOptions['disableVideoCall'] && conversationInfo.conversation.type === 0">
-                            <i @click="requestRemoteControl" class="icon-ion-android-desktop"/>
+                        <li
+                            v-if="false && sharedMiscState.isElectron && !inputOptions['disableVideoCall'] && conversationInfo.conversation.type === 0">
+                            <i @click="requestRemoteControl" class="icon-ion-android-desktop" />
                         </li>
                     </template>
-                    <li v-if="!inputOptions['disableChannelMenu'] && conversationInfo.conversation.type === 3 && conversationInfo.conversation._target.menus && conversationInfo.conversation._target.menus.length">
-                        <i @click="toggleChannelMenu" class="icon-ion-android-menu"/>
+                    <li
+                        v-if="!inputOptions['disableChannelMenu'] && conversationInfo.conversation.type === 3 && conversationInfo.conversation._target.menus && conversationInfo.conversation._target.menus.length">
+                        <i @click="toggleChannelMenu" class="icon-ion-android-menu" />
                     </li>
                 </ul>
             </section>
-            <div @keydown.enter="send($event)"
-                 ref="input" class="input"
-                 @paste="handlePaste"
-                 draggable="false"
-                 title="Enter发送，Ctrl+Enter换行"
-                 autofocus
-                 @input="onInput"
-                 @contextmenu.prevent="$refs.menu.open($event)"
-                 onmouseover="this.setAttribute('org_title', this.title); this.title='';"
-                 onmouseout="this.title = this.getAttribute('org_title');"
-                 v-on:tribute-replaced="onTributeReplaced"
-                 contenteditable="true">
+            <div @keydown.enter="send($event)" ref="input" class="input" @paste="handlePaste" draggable="false"
+                title="Enter发送，Ctrl+Enter换行" autofocus @input="onInput" @contextmenu.prevent="$refs.menu.open($event)"
+                onmouseover="this.setAttribute('org_title', this.title); this.title='';"
+                onmouseout="this.title = this.getAttribute('org_title');" v-on:tribute-replaced="onTributeReplaced"
+                contenteditable="true">
             </div>
             <vue-context ref="menu" :lazy="true">
                 <li>
@@ -90,15 +79,12 @@
                     <a @click.prevent="cut">{{ $t('common.cut') }}</a>
                 </li>
             </vue-context>
-            <QuoteMessageView
-                v-if="quotedMessage"
-                style="padding: 10px 20px"
-                v-on:cancelQuoteMessage="cancelQuoteMessage"
-                :enable-message-preview="false"
-                :quoted-message="quotedMessage" :show-close-button="true"/>
+            <QuoteMessageView v-if="quotedMessage" style="padding: 10px 20px"
+                v-on:cancelQuoteMessage="cancelQuoteMessage" :enable-message-preview="false"
+                :quoted-message="quotedMessage" :show-close-button="true" />
         </section>
         <ChannelMenuView v-else :menus="conversationInfo.conversation._target.menus"
-                         :conversation="conversationInfo.conversation"></ChannelMenuView>
+            :conversation="conversationInfo.conversation"></ChannelMenuView>
     </div>
 </template>
 
@@ -106,7 +92,7 @@
 import wfc from "../../../wfc/client/wfc";
 import TextMessageContent from "../../../wfc/messages/textMessageContent";
 import store from "../../../store";
-import {categoriesDefault, emojisDefault, VEmojiPicker} from "@imndx/v-emoji-picker-vue3"
+import { categoriesDefault, emojisDefault, VEmojiPicker } from "@imndx/v-emoji-picker-vue3"
 import '@imndx/v-emoji-picker-vue3/lib/v-emoji-picker.esm.css'
 import Tribute from "tributejs";
 import '../../../tribute.css'
@@ -117,13 +103,13 @@ import GroupMemberType from "../../../wfc/model/groupMemberType";
 import QuoteInfo from "../../../wfc/model/quoteInfo";
 import Draft from "../../util/draft";
 import Mention from "../../../wfc/model/mention";
-import {parser as emojiParse} from '../../util/emoji';
+import { parser as emojiParse } from '../../util/emoji';
 import QuoteMessageView from "../../main/conversation/message/QuoteMessageView";
-import {fileFromDataUri} from "../../util/imageUtil";
+import { fileFromDataUri } from "../../util/imageUtil";
 import StickerMessageContent from "../../../wfc/messages/stickerMessageContent";
-import {config as emojiConfig} from "../../main/conversation/EmojiAndStickerConfig";
-import {ipcRenderer, isElectron} from "../../../platform";
-import {copyText} from "../../util/clipboard";
+import { config as emojiConfig } from "../../main/conversation/EmojiAndStickerConfig";
+import { ipcRenderer, isElectron } from "../../../platform";
+import { copyText } from "../../util/clipboard";
 import EventType from "../../../wfc/client/wfcEvent";
 import IpcEventType from "../../../ipcEventType";
 import ChannelMenuView from "./ChannelMenuView";
@@ -133,8 +119,8 @@ import Config from "../../../config";
 import SoundMessageContent from "../../../wfc/messages/soundMessageContent";
 import BenzAMRRecorder from "benz-amr-recorder";
 import TypingMessageContent from "../../../wfc/messages/typingMessageContent";
-import {currentWindow, fs} from "../../../platform";
-import {vOnClickOutside} from '@vueuse/components'
+import { currentWindow, fs } from "../../../platform";
+import { vOnClickOutside } from '@vueuse/components'
 import SendMixMediaMessageView from "../view/SendMixMediaMessageView.vue";
 import avenginekitproxy from "../../../wfc/av/engine/avenginekitproxy";
 import avenginekit from "../../../wfc/av/internal/engine.min";
@@ -553,29 +539,29 @@ export default {
         startAudioCall() {
             console.log(`startAudioCall from mainWindow ${this.sharedMiscState.isMainWindow}`);
             let conversation = this.conversationInfo.conversation;
-            this.$startVoipCall({audioOnly: true, conversation: conversation});
+            this.$startVoipCall({ audioOnly: true, conversation: conversation });
         },
 
         startVideoCall() {
             console.log(`startVideoCall from mainWindow ${this.sharedMiscState.isMainWindow}`);
             let conversation = this.conversationInfo.conversation;
-            this.$startVoipCall({audioOnly: false, conversation: conversation});
+            this.$startVoipCall({ audioOnly: false, conversation: conversation });
         },
 
-        requestRemoteControl(){
-            if(avenginekit.startConference){
-                if(process.platform === 'linux'){
+        requestRemoteControl() {
+            if (avenginekit.startConference) {
+                if (process.platform === 'linux') {
                     this.$notify({
-                        text:'远程协助，目前只支持 Windows 和 macOS',
-                        type:'error',
+                        text: '远程协助，目前只支持 Windows 和 macOS',
+                        type: 'error',
                     })
                     return
                 }
                 avenginekitproxy.requestRemoteControl(this.conversationInfo.conversation);
-            }else {
+            } else {
                 this.$notify({
-                    text:'需要高级版音视频才支持远程协助',
-                    type:'error',
+                    text: '需要高级版音视频才支持远程协助',
+                    type: 'error',
                 })
             }
         },
@@ -699,7 +685,7 @@ export default {
                     // if (this.range.isContentEditable(this.current.element)) {
                     //     return '<span contenteditable="false"><a href="http://zurb.com" target="_blank" title="' + item.original.email + '">' + item.original.value + '</a></span>';
                     // }
-                    this.mentions.push({key: item.original.key, value: item.original.value});
+                    this.mentions.push({ key: item.original.key, value: item.original.value });
 
                     return '@' + item.original.keyIgnoreFriendAlias;
                 },
@@ -946,13 +932,13 @@ export default {
                     conversation: this.conversationInfo.conversation,
                     text: this.$refs.input.innerText,
                 }, null, {
-                    name: 'send-mix-multi-media-message-modal',
-                    width: 600,
-                    height: 480,
-                    clickToClose: true,
-                }, {
-                    'before-close': null,
-                });
+                name: 'send-mix-multi-media-message-modal',
+                width: 600,
+                height: 480,
+                clickToClose: true,
+            }, {
+                'before-close': null,
+            });
 
         }
 
@@ -1096,7 +1082,7 @@ export default {
 }
 
 /*pls refer to https://vue-loader.vuejs.org/guide/scoped-css.html#child-component-root-elements*/
-#emoji >>> .container-emoji {
+#emoji>>>.container-emoji {
     height: 280px;
 }
 
@@ -1144,7 +1130,7 @@ i {
 }
 
 i:hover {
-    color: #3f64e4;
+    color: #07c160;
 }
 
 .input-action-container ul li .screen-shot-button {
@@ -1174,9 +1160,11 @@ i:hover {
     0% {
         opacity: 1;
     }
+
     50% {
         opacity: 0.5;
     }
+
     100% {
         opacity: 1;
     }
@@ -1201,7 +1189,7 @@ i:hover {
     animation: glow 2s infinite;
 }
 
->>> .emoji-picker {
+>>>.emoji-picker {
     box-shadow: 5px 5px 20px 0 #C0C0C0;
     --ep-color-active: #3f64e4 !important;
 }

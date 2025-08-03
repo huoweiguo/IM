@@ -1,108 +1,89 @@
 <template>
     <div class="home-container" ref="home-container">
         <ElectronWindowsControlButtonView style="position: absolute; top: 0; right: 0"
-                                          v-if="sharedMiscState.isElectronWindowsOrLinux"/>
+            v-if="sharedMiscState.isElectronWindowsOrLinux" />
         <div class="home">
             <section class="menu-container">
                 <div>
-                    <tippy
-                        to="#infoTrigger"
-                        interactive
-                        :animate-fill="false"
-                        distant="7"
-                        theme="light"
-                        animation="fade"
-                        trigger="click"
-                        :arrow="true"
-                    >
+                    <tippy to="#infoTrigger" interactive :animate-fill="false" distant="7" theme="light"
+                        animation="fade" trigger="click" :arrow="true">
                         <template #content>
                             <UserCardView v-if="sharedContactState.selfUserInfo" v-on:close="closeUserCard"
-                                          :enable-update-portrait="true"
-                                          :user-info="sharedContactState.selfUserInfo"/>
+                                :enable-update-portrait="true" :user-info="sharedContactState.selfUserInfo" />
                         </template>
                     </tippy>
 
-                    <img
-                        v-if="sharedContactState.selfUserInfo"
-                        ref="userCardTippy"
-                        id="infoTrigger"
-                        class="avatar"
-                        draggable="false"
-                        @click.prevent="onClickPortrait"
-                        :src="sharedContactState.selfUserInfo.portrait"
-                        alt=""
-                    />
+                    <img v-if="sharedContactState.selfUserInfo" ref="userCardTippy" id="infoTrigger" class="avatar"
+                        draggable="false" @click.prevent="onClickPortrait"
+                        :src="sharedContactState.selfUserInfo.portrait" alt="" />
                 </div>
                 <nav class="menu">
                     <ul>
                         <li>
                             <div class="menu-item">
-                                <i class="icon-ion-ios-chatboxes"
-                                   v-bind:class="{active : this.$router.currentRoute.value.path === '/home'}"
-                                   @click="go2Conversation"></i>
+                                <i class="icon-ion-chatbubble-working"
+                                    v-bind:class="{ active: this.$router.currentRoute.value.path === '/home' }"
+                                    @click="go2Conversation"></i>
                                 <em v-show="unread > 0" class="badge">{{ unread > 99 ? '···' : unread }}</em>
                             </div>
                         </li>
                         <li>
                             <div class="menu-item">
                                 <i class="icon-ion-android-contact"
-                                   v-bind:class="{active : this.$router.currentRoute.value.path === '/home/contact'}"
-                                   @click="go2Contact"></i>
-                                <em v-show="sharedContactState.unreadFriendRequestCount > 0" class="badge">{{ sharedContactState.unreadFriendRequestCount > 99 ? '99' : sharedContactState.unreadFriendRequestCount }}</em>
+                                    v-bind:class="{ active: this.$router.currentRoute.value.path === '/home/contact' }"
+                                    @click="go2Contact"></i>
+                                <em v-show="sharedContactState.unreadFriendRequestCount > 0" class="badge">{{
+                                    sharedContactState.unreadFriendRequestCount > 99 ? '99' :
+                                        sharedContactState.unreadFriendRequestCount }}</em>
                             </div>
                         </li>
                         <li>
                             <i class="icon-ion-android-favorite"
-                               v-bind:class="{active : this.$router.currentRoute.value.path === '/home/fav'}"
-                               @click="go2Fav"></i>
+                                v-bind:class="{ active: this.$router.currentRoute.value.path === '/home/fav' }"
+                                @click="go2Fav"></i>
                         </li>
                         <li v-if="sharedMiscState.isElectron && sharedMiscState.isCommercialServer">
                             <i class="icon-ion-ios-folder"
-                               v-bind:class="{active : this.$router.currentRoute.value.path === '/home/files'}"
-                               @click="go2Files"></i>
+                                v-bind:class="{ active: this.$router.currentRoute.value.path === '/home/files' }"
+                                @click="go2Files"></i>
                         </li>
                         <li v-if="sharedMiscState.isElectron && sharedMiscState.enableOpenWorkSpace">
                             <i class="icon-ion-code-working"
-                               v-bind:class="{active : this.$router.currentRoute.value.path === '/home/h-wp'}"
-                               @click="go2Workspace"></i>
+                                v-bind:class="{ active: this.$router.currentRoute.value.path === '/home/h-wp' }"
+                                @click="go2Workspace"></i>
                         </li>
                         <li v-if="supportConference">
                             <i class="icon-ion-speakerphone"
-                               v-bind:class="{active : this.$router.currentRoute.value.path === '/home/conference'}"
-                               @click="go2Conference"></i>
+                                v-bind:class="{ active: this.$router.currentRoute.value.path === '/home/conference' }"
+                                @click="go2Conference"></i>
                         </li>
                         <li v-if="aiPortalUrl">
                             <i class="icon-ion-android-sunny"
-                               v-bind:class="{ active: this.$router.currentRoute.value.path === '/home/ai'}"
-                               @click="go2AI"></i>
+                                v-bind:class="{ active: this.$router.currentRoute.value.path === '/home/ai' }"
+                                @click="go2AI"></i>
                         </li>
                         <li>
                             <i v-show="this.$router.currentRoute.value.path !== '/home/ai'"
-                               class="icon-ion-android-settings"
-                               v-bind:class="{active : this.$router.currentRoute.value.path === '/home/setting'}"
-                               @click="go2Setting"></i>
+                                class="icon-ion-android-settings"
+                                v-bind:class="{ active: this.$router.currentRoute.value.path === '/home/setting' }"
+                                @click="go2Setting"></i>
                         </li>
                     </ul>
                 </nav>
             </section>
             <router-view v-slot="{ Component, route }">
                 <keep-alive v-show="route.path !== '/home/ai'">
-                    <component :is="Component" :key="route.path"/>
+                    <component :is="Component" :key="route.path" />
                 </keep-alive>
-                <AI v-show="route.path === '/home/ai'"/>
+                <AI v-show="route.path === '/home/ai'" />
             </router-view>
             <div v-if="sharedMiscState.connectionStatus === -1" class="unconnected">网络连接断开</div>
-            <div class="drag-area" :style="dragAreaLeft"></div>
-            <UseDraggable v-if="!sharedMiscState.isElectron && sharedMiscState.isVoipOngoing"
-                          class="voip-div-container"
-                          draggable="true"
-                          :initial-value="{x:'50%', y:'50%'}"
-                          :prevent-default="true"
-                          v-bind:class="{single:voipProxy.type === 'single', multi:voipProxy.type === 'multi', conference: voipProxy.type === 'conference'}"
-            >
-                <Single v-if="voipProxy.type === 'single'" ref="handle-id"/>
-                <Multi v-if="voipProxy.type === 'multi'" ref="handle-id"/>
-                <Conference v-if="voipProxy.type === 'conference'" ref="handle-id"/>
+            <UseDraggable v-if="!sharedMiscState.isElectron && sharedMiscState.isVoipOngoing" class="voip-div-container"
+                draggable="true" :initial-value="{ x: '50%', y: '50%' }" :prevent-default="true"
+                v-bind:class="{ single: voipProxy.type === 'single', multi: voipProxy.type === 'multi', conference: voipProxy.type === 'conference' }">
+                <Single v-if="voipProxy.type === 'single'" ref="handle-id" />
+                <Multi v-if="voipProxy.type === 'multi'" ref="handle-id" />
+                <Conference v-if="voipProxy.type === 'conference'" ref="handle-id" />
             </UseDraggable>
         </div>
     </div>
@@ -115,17 +96,17 @@ import wfc from "../../wfc/client/wfc";
 import EventType from "../../wfc/client/wfcEvent";
 import ConnectionStatus from "../../wfc/client/connectionStatus";
 import ElectronWindowsControlButtonView from "../common/ElectronWindowsControlButtonView.vue";
-import {removeItem} from "../util/storageHelper";
-import {ipcRenderer} from "../../platform";
+import { removeItem } from "../util/storageHelper";
+import { ipcRenderer } from "../../platform";
 import avenginekit from "../../wfc/av/internal/engine.min";
 import avenginekitproxy from "../../wfc/av/engine/avenginekitproxy";
 import IpcEventType from "../../ipcEventType";
-import {isElectron} from "../../platform";
+import { isElectron } from "../../platform";
 import Single from "../voip/Single.vue";
 import Multi from "../voip/Multi.vue";
 import Conference from "../voip/conference/Conference.vue";
 import 'tippy.js/dist/tippy.css' // optional for styling
-import {UseDraggable} from '@vueuse/components'
+import { UseDraggable } from '@vueuse/components'
 import AI from "./AI.vue";
 import Config from "../../config";
 
@@ -137,7 +118,6 @@ export default {
             sharedMiscState: store.state.misc,
             shareConversationState: store.state.conversation,
             supportConference: avenginekit.startConference !== undefined,
-            isSetting: false,
             fileWindow: null,
             voipProxy: avenginekitproxy,
         };
@@ -153,21 +133,18 @@ export default {
                 return
             }
             this.$router.replace("/home");
-            this.isSetting = false;
         },
         go2Contact() {
             if (this.$router.currentRoute.path === '/home/contact') {
                 return;
             }
             this.$router.replace("/home/contact");
-            this.isSetting = false;
         },
         go2Fav() {
             if (this.$router.currentRoute.path === '/home/fav') {
                 return;
             }
             this.$router.replace("/home/fav");
-            this.isSetting = false;
         },
         go2Files() {
             let hash = window.location.hash;
@@ -189,27 +166,23 @@ export default {
                 return;
             }
             this.$router.replace("/home/h-wp");
-            this.isSetting = false;
         },
         go2Conference() {
             if (this.$router.currentRoute.path === '/home/conference') {
                 return;
             }
-            this.$router.replace({path: "/home/conference"});
-            this.isSetting = false;
+            this.$router.replace({ path: "/home/conference" });
         },
         go2AI() {
             if (this.$router.currentRoute.value.path !== '/home/ai') {
-                this.$router.replace({path: '/home/ai'});
+                this.$router.replace({ path: '/home/ai' });
             }
-            this.isSetting = false;
         },
         go2Setting() {
             if (this.$router.currentRoute.path === '/home/setting') {
                 return;
             }
-            this.$router.replace({path: "/home/setting"});
-            this.isSetting = true;
+            this.$router.replace({ path: "/home/setting" });
         },
 
         closeUserCard() {
@@ -228,7 +201,7 @@ export default {
                 || wfc.getUserId() === '') {
 
                 if (this.$router.currentRoute.path !== '/') {
-                    this.$router.replace({path: "/"});
+                    this.$router.replace({ path: "/" });
                 }
                 if (status === ConnectionStatus.ConnectionStatusSecretKeyMismatch
                     || status === ConnectionStatus.ConnectionStatusLogout
@@ -259,18 +232,6 @@ export default {
                 count += unreadCount.unread;
             });
             return count;
-        },
-        dragAreaLeft() {
-            // 60为左边菜单栏的宽度，261为会话列表的宽度
-            if (this.isSetting) {
-                return {
-                    left: '60px'
-                }
-            } else {
-                return {
-                    left: 'calc(60px + 261px)'
-                }
-            }
         }
     },
 
@@ -336,7 +297,6 @@ export default {
 </script>
 
 <style lang="css" scoped>
-
 .home {
     display: flex;
     width: calc(100vw - var(--main-margin-left) - var(--main-margin-right));
@@ -422,20 +382,11 @@ i {
 }
 
 i:hover {
-    color: #1f64e4;
+    color: #07c160;
 }
 
 i.active {
-    color: #3f64e4;
-}
-
-.drag-area {
-    position: absolute;
-    top: 0;
-    height: 60px;
-    right: 140px;
-    z-index: -1;
-    -webkit-app-region: drag;
+    color: #07c160;
 }
 
 .unconnected {

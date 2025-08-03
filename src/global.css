@@ -70,3 +70,7 @@ div {
     user-select: none;
 }
 
+/* 拖拽 */
+.window-move {
+    -webkit-app-region: drag;
+}

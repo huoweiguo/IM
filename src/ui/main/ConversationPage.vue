@@ -1,7 +1,7 @@
 <template>
     <section id="conversation-content" class="conversation-page">
-        <ConversationListPanel class="conversation-list-panel"/>
-        <ConversationView class="conversation-view"/>
+        <ConversationListPanel class="conversation-list-panel" />
+        <ConversationView class="conversation-view" />
     </section>
 </template>
 
@@ -38,5 +38,4 @@ export default {
 .conversation-view {
     flex: 1;
 }
-
 </style>

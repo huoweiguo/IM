@@ -23,32 +23,27 @@
                     <ul v-if="!pickSource">
                         <li @click="pickSource = 'friend'; organizationPathList = []">
                             <a href="#" @click.prevent>
-                                <i class="icon-ion-android-contacts"/>
+                                <i class="icon-ion-android-contacts" />
                                 选择好友
                             </a>
                         </li>
-                        <li @click="pickSource = 'organization'">
+                        <!-- <li @click="pickSource = 'organization'">
                             <a href="#" @click.prevent>
                                 <i class="icon-ion-android-document"/>
                                 选择组织联系人
                             </a>
-                        </li>
+                        </li> -->
                     </ul>
                 </div>
             </div>
             <div v-if="!showOrganization || pickSource === 'friend'" class="friend-list-container">
-                <CheckableUserListView :enable-pick="true"
-                                       :users="filterUsers"
-                                       :initial-checked-users="initialCheckedUsers"
-                                       :uncheckable-users="uncheckableUsers"
-                                       :show-category-label="showCategoryLabel && !filterQuery"
-                                       :padding-left="'20px'"
-                                       enable-category-label-sticky/>
+                <CheckableUserListView :enable-pick="true" :users="filterUsers"
+                    :initial-checked-users="initialCheckedUsers" :uncheckable-users="uncheckableUsers"
+                    :show-category-label="showCategoryLabel && !filterQuery" :padding-left="'20px'"
+                    enable-category-label-sticky />
             </div>
-            <CheckableOrganizationTreeView
-                ref="checkableOrganizationTreeView"
-                v-if="pickSource === 'organization'"
-                @organization-path-update="onOrganizationPathUpdate"/>
+            <CheckableOrganizationTreeView ref="checkableOrganizationTreeView" v-if="pickSource === 'organization'"
+                @organization-path-update="onOrganizationPathUpdate" />
         </section>
         <section class="checked-contact-list-container">
             <header>
@@ -56,7 +51,8 @@
                 <div style="display: flex; justify-content: flex-end">
                     <span v-if="checkedUsers.length === 0">{{ $t('pick.picked_contact') }}</span>
                     <span v-else>{{ $t('pick.picked_contact') + ':' + this.checkedUsers.length }}</span>
-                    <span v-if="sharedPickState.organizations.length">{{ '组织: ' + sharedPickState.organizations.length }}</span>
+                    <span v-if="sharedPickState.organizations.length">{{ '组织: ' + sharedPickState.organizations.length
+                        }}</span>
                 </div>
             </header>
             <div class="content">
@@ -67,7 +63,9 @@
                     </div>
                     <div style="display: flex; align-items: center; ">
                         <p class="name single-line">{{ user._displayName }}</p>
-                        <p v-if="isExternalDomainUser(user)" class="single-line" style="color: #F0A040; border-radius: 2px;  padding: 1px 2px; font-size: 9px">{{ domainName(user) }}</p>
+                        <p v-if="isExternalDomainUser(user)" class="single-line"
+                            style="color: #F0A040; border-radius: 2px;  padding: 1px 2px; font-size: 9px">{{
+                            domainName(user) }}</p>
                     </div>
                 </div>
                 <div class="picked-user-container" v-for="(org, index) in sharedPickState.organizations" :key="org.id">
@@ -80,7 +78,8 @@
             </div>
             <footer>
                 <button @click="cancel" class="cancel">{{ $t('common.cancel') }}</button>
-                <button @click="confirm" class="confirm" v-bind:class="{disable:checkedUsers.length === 0  && sharedPickState.organizations.length === 0}">
+                <button @click="confirm" class="confirm"
+                    v-bind:class="{ disable: checkedUsers.length === 0 && sharedPickState.organizations.length === 0 }">
                     {{ confirmTitle }}
                 </button>
             </footer>
@@ -173,7 +172,7 @@ export default {
         cancel() {
             this.sharedPickState.users.length = 0
             this.sharedPickState.organizations.length = 0;
-            this.$modal.hide('pick-user-modal', {confirm: false})
+            this.$modal.hide('pick-user-modal', { confirm: false })
         },
 
         /**
@@ -201,10 +200,10 @@ export default {
                             userInfo.updateDt = employee.updateDt;
                             users.push(userInfo);
                         }
-                        this.$modal.hide('pick-user-modal', {confirm: true, users: users})
+                        this.$modal.hide('pick-user-modal', { confirm: true, users: users })
                     })
             } else {
-                this.$modal.hide('pick-user-modal', {confirm: true, users: users})
+                this.$modal.hide('pick-user-modal', { confirm: true, users: users })
             }
         },
 
@@ -241,7 +240,7 @@ export default {
         }
     },
 
-    components: {CheckableOrganizationTreeView, CheckableUserListView},
+    components: { CheckableOrganizationTreeView, CheckableUserListView },
 }
 </script>
 
@@ -477,5 +476,4 @@ footer button.confirm.disable {
     background-color: #f2f2f2;
     color: #c2c2c2;
 }
-
 </style>
