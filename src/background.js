@@ -513,10 +513,10 @@ const createMainWindow = async () => {
             nativeWindowOpen: true,
             webSecurity: false,
             webviewTag: true,
-            zoomFactor: 1.0,
+            zoomFactor: 1.0
 
             // 如果想打包之后的版本，不能打开调试控制台，请取消下面的注释
-            devTools: !app.isPackaged,
+            // devTools: !app.isPackaged,
         },
         frame: !isWin,
     });
