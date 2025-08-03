@@ -1,7 +1,7 @@
-import {createApp} from 'vue'
+import { createApp } from 'vue'
 import App from './App.vue'
-import {createRouter, createWebHashHistory} from 'vue-router'
-import {createPinia} from 'pinia'
+import { createRouter, createWebHashHistory } from 'vue-router'
+import { createPinia } from 'pinia'
 import routers from './routers'
 
 import wfc from './wfc/client/wfc'
@@ -17,9 +17,9 @@ import './wfc.css'
 import './assets/fonts/icomoon/style.css'
 import store from "./store";
 import visibility from './vendor/vue-visibility-change';
-import {isElectron} from "./platform";
-import {getItem} from "./ui/util/storageHelper";
-import {createI18n} from 'vue-i18n'
+import { isElectron } from "./platform";
+import { getItem } from "./ui/util/storageHelper";
+import { createI18n } from 'vue-i18n'
 import Notifications from '@kyvg/vue3-notification'
 import Alert from "./ui/common/Alert.js";
 import Picker from "./ui/common/Picker";
@@ -28,7 +28,7 @@ import Voip from "./ui/common/Voip";
 import VirtualList from "vue3-virtual-scroll-list";
 import xss from "xss";
 import mitt from 'mitt'
-import {plugin as CoolLightBox} from "./vendor/vue-cool-lightbox";
+import { plugin as CoolLightBox } from "./vendor/vue-cool-lightbox";
 import CustomMessageConfig from "./wfc_custom_message/customMessageConfig";
 
 // Vue.config.productionTip = false
@@ -70,7 +70,7 @@ app.use(CoolLightBox)
                 subWindowLoadDataOptions.loadFriendList = true
                 subWindowLoadDataOptions.loadDefaultConversationList = true
             }
-            if ( path.startsWith('/workspace')) {
+            if (path.startsWith('/workspace')) {
                 subWindowLoadDataOptions.loadFriendList = true
             }
             store.init(false, subWindowLoadDataOptions);
@@ -161,7 +161,7 @@ const xssOptions = (() => {
     };
 })();
 
-app.config.globalProperties.$xss = (html) => {	
+app.config.globalProperties.$xss = (html) => {
     return xss(html, xssOptions);
 };
 

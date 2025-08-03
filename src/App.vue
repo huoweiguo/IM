@@ -1,27 +1,58 @@
 <template>
-    <div id="app-main"
-         style="width: 100vw; height: 100vh"
-         @contextmenu.prevent=""
-         @dragenter="$event.preventDefault()"
-         @dragover="$event.preventDefault()"
-         @drop="$event.preventDefault()"
-         v-visibility-change="visibilityChange">
-        <div v-if="!sharedMiscState.isElectron" id="blur-container" class="blur-container">
-            <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%" id="blurred_mkvvpnf50"
-                 class="blured-img" viewBox="0 0 1920 875" preserveAspectRatio="none">
+    <div
+        id="app-main"
+        style="width: 100vw; height: 100vh"
+        @contextmenu.prevent=""
+        @dragenter="$event.preventDefault()"
+        @dragover="$event.preventDefault()"
+        @drop="$event.preventDefault()"
+        v-visibility-change="visibilityChange"
+    >
+        <div
+            v-if="!sharedMiscState.isElectron"
+            id="blur-container"
+            class="blur-container"
+        >
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                version="1.1"
+                width="100%"
+                height="100%"
+                id="blurred_mkvvpnf50"
+                class="blured-img"
+                viewBox="0 0 1920 875"
+                preserveAspectRatio="none"
+            >
                 <filter id="blur_mkvvpnf">
-                    <feGaussianBlur in="SourceGraphic" stdDeviation="50"></feGaussianBlur>
+                    <feGaussianBlur
+                        in="SourceGraphic"
+                        stdDeviation="50"
+                    ></feGaussianBlur>
                 </filter>
-                <image x="0" y="0" width="100%" height="100%" externalResourcesRequired="true"
-                       xmlns:xlink="http://www.w3.org/1999/xlink"
-                       xlink:href="https://static.wildfirechat.net/web_wfc_bg2.jpeg"
-                       style="filter:url(#blur_mkvvpnf)" preserveAspectRatio="none"></image>
+                <image
+                    x="0"
+                    y="0"
+                    width="100%"
+                    height="100%"
+                    externalResourcesRequired="true"
+                    xmlns:xlink="http://www.w3.org/1999/xlink"
+                    xlink:href="https://static.wildfirechat.net/web_wfc_bg2.jpeg"
+                    style="filter: url(#blur_mkvvpnf)"
+                    preserveAspectRatio="none"
+                ></image>
             </svg>
             <div class="blur-mask"></div>
         </div>
         <!--用来实现视频缩略图-->
         <div id="styled_video_container" class="styled_video_container">
-            <video id="bgvid" playsinline autoplay muted loop crossorigin="anonymous">
+            <video
+                id="bgvid"
+                playsinline
+                autoplay
+                muted
+                loop
+                crossorigin="anonymous"
+            >
                 <!-- <source src="http://thenewcode.com/assets/videos/polina.webm" type="video/webm">
                 <source src="http://thenewcode.com/assets/videos/polina.mp4" type="video/mp4"> -->
             </video>
@@ -32,38 +63,44 @@
             :items="sharedConversationState.previewMediaItems"
             :index="sharedConversationState.previewMediaIndex"
             :slideshow="false"
-            @close="sharedConversationState.previewMediaIndex = null">
+            @close="sharedConversationState.previewMediaIndex = null"
+        >
         </CoolLightBox>
-        <notifications v-if="sharedMiscState.isMainWindow"/>
-        <IpcMain v-if="sharedMiscState.isMainWindow && sharedMiscState.isElectron"/>
-        <router-view id="main-content-container" class="main-content-container"></router-view>
+        <notifications v-if="sharedMiscState.isMainWindow" />
+        <IpcMain
+            v-if="sharedMiscState.isMainWindow && sharedMiscState.isElectron"
+        />
+        <router-view
+            id="main-content-container"
+            class="main-content-container"
+        ></router-view>
     </div>
 </template>
 
 <script>
 import store from "./store";
-import {isElectron} from "./platform";
-import CoolLightBox from './vendor/vue-cool-lightbox'
-import './vendor/vue-cool-lightbox/dist/vue-cool-lightbox.min.css'
+import { isElectron } from "./platform";
+import CoolLightBox from "./vendor/vue-cool-lightbox";
+import "./vendor/vue-cool-lightbox/dist/vue-cool-lightbox.min.css";
 import IpcMain from "./ipc/ipcMain";
-import {currentWindow} from "./platform";
+import { currentWindow } from "./platform";
 import wfc from "./wfc/client/wfc";
 import waterMark from "./ui/util/waterMark";
 import Config from "./config";
 
 export default {
-    name: 'App',
+    name: "App",
     data() {
         return {
-            url: '',
+            url: "",
             sharedMiscState: store.state.misc,
             sharedConversationState: store.state.conversation,
-        }
+        };
     },
     methods: {
         visibilityChange(event, hidden) {
             store.setPageVisibility(!hidden);
-            console.log('page visibilityChange', hidden);
+            console.log("page visibilityChange", hidden);
             if (!hidden && !isElectron()) {
                 wfc.onForeground();
             }
@@ -73,26 +110,26 @@ export default {
         },
         onfocus() {
             store.setPageVisibility(true);
-        }
+        },
     },
 
     created() {
         let root = document.documentElement;
-        if (isElectron() || window.location.href.indexOf('voip') >= 0) {
-            root.style.setProperty('--main-margin-left', '0px');
-            root.style.setProperty('--main-margin-right', '0px');
-            root.style.setProperty('--main-margin-top', '0px');
-            root.style.setProperty('--main-margin-bottom', '0px');
-            root.style.setProperty('--composite-message-page-width', '100vw');
-            root.style.setProperty('--composite-message-page-height', '100vh');
+        if (isElectron() || window.location.href.indexOf("voip") >= 0) {
+            root.style.setProperty("--main-margin-left", "0px");
+            root.style.setProperty("--main-margin-right", "0px");
+            root.style.setProperty("--main-margin-top", "0px");
+            root.style.setProperty("--main-margin-bottom", "0px");
+            root.style.setProperty("--composite-message-page-width", "100vw");
+            root.style.setProperty("--composite-message-page-height", "100vh");
         }
 
         if (this.sharedMiscState.isElectronWindowsOrLinux) {
-            root.style.setProperty('--main-border-radius', '0px')
-            root.style.setProperty('--home-menu-padding-top', '0px')
+            root.style.setProperty("--main-border-radius", "0px");
+            root.style.setProperty("--home-menu-padding-top", "0px");
         }
-        window.addEventListener('blur', this.onblur);
-        window.addEventListener('focus', this.onfocus)
+        window.addEventListener("blur", this.onblur);
+        window.addEventListener("focus", this.onfocus);
 
         if (isElectron()) {
             currentWindow.minimizable = this.sharedMiscState.enableMinimize;
@@ -101,55 +138,55 @@ export default {
 
     mounted() {
         let href = window.location.href;
-        if (href.indexOf('voip') >= 0 || href.indexOf('files') >= 0) {
+        if (href.indexOf("voip") >= 0 || href.indexOf("files") >= 0) {
             let app = document.getElementById("app-main");
             let el;
             el = document.getElementById("blur-container");
-            el && app.removeChild(el)
-            el = document.getElementById('styled_video_container');
-            el && app.removeChild(el)
+            el && app.removeChild(el);
+            el = document.getElementById("styled_video_container");
+            el && app.removeChild(el);
             // app.style.backgroundColor = 'red'
         }
 
-        this.$eventBus.$on('uploadFile', file => {
+        this.$eventBus.$on("uploadFile", (file) => {
             if (!file) {
                 return;
             }
-            if (file.size > 100 * 1024 * 1024 && !wfc.isSupportBigFilesUpload()) {
-
+            if (
+                file.size > 100 * 1024 * 1024 &&
+                !wfc.isSupportBigFilesUpload()
+            ) {
                 this.$notify({
-                    title: '大文件提示',
-                    text: ' 不支持大文件上传',
-                    type: 'warn'
+                    title: "大文件提示",
+                    text: " 不支持大文件上传",
+                    type: "warn",
                 });
             }
-        })
+        });
 
-        if(Config.ENABLE_WATER_MARK){
-            waterMark.init()
+        if (Config.ENABLE_WATER_MARK) {
+            waterMark.init();
         }
     },
     beforeUnmount() {
-        this.$eventBus.$off('uploadFile');
-        window.removeEventListener('blur', this.onblur)
-        window.removeEventListener('focus', this.onfocus)
+        this.$eventBus.$off("uploadFile");
+        window.removeEventListener("blur", this.onblur);
+        window.removeEventListener("focus", this.onfocus);
 
-        if(Config.ENABLE_WATER_MARK) {
-            waterMark.remove()
+        if (Config.ENABLE_WATER_MARK) {
+            waterMark.remove();
         }
     },
 
     components: {
         IpcMain,
         CoolLightBox,
-    }
-}
-
+    },
+};
 </script>
 
 <!--should not scoped-->
 <style lang="css">
-
 :root {
     --main-border-radius: 10px;
     --main-margin-left: 80px;
@@ -188,7 +225,7 @@ export default {
     top: 0;
     height: 100vh;
     width: 100vw;
-    background: rgba(0, 0, 0, .2);
+    background: rgba(0, 0, 0, 0.2);
     overflow: hidden;
 }
 
@@ -211,7 +248,8 @@ export default {
     height: calc(100vh - var(--main-margin-top) - var(--main-margin-bottom));
     top: 0;
     left: 0;
-    margin: var(--main-margin-top) var(--main-margin-right) var(--main-margin-bottom) var(--main-margin-left);
+    margin: var(--main-margin-top) var(--main-margin-right)
+        var(--main-margin-bottom) var(--main-margin-left);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -220,6 +258,4 @@ export default {
 .container-emoji {
     height: 300px;
 }
-
-
 </style>
