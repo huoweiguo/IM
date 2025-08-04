@@ -75,7 +75,7 @@
                 </div>
                 <div v-if="loginStatus === 0" style="display: flex; justify-content: space-between; width: 100%">
                     <p class="tip" @click="switchLoginType(2)">使用验证码登录</p>
-                    <p class="tip" @click="register">注册</p>
+                    <p class="tip" @click="switchLoginType(3)">注册</p>
                 </div>
                 <button class="login-button" :disabled="mobile === '' || !password || password === ''"
                     ref="loginWithPasswordButton" @click="loginWithPassword">
@@ -84,7 +84,7 @@
                 <ClipLoader v-if="loginStatus === 3" class="syncing" :color="'#4168e0'" :height="'80px'"
                     :width="'80px'" />
             </div>
-            <div v-else class="login-form-container">
+            <div v-else-if="loginType === 2" class="login-form-container">
                 <!--            验证码登录-->
                 <img class="logo" :src="require(`@/assets/images/icon.png`)" alt="" />
                 <p class="title">验证码登录</p>
@@ -100,6 +100,29 @@
                 <button class="login-button" :disabled="mobile === '' || authCode === ''" ref="loginWithAuthCodeButton"
                     @click="loginWithAuthCode">
                     {{ loginStatus === 3 ? '数据同步中，可能需要数分钟...' : '登录' }}
+                </button>
+                <ClipLoader v-if="loginStatus === 3" style="margin-top: 10px" class="syncing" :color="'4168e0'"
+                    :height="'80px'" :width="'80px'" />
+            </div>
+            <div v-else-if="loginType === 3" class="login-form-container">
+                <!-- 注册 -->
+                <img class="logo" :src="require(`@/assets/images/icon.png`)" alt="" />
+                <p class="title">注册</p>
+                <div class="item">
+                    <input v-model.trim="mobile" class="text-input" type="number" placeholder="请输入手机号" />
+                </div>
+                <div class="item">
+                    <input v-model.trim="authCode" class="text-input" type="text" placeholder="验证码" />
+                    <button :disabled="mobile.toString().length !== 11" class="request-auth-code-button"
+                        @keydown.enter="loginWithAuthCode" @click="requestAuthCode">获取验证码</button>
+                </div>
+                <div class="item">
+                    <input v-model.trim="password" class="text-input" type="password" placeholder="请输入密码" />
+                </div>
+                <p v-if="loginStatus === 0" class="tip" @click="switchLoginType(1)">使用密码登录</p>
+                <button class="login-button" :disabled="mobile === '' || authCode === '' || password === ''"
+                    ref="loginWithAuthCodeButton" @click="register">
+                    {{ loginStatus === 3 ? '数据同步中，可能需要数分钟...' : '注册' }}
                 </button>
                 <ClipLoader v-if="loginStatus === 3" style="margin-top: 10px" class="syncing" :color="'4168e0'"
                     :height="'80px'" :width="'80px'" />
@@ -138,7 +161,7 @@ import organizationServerApi from '../../api/organizationServerApi';
 import WfcScheme from '../../wfcScheme';
 import axios from 'axios';
 import avenginekit from '../../wfc/av/internal/engine.min';
-import { loginAccount, sendSmsCode } from '../../api/index';
+import { loginAccount, sendSmsCode, registerAccount } from '../../api/index';
 
 export default {
     name: 'LoginPage',
@@ -151,7 +174,7 @@ export default {
             qrCodeTimer: null,
             appToken: '',
             lastAppToken: '',
-            loginType: 1, // 0 扫码登录，1 密码登录，2 验证码登录
+            loginType: 1, // 0 扫码登录，1 密码登录，2 验证码登录 3 注册
             enableAutoLogin: Config.ENABLE_AUTO_LOGIN,
             mobile: '',
             password: '',
@@ -197,11 +220,28 @@ export default {
 
     methods: {
         register() {
-            this.$notify({
-                text: '使用短信验证码登录，将会为您创建账户，请使用短信验证码登录',
-                type: 'info',
-            });
-            this.switchLoginType(2);
+            if (!this.mobile || !this.authCode || !this.password) {
+                return;
+            }
+
+            registerAccount({
+                account: this.mobile,
+                code: this.authCode,
+                password: this.password,
+                terminal: Config.getWFCPlatform()
+            }).then((res) => {
+                if (res.code === 0) {
+                    this.$notify({
+                        text: '注册成功',
+                        type: 'success',
+                    });
+                } else {
+                    this.$notify({
+                        text: res.msg,
+                        type: 'error',
+                    });
+                }
+            })
         },
         switchLoginType(type) {
             this.loginType = type;
@@ -258,24 +298,28 @@ export default {
             loginAccount(formData)
                 .then((res) => {
 
-                    const userId = res.data.serviceId;
-                    const token = res.data.serviceToken;
-                    const portrait = res.data.id;
+                    if (res.code === 0) {
+                        this.$notify({
+                            text: '登录成功',
+                            type: 'success',
+                        });
 
-                    this.firstTimeConnect = wfc.connect(userId, token);
-                    setItem('userId', userId);
-                    setItem('token', token);
-                    setItem('userPortrait', portrait);
-                })
-                .catch((err) => {
-                    console.log('loginWithPassword err', err);
-                    this.password = '';
-                    this.loginStatus = 0;
-                    this.$notify({
-                        title: '登录失败',
-                        text: err.message,
-                        type: 'error',
-                    });
+                        const userId = res.data.serviceId;
+                        const token = res.data.serviceToken;
+                        const portrait = res.data.id;
+
+                        this.firstTimeConnect = wfc.connect(userId, token);
+                        setItem('userId', userId);
+                        setItem('token', token);
+                        setItem('userPortrait', portrait);
+                    } else {
+                        this.password = '';
+                        this.loginStatus = 0;
+                        this.$notify({
+                            text: res.msg,
+                            type: 'error',
+                        });
+                    }
                 });
         },
 
@@ -296,23 +340,28 @@ export default {
             })
                 .then((res) => {
 
-                    const userId = res.data.serviceId;
-                    const token = res.data.serviceToken;
-                    const portrait = res.data.id;
+                    if (res.code === 0) {
+                        this.$notify({
+                            text: '登录成功',
+                            type: 'success',
+                        });
+                        const userId = res.data.serviceId;
+                        const token = res.data.serviceToken;
+                        const portrait = res.data.id;
 
-                    this.firstTimeConnect = wfc.connect(userId, token);
-                    setItem('userId', userId);
-                    setItem('token', token);
-                    setItem('userPortrait', portrait);
-                })
-                .catch((err) => {
-                    this.authCode = '';
-                    this.loginStatus = 0;
-                    this.$notify({
-                        title: '登录失败',
-                        text: err.message,
-                        type: 'error',
-                    });
+                        this.firstTimeConnect = wfc.connect(userId, token);
+                        setItem('userId', userId);
+                        setItem('token', token);
+                        setItem('userPortrait', portrait);
+                    } else {
+                        this.authCode = '';
+                        this.loginStatus = 0;
+                        this.$notify({
+                            text: res.msg,
+                            type: 'error',
+                        });
+                    }
+
                 });
         },
 
@@ -705,9 +754,9 @@ export default {
 }
 
 .login-form-container .title {
-    align-self: flex-start;
+    display: block;
     font-size: 18px;
-    color: white;
+    text-align: center;
 }
 
 .login-form-container .item {
@@ -776,8 +825,9 @@ input::-webkit-inner-spin-button {
 }
 
 .logo {
-    width: 160px;
-    height: 160px;
+    width: 120px;
+    height: 120px;
+    margin-bottom: 20px;
 }
 
 .diagnose {
