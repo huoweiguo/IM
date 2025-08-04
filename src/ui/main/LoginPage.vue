@@ -1,15 +1,16 @@
 <template>
     <div>
-        <div class="login-container">
-            <ElectronWindowsControlButtonView style="position: absolute; top: 0; right: 0" :maximizable="false" v-if="sharedMiscState.isElectronWindowsOrLinux" />
+        <div class="login-container window-move">
+            <ElectronWindowsControlButtonView style="position: absolute; top: 0; right: 0" :maximizable="false"
+                v-if="sharedMiscState.isElectronWindowsOrLinux" />
 
-            <div class="drag-area" />
             <div v-if="loginType === 0" class="qrcode-login-container">
                 <div class="qr-container" @click="regenerateQrCode">
                     <p v-if="qrCode === 'error'">生成二维码失败，点击重试<br />开发者请打开控制台查看日志</p>
                     <img v-else-if="qrCode" v-bind:src="qrCode" alt="" />
                     <p v-else>{{ $t('misc.gen_qr_code') }}</p>
-                    <ClipLoader v-if="loginStatus === 4" class="loading" :color="'white'" :height="'80px'" :width="'80px'" />
+                    <ClipLoader v-if="loginStatus === 4" class="loading" :color="'white'" :height="'80px'"
+                        :width="'80px'" />
                 </div>
                 <!--    等待扫码-->
                 <div v-if="loginStatus === 0" class="pending-scan">
@@ -22,7 +23,8 @@
                     <p style="font-size: 15px; color: #a3a3a3; padding-bottom: 5px">
                         {{ $t('login.warning') }}
                     </p>
-                    <a style="font-size: 15px; color: #4168e0" target="_blank" href="https://static.wildfirechat.net/download_qrcode.png">点击下载野火IM移动端</a>
+                    <a style="font-size: 15px; color: #4168e0" target="_blank"
+                        href="https://static.wildfirechat.net/download_qrcode.png">点击下载野火IM移动端</a>
                 </div>
                 <!--    已经扫码-->
                 <div v-else-if="loginStatus === 1" class="scanned">
@@ -68,16 +70,19 @@
                     <input v-model.trim="mobile" class="text-input" type="number" placeholder="请输入手机号" />
                 </div>
                 <div class="item">
-                    <input v-model.trim="password" class="text-input" @keydown.enter="loginWithPassword" type="password" placeholder="请输入密码" />
+                    <input v-model.trim="password" class="text-input" @keydown.enter="loginWithPassword" type="password"
+                        placeholder="请输入密码" />
                 </div>
                 <div v-if="loginStatus === 0" style="display: flex; justify-content: space-between; width: 100%">
                     <p class="tip" @click="switchLoginType(2)">使用验证码登录</p>
                     <p class="tip" @click="register">注册</p>
                 </div>
-                <button class="login-button" :disabled="mobile === '' || !password || password === ''" ref="loginWithPasswordButton" @click="loginWithPassword">
+                <button class="login-button" :disabled="mobile === '' || !password || password === ''"
+                    ref="loginWithPasswordButton" @click="loginWithPassword">
                     {{ loginStatus === 3 ? '数据同步中，可能需要数分钟...' : '登录' }}
                 </button>
-                <ClipLoader v-if="loginStatus === 3" class="syncing" :color="'#4168e0'" :height="'80px'" :width="'80px'" />
+                <ClipLoader v-if="loginStatus === 3" class="syncing" :color="'#4168e0'" :height="'80px'"
+                    :width="'80px'" />
             </div>
             <div v-else class="login-form-container">
                 <!--            验证码登录-->
@@ -88,13 +93,16 @@
                 </div>
                 <div class="item">
                     <input v-model.trim="authCode" class="text-input" type="number" placeholder="验证码" />
-                    <button :disabled="mobile.toString().length !== 11" class="request-auth-code-button" @keydown.enter="loginWithAuthCode" @click="requestAuthCode">获取验证码</button>
+                    <button :disabled="mobile.toString().length !== 11" class="request-auth-code-button"
+                        @keydown.enter="loginWithAuthCode" @click="requestAuthCode">获取验证码</button>
                 </div>
                 <p v-if="loginStatus === 0" class="tip" @click="switchLoginType(1)">使用密码登录</p>
-                <button class="login-button" :disabled="mobile === '' || authCode === ''" ref="loginWithAuthCodeButton" @click="loginWithAuthCode">
+                <button class="login-button" :disabled="mobile === '' || authCode === ''" ref="loginWithAuthCodeButton"
+                    @click="loginWithAuthCode">
                     {{ loginStatus === 3 ? '数据同步中，可能需要数分钟...' : '登录' }}
                 </button>
-                <ClipLoader v-if="loginStatus === 3" style="margin-top: 10px" class="syncing" :color="'4168e0'" :height="'80px'" :width="'80px'" />
+                <ClipLoader v-if="loginStatus === 3" style="margin-top: 10px" class="syncing" :color="'4168e0'"
+                    :height="'80px'" :width="'80px'" />
             </div>
             <!-- <div v-if="loginStatus === 0" class="switch-login-type-container">
                 <p class="tip" @click="switchLoginType( loginType === 0 ? 1 : 0)">{{ loginType === 0 ? '使用密码/验证码登录' : '扫码登录' }}</p>
@@ -130,6 +138,7 @@ import organizationServerApi from '../../api/organizationServerApi';
 import WfcScheme from '../../wfcScheme';
 import axios from 'axios';
 import avenginekit from '../../wfc/av/internal/engine.min';
+import { loginAccount, sendSmsCode } from '../../api/index';
 
 export default {
     name: 'LoginPage',
@@ -207,8 +216,10 @@ export default {
         },
 
         async requestAuthCode() {
-            appServerApi
-                .requestAuthCode(this.mobile)
+            sendSmsCode({
+                mobile: this.mobile,
+                scene: 'YZMDL'
+            })
                 .then((response) => {
                     this.$notify({
                         text: '发送验证码成功',
@@ -234,10 +245,18 @@ export default {
             // wfc.setAppName('wfc-' + this.mobile);
             this.$refs.loginWithPasswordButton.disabled = true;
             this.loginStatus = 3;
-            appServerApi
-                .loinWithPassword(this.mobile, this.password)
+            const formData = {
+                account: this.mobile,
+                password: this.password,
+                clientId: wfc.getClientId(),
+                scene: 1,
+                terminal: Config.getWFCPlatform()
+            };
+
+            console.log(123, formData);
+
+            loginAccount(formData)
                 .then((res) => {
-                    console.log(123, res);
 
                     const userId = res.data.serviceId;
                     const token = res.data.serviceToken;
@@ -268,10 +287,19 @@ export default {
             this.$refs.loginWithAuthCodeButton.disabled = true;
             this.loginStatus = 3;
             //wfc.setAppName('wfc-' + this.mobile);
-            appServerApi
-                .loginWithAuthCode(this.mobile, this.authCode)
+            loginAccount({
+                account: this.mobile,
+                code: this.authCode,
+                clientId: wfc.getClientId(),
+                scene: 2,
+                terminal: Config.getWFCPlatform()
+            })
                 .then((res) => {
-                    const { userId, token, portrait } = res;
+
+                    const userId = res.data.serviceId;
+                    const token = res.data.serviceToken;
+                    const portrait = res.data.id;
+
                     this.firstTimeConnect = wfc.connect(userId, token);
                     setItem('userId', userId);
                     setItem('token', token);
@@ -375,7 +403,7 @@ export default {
                         }
                     }
                 })
-                .catch((err) => {});
+                .catch((err) => { });
         },
 
         sendQuickLoginRequest() {
@@ -659,16 +687,6 @@ export default {
 
 .button-confirm:active {
     background-color: #4168e0;
-}
-
-.drag-area {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 150px;
-    height: 60px;
-    z-index: -1;
-    -webkit-app-region: drag;
 }
 
 .switch-login-type-container {

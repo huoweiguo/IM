@@ -1,4 +1,4 @@
-import { GET, POST, loginout } from './request.js'
+import { GET, POST, } from './request.js'
 
 // ## 登录管理
 // 账号登录
@@ -8,7 +8,6 @@ export function loginAccount(data) {
 
 // 退出登录
 export async function logoutAccount() {
-  loginout()
   await POST('/api/login/logout')
 }
 
