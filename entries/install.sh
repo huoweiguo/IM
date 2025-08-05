@@ -1,5 +1,5 @@
 #! /bin/sh
-desktopPath=/opt/野火IM/entries/applications/cn.wildfire.chat.desktop
+desktopPath=/opt/圈子/entries/applications/cn.wildfire.chat.desktop
 rootDesktop=/root/Desktop
 if [ -d $rootDesktop ]; then
   cp $desktopPath $rootDesktop

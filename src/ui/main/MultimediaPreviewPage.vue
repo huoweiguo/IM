@@ -4,21 +4,12 @@
             加载中...
         </div>
         <div v-else style="width: 100vw; height: 100vh; display: flex; justify-content: center; align-items: center">
-            <img v-show="mediaLoaded === false"
-                 alt=""
-                 v-bind:src="'data:video/jpeg;base64,' + currentMedia.thumbnail">
-            <img v-show="mediaLoaded && currentMedia.type === 'image'" @load="onImageLoaded"
-                 draggable="true"
-                 alt=""
-                 ref="img"
-                 @contextmenu.prevent="showContextMenu"
-                 v-bind:src="currentMedia.url">
+            <img v-show="mediaLoaded === false" alt="" v-bind:src="'data:video/jpeg;base64,' + currentMedia.thumbnail">
+            <img v-show="mediaLoaded && currentMedia.type === 'image'" @load="onImageLoaded" draggable="true" alt=""
+                ref="img" @contextmenu.prevent="showContextMenu" v-bind:src="currentMedia.url">
             <video v-show="mediaLoaded && currentMedia.type === 'video'" @loadedmetadata="onVideoMetaDataLoaded"
-                   controls
-                   draggable="true"
-                   ref="video"
-                   @contextmenu.prevent="showContextMenu"
-                   v-bind:src="currentMedia.url"/>
+                controls draggable="true" ref="video" @contextmenu.prevent="showContextMenu"
+                v-bind:src="currentMedia.url" />
             <div v-if="hasMoreOldMediaMessage" class="left-arrow-container">
                 <div class="left-arrow" @click="previewNextMessage(true)">
                     <i class="icon-ion-ios-arrow-left"></i>
@@ -30,16 +21,16 @@
                 </div>
             </div>
         </div>
-        <vue-context ref="menu" v-on:close="()=>{}">
+        <vue-context ref="menu" v-on:close="() => { }">
             <li>
                 <a @click.prevent="download">{{
-                        $t('common.save')
-                    }}</a>
+                    $t('common.save')
+                }}</a>
             </li>
             <li>
                 <a @click.prevent="forward">{{
-                        $t('misc.share_to_friend')
-                    }}</a>
+                    $t('misc.share_to_friend')
+                }}</a>
             </li>
         </vue-context>
     </div>
@@ -48,11 +39,11 @@
 <script>
 import '../../vendor/vue-cool-lightbox/dist/vue-cool-lightbox.min.css'
 import wfc from "../../wfc/client/wfc";
-import {currentWindow, ipcRenderer, screen} from "../../platform";
+import { currentWindow, ipcRenderer, screen } from "../../platform";
 import MessageContentType from "../../wfc/messages/messageContentType";
-import {downloadFile} from "../../platformHelper";
+import { downloadFile } from "../../platformHelper";
 import ForwardType from "./conversation/message/forward/ForwardType";
-import {scaleDown} from "../util/imageUtil";
+import { scaleDown } from "../util/imageUtil";
 
 export default {
     name: 'MultimediaPreviewPage',
@@ -74,7 +65,7 @@ export default {
     },
 
     created() {
-        document.title = '野火IM消息预览';
+        document.title = '圈子消息预览';
         let hash = window.location.hash;
 
         let query = hash.substring(hash.indexOf('?'));
@@ -237,7 +228,6 @@ export default {
 
 <!--should not scoped-->
 <style lang="css" scoped>
-
 .image-content-container {
     position: relative;
 }
@@ -317,5 +307,4 @@ export default {
 .right-arrow i {
     font-size: 30px;
 }
-
 </style>

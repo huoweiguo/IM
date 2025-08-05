@@ -24,7 +24,7 @@
                         {{ $t('login.warning') }}
                     </p>
                     <a style="font-size: 15px; color: #4168e0" target="_blank"
-                        href="https://static.wildfirechat.net/download_qrcode.png">点击下载野火IM移动端</a>
+                        href="https://static.wildfirechat.net/download_qrcode.png">点击下载圈子移动端</a>
                 </div>
                 <!--    已经扫码-->
                 <div v-else-if="loginStatus === 1" class="scanned">

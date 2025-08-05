@@ -3,11 +3,11 @@ import Vue from 'vue'
 import wfc from "./wfc/client/wfc";
 import EventType from "./wfc/client/wfcEvent";
 import ConversationType from "./wfc/model/conversationType";
-import {eq, gt, lt, numberValue} from "./wfc/util/longUtil";
+import { eq, gt, lt, numberValue } from "./wfc/util/longUtil";
 import helper from "./ui/util/helper";
 import convert from './vendor/pinyin'
 import GroupType from "./wfc/model/groupType";
-import {imageThumbnail, videoDuration, videoThumbnail} from "./ui/util/imageUtil";
+import { imageThumbnail, videoDuration, videoThumbnail } from "./ui/util/imageUtil";
 import MessageContentMediaType from "./wfc/messages/messageContentMediaType";
 import Conversation from "./wfc/model/conversation";
 import MessageContentType from "./wfc/messages/messageContentType";
@@ -21,12 +21,12 @@ import MessageConfig from "./wfc/client/messageConfig";
 import PersistFlag from "./wfc/messages/persistFlag";
 import ForwardType from "./ui/main/conversation/message/forward/ForwardType";
 import TextMessageContent from "./wfc/messages/textMessageContent";
-import {currentWindow, ipcRenderer, isElectron, remote} from "./platform";
+import { currentWindow, ipcRenderer, isElectron, remote } from "./platform";
 import SearchType from "./wfc/model/searchType";
 import Config from "./config";
-import {getItem, setItem} from "./ui/util/storageHelper";
+import { getItem, setItem } from "./ui/util/storageHelper";
 import CompositeMessageContent from "./wfc/messages/compositeMessageContent";
-import {stringValue, longValue} from "./wfc/util/longUtil";
+import { stringValue, longValue } from "./wfc/util/longUtil";
 import DismissGroupNotification from "./wfc/messages/notification/dismissGroupNotification";
 import KickoffGroupMemberNotification from "./wfc/messages/notification/kickoffGroupMemberNotification";
 import QuitGroupNotification from "./wfc/messages/notification/quitGroupNotification";
@@ -41,8 +41,8 @@ import NullGroupInfo from "./wfc/model/nullGroupInfo";
 import IPCEventType from "./ipcEventType";
 import NullChannelInfo from "./wfc/model/NullChannelInfo";
 import ModifyGroupSettingNotification from "./wfc/messages/notification/modifyGroupSettingNotification";
-import {storeToRefs} from 'pinia'
-import {pstore} from './pstore'
+import { storeToRefs } from 'pinia'
+import { pstore } from './pstore'
 import CallStartMessageContent from "./wfc/av/messages/callStartMessageContent";
 import SoundMessageContent from "./wfc/messages/soundMessageContent";
 import MixMultiMediaTextMessageContent from "./wfc/messages/mixMultiMediaTextMessageContent";
@@ -73,7 +73,7 @@ let store = {
     init(isMainWindow, subWindowLoadDataOptions) {
         console.log('init store')
 
-        const {conversationStore, contactStore, pickStore, searchStore, miscStore} = storeToRefs(pstore())
+        const { conversationStore, contactStore, pickStore, searchStore, miscStore } = storeToRefs(pstore())
         conversationState = conversationStore.value;
         contactState = contactStore.value;
         searchState = searchStore.value;
@@ -253,7 +253,7 @@ let store = {
                     return;
                 } else {
                     let firstMsg = conversationState.currentConversationMessageList[0];
-                    if(firstMsg && lt(msg.timestamp, firstMsg.timestamp)) {
+                    if (firstMsg && lt(msg.timestamp, firstMsg.timestamp)) {
                         console.log('msg timestamp is less than first msg, maybe update old message content, ignore')
                         return;
                     }
@@ -515,7 +515,7 @@ let store = {
 
         // 休眠恢复之后，重新连接成功时，可能出现会话列表的 lastMessage 在会话界面未显示，需要判断是否需要重新加载当前会话的消息
         if (conversationState.currentConversationInfo) {
-            if(gt(conversationState.currentConversationInfo.timestamp, 0) && (conversationState.currentConversationMessageList.length === 0 || !eq(conversationState.currentConversationInfo.timestamp, conversationState.currentConversationMessageList[conversationState.currentConversationMessageList.length - 1].timestamp))){
+            if (gt(conversationState.currentConversationInfo.timestamp, 0) && (conversationState.currentConversationMessageList.length === 0 || !eq(conversationState.currentConversationInfo.timestamp, conversationState.currentConversationMessageList[conversationState.currentConversationMessageList.length - 1].timestamp))) {
                 this._loadCurrentConversationMessages();
             }
         }
@@ -1038,7 +1038,7 @@ let store = {
             entries = await Promise.all(
                 files.map(async f => {
                     let isImg = f.type.indexOf('image') >= 0
-                    let {thumbnail: it, width: iw, height: ih} = isImg ? await imageThumbnail(f) : await videoThumbnail(f);
+                    let { thumbnail: it, width: iw, height: ih } = isImg ? await imageThumbnail(f) : await videoThumbnail(f);
                     it = it ? it : Config.DEFAULT_THUMBNAIL_URL;
                     if (it.length > 6 * 1024) {
                         console.warn('generated thumbnail is too large, use default thumbnail', it.length);
@@ -1146,7 +1146,7 @@ let store = {
         let messageContent;
         switch (messageContentmediaType) {
             case MessageContentMediaType.Image:
-                let {thumbnail: it, width: iw, height: ih} = await imageThumbnail(file);
+                let { thumbnail: it, width: iw, height: ih } = await imageThumbnail(file);
                 it = it ? it : Config.DEFAULT_THUMBNAIL_URL;
                 console.log('image file', it.length, file)
                 if (it.length > 10 * 1024) {
@@ -1160,7 +1160,7 @@ let store = {
             case MessageContentMediaType.Video:
                 let vtr = await videoThumbnail(file);
                 if (vtr) {
-                    let {thumbnail: vt, width: vw, height: vh} = vtr;
+                    let { thumbnail: vt, width: vw, height: vh } = vtr;
                     let duration = await videoDuration(file)
                     duration = Math.ceil(duration * 1000);
                     if (vt.length > 10 * 1024) {
@@ -1192,7 +1192,7 @@ let store = {
                     sm.progress = progress;
                     sm.total = total;
                 } else {
-                    conversationState.sendingMessages.push({messageId: msg.messageId, progress, total});
+                    conversationState.sendingMessages.push({ messageId: msg.messageId, progress, total });
                 }
             },
             (messageUid) => {
@@ -1573,7 +1573,7 @@ let store = {
 
     _loadFriendList() {
         let friends = wfc.getMyFriendList(false);
-        if(Config.FILE_HELPER_ID){
+        if (Config.FILE_HELPER_ID) {
             let fileHelperIndex = friends.indexOf(Config.FILE_HELPER_ID);
             if (fileHelperIndex < 0 && Config.FILE_HELPER_ID) {
                 friends.push(Config.FILE_HELPER_ID);
@@ -1632,14 +1632,14 @@ let store = {
             } else {
                 u._displayName = wfc.getUserDisplayNameEx(u);
             }
-            u._pinyin = convert(u._displayName, {style: 0}).join('').trim().toLowerCase();
+            u._pinyin = convert(u._displayName, { style: 0 }).join('').trim().toLowerCase();
             let firstLetter = u._pinyin[0];
             if (firstLetter >= 'a' && firstLetter <= 'z') {
                 u.__sortPinyin = 'a' + u._pinyin;
             } else {
                 u.__sortPinyin = 'z' + u._pinyin;
             }
-            u._firstLetters = convert(u._displayName, {style: 4}).join('').trim().toLowerCase();
+            u._firstLetters = convert(u._displayName, { style: 4 }).join('').trim().toLowerCase();
             return u;
         });
         if (compareFn) {
@@ -1768,7 +1768,7 @@ let store = {
     toggleChannelList() {
         contactState.expandChanel = !contactState.expandChanel;
         // 从服务端拉取，且比较耗性能，故展开时，才从刷新
-        if(contactState.expandChanel) {
+        if (contactState.expandChanel) {
             this._loadChannelList();
         }
     },
@@ -1881,7 +1881,7 @@ let store = {
         if (!users || !filter || !filter.trim()) {
             return users;
         }
-        let queryPinyin = convert(filter, {style: 0}).join('').trim().toLowerCase();
+        let queryPinyin = convert(filter, { style: 0 }).join('').trim().toLowerCase();
         let result = users.filter(u => {
             return u._displayName.indexOf(filter) > -1 || u._displayName.indexOf(queryPinyin) > -1
                 || u._pinyin.indexOf(filter) > -1 || u._pinyin.indexOf(queryPinyin) > -1
@@ -1894,9 +1894,9 @@ let store = {
     // 目前只搜索群名称
     filterFavGroup(query) {
         console.log('to search group', contactState.favGroupList)
-        let queryPinyin = convert(query, {style: 0}).join('').trim().toLowerCase();
+        let queryPinyin = convert(query, { style: 0 }).join('').trim().toLowerCase();
         let result = contactState.favGroupList.filter(g => {
-            let groupNamePinyin = convert(g.name, {style: 0}).join('').trim().toLowerCase();
+            let groupNamePinyin = convert(g.name, { style: 0 }).join('').trim().toLowerCase();
             return g.name.indexOf(query) > -1 || g.name.indexOf(queryPinyin) > -1
                 || groupNamePinyin.indexOf(query) > -1 || groupNamePinyin.indexOf(queryPinyin) > -1
         });
@@ -1907,8 +1907,8 @@ let store = {
 
     filterConversation(query) {
         return conversationState.conversationInfoList.filter(info => {
-            let displayNamePinyin = convert(info.conversation._target._displayName, {style: 0}).join('').trim().toLowerCase();
-            let firstLetters = convert(info.conversation._target._displayName, {style: 4}).join('').trim().toLowerCase();
+            let displayNamePinyin = convert(info.conversation._target._displayName, { style: 0 }).join('').trim().toLowerCase();
+            let firstLetters = convert(info.conversation._target._displayName, { style: 4 }).join('').trim().toLowerCase();
             return info.conversation._target._displayName.indexOf(query) > -1 || displayNamePinyin.indexOf(query.toLowerCase()) > -1 || firstLetters.indexOf(query) > -1
         })
     },
@@ -2246,7 +2246,7 @@ let store = {
     },
 
     updateLinuxTitle(unreadCount) {
-        this.updateLinuxTitle.title = '野火IM';
+        this.updateLinuxTitle.title = '圈子';
         this.updateLinuxTitle.unreadCount = unreadCount;
         this.updateLinuxTitle.showTitle = true;
         if (!miscState.linuxUpdateTitleInterval) {

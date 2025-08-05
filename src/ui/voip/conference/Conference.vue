@@ -6,99 +6,96 @@
 <!--static STATUS_CONNECTED = 4;-->
 <!--}-->
 <template>
-    <div class="flex-column flex-align-center flex-justify-center voip-container" style="width: 100%; height: 100%" ref="rootContainer">
+    <div class="flex-column flex-align-center flex-justify-center voip-container" style="width: 100%; height: 100%"
+        ref="rootContainer">
         <div v-if="sharedMiscState.isElectron" ref="notClickThroughArea">
-            <ElectronWindowsControlButtonView style="position: absolute; top: 0; left: 0; width: 100%; height: 30px; background: white"
-                                              :title="'野火会议'"
-                                              :macos="!sharedMiscState.isElectronWindowsOrLinux"/>
-            <ScreenShareControlView v-if="session && session.screenSharing" type="conference"/>
+            <ElectronWindowsControlButtonView
+                style="position: absolute; top: 0; left: 0; width: 100%; height: 30px; background: white"
+                :title="'圈子会议'" :macos="!sharedMiscState.isElectronWindowsOrLinux" />
+            <ScreenShareControlView v-if="session && session.screenSharing" type="conference" />
             <h1 style="display: none">Voip-Conference 运行在新的window，和主窗口数据是隔离的！！</h1>
         </div>
         <div v-if="endReason !== undefined && endReason === 4" @click="rejoinConference" class="rejoin-container">
             会议断开，点击重新加入
         </div>
         <div v-if="session" class="main-slider-container"
-             v-bind:style="{display: session.screenSharing && sharedMiscState.isElectron ? 'none' : 'flex'}">
+            v-bind:style="{ display: session.screenSharing && sharedMiscState.isElectron ? 'none' : 'flex' }">
             <div class="main">
                 <header style="background: white; height: 20px; display: flex; justify-content: space-between">
                     <a href="#" @click.prevent>
-                        <i class="icon-ion-information" style="padding: 0 10px"
-                           id="info-icon"
-                           v-bind:class="{active:showConferenceSimpleInfoView}"
-                           @click.prevent="showConferenceSimpleInfoView = !showConferenceSimpleInfoView"/>
+                        <i class="icon-ion-information" style="padding: 0 10px" id="info-icon"
+                            v-bind:class="{ active: showConferenceSimpleInfoView }"
+                            @click.prevent="showConferenceSimpleInfoView = !showConferenceSimpleInfoView" />
                     </a>
                     <p style="flex: 1"></p>
                     <p style="padding-right: 10px">{{ duration }}</p>
                     <div>
                         <a v-if="!audioOnly" href="#" @click.prevent>
-                            <i class="icon-ion-grid" style="padding: 0 10px"
-                               id="grid-icon"
-                               v-bind:class="{active:showChooseLayoutView}"
-                               @click.prevent="showChooseLayoutView = !showChooseLayoutView">宫格布局</i>
+                            <i class="icon-ion-grid" style="padding: 0 10px" id="grid-icon"
+                                v-bind:class="{ active: showChooseLayoutView }"
+                                @click.prevent="showChooseLayoutView = !showChooseLayoutView">宫格布局</i>
                         </a>
                         <!--                        TODO 条件显示，展示聊天界面，或者参与者列表界面时，才展示-->
                         <a href="#" v-if="showSlider" @click.prevent>
-                            <i :class="showSlider? 'icon-ion-arrow-left-b' : 'icon-ion-arrow-right-b'" style="padding: 0 10px" @click="toggleSliderView"></i>
+                            <i :class="showSlider ? 'icon-ion-arrow-left-b' : 'icon-ion-arrow-right-b'"
+                                style="padding: 0 10px" @click="toggleSliderView"></i>
                         </a>
                     </div>
                 </header>
-                <div v-if="showConferenceSimpleInfoView"
-                     v-v-on-click-outside="hideConferenceSimpleInfoView"
-                     style="position: absolute; left: 10px; top: 50px; z-index: 1000">
-                    <ConferenceSimpleInfoView
-                        :session="session"
-                    />
+                <div v-if="showConferenceSimpleInfoView" v-v-on-click-outside="hideConferenceSimpleInfoView"
+                    style="position: absolute; left: 10px; top: 50px; z-index: 1000">
+                    <ConferenceSimpleInfoView :session="session" />
                 </div>
-                <div v-if="showChooseLayoutView"
-                     v-v-on-click-outside="hideChooseLayoutView"
-                     style="position: absolute; right: 10px; top: 50px; z-index: 1000">
-                    <ChooseConferenceLayoutView
-                        :current-layout="computedCurrentLayout"
-                        :session="session"/>
+                <div v-if="showChooseLayoutView" v-v-on-click-outside="hideChooseLayoutView"
+                    style="position: absolute; right: 10px; top: 50px; z-index: 1000">
+                    <ChooseConferenceLayoutView :current-layout="computedCurrentLayout" :session="session" />
                 </div>
-                <div style="position: absolute; left: 10px; bottom: 80px; width: 300px; max-height: 300px; overflow: hidden; background: transparent; z-index: 1000">
-                    <ConferenceConversationFloatingView
-                        :session="session"
-                    />
+                <div
+                    style="position: absolute; left: 10px; bottom: 80px; width: 300px; max-height: 300px; overflow: hidden; background: transparent; z-index: 1000">
+                    <ConferenceConversationFloatingView :session="session" />
                 </div>
                 <div class="conference-main-content-container">
                     <!--main-->
                     <!--video-->
                     <div v-if="!audioOnly" style="width: 100%; height: 100%">
-                        <i v-if="computedCurrentLayout=== 0 && currentGridPageIndex > 0" style="position: absolute; top: 50%; left: 0; color: #c8cacc; z-index: 1000; font-size: 40px; padding: 0 10px" class="icon-ion-arrow-left-c"
-                           @click="prePage"></i>
-                        <i v-if="computedCurrentLayout=== 0 && currentGridPageIndex < gridPageCount - 1" style="position: absolute; top: 50%; right: 0; color: #c8cacc; z-index: 1000; font-size: 40px; padding: 0 10px" class="icon-ion-arrow-right-c"
-                           @click="nextPage"></i>
+                        <i v-if="computedCurrentLayout === 0 && currentGridPageIndex > 0"
+                            style="position: absolute; top: 50%; left: 0; color: #c8cacc; z-index: 1000; font-size: 40px; padding: 0 10px"
+                            class="icon-ion-arrow-left-c" @click="prePage"></i>
+                        <i v-if="computedCurrentLayout === 0 && currentGridPageIndex < gridPageCount - 1"
+                            style="position: absolute; top: 50%; right: 0; color: #c8cacc; z-index: 1000; font-size: 40px; padding: 0 10px"
+                            class="icon-ion-arrow-right-c" @click="nextPage"></i>
                         <!--                    宫格布局-->
-                        <section v-if="computedCurrentLayout=== 0" class="content-container grid video">
+                        <section v-if="computedCurrentLayout === 0" class="content-container grid video">
                             <!--participants include self-->
                             <ConferenceParticipantVideoView v-for="(participant) in currentPageParticipants"
-                                                            :key="participant.uid + '-' + participant._isScreenSharing"
-                                                            :participant="participant"
-                                                            :session="session">
+                                :key="participant.uid + '-' + participant._isScreenSharing" :participant="participant"
+                                :session="session">
                             </ConferenceParticipantVideoView>
                         </section>
 
                         <!--                    演讲者布局-->
                         <section v-else class="content-container focus video">
-                            <div :style="{width: hideFocusLayoutParticipantListVideoView ? '100%' : 'calc(100% - 200px)', height: '100%', position: 'relative'}">
-                                <video v-if=" computedFocusVideoParticipant && !computedFocusVideoParticipant._isAudience && (!computedFocusVideoParticipant._isVideoMuted || computedFocusVideoParticipant._isScreenSharing) && computedFocusVideoParticipant._stream"
-                                       v-bind:style="{objectFit:computedFocusVideoParticipant._isScreenSharing ? 'contain' : 'fit'}"
-                                       style="width: 100%; height: 100%"
-                                       :srcObject.prop="computedFocusVideoParticipant._screenShareStream ? computedFocusVideoParticipant._screenShareStream : computedFocusVideoParticipant._stream"
-                                       :muted="computedFocusVideoParticipant.uid === selfUserInfo.uid"
-                                       playsInline
-                                       autoPlay/>
-                                <div @click="toggleParticipantListVideoView" style="position: absolute; top: 50%; right: 0; color: #c8cacc; z-index: 1000; font-size: 40px">
-                                    <i :class="hideFocusLayoutParticipantListVideoView ? 'icon-ion-arrow-left-b' : 'icon-ion-arrow-right-b'"></i>
+                            <div
+                                :style="{ width: hideFocusLayoutParticipantListVideoView ? '100%' : 'calc(100% - 200px)', height: '100%', position: 'relative' }">
+                                <video
+                                    v-if="computedFocusVideoParticipant && !computedFocusVideoParticipant._isAudience && (!computedFocusVideoParticipant._isVideoMuted || computedFocusVideoParticipant._isScreenSharing) && computedFocusVideoParticipant._stream"
+                                    v-bind:style="{ objectFit: computedFocusVideoParticipant._isScreenSharing ? 'contain' : 'fit' }"
+                                    style="width: 100%; height: 100%"
+                                    :srcObject.prop="computedFocusVideoParticipant._screenShareStream ? computedFocusVideoParticipant._screenShareStream : computedFocusVideoParticipant._stream"
+                                    :muted="computedFocusVideoParticipant.uid === selfUserInfo.uid" playsInline
+                                    autoPlay />
+                                <div @click="toggleParticipantListVideoView"
+                                    style="position: absolute; top: 50%; right: 0; color: #c8cacc; z-index: 1000; font-size: 40px">
+                                    <i
+                                        :class="hideFocusLayoutParticipantListVideoView ? 'icon-ion-arrow-left-b' : 'icon-ion-arrow-right-b'"></i>
                                 </div>
                             </div>
-                            <div v-show="!hideFocusLayoutParticipantListVideoView" class="focus-mode-participant-list-container">
+                            <div v-show="!hideFocusLayoutParticipantListVideoView"
+                                class="focus-mode-participant-list-container">
                                 <!--participants include self-->
                                 <ConferenceParticipantVideoView v-for="(participant) in participantUserInfos"
-                                                                :key="participant.uid + '-' + participant._isScreenSharing"
-                                                                :participant="participant"
-                                                                :session="session">
+                                    :key="participant.uid + '-' + participant._isScreenSharing"
+                                    :participant="participant" :session="session">
                                 </ConferenceParticipantVideoView>
                             </div>
                         </section>
@@ -114,27 +111,23 @@
                         </div>
                         <section class="content-container audio">
                             <!--participants-->
-                            <div v-for="(participant) in participantUserInfos"
-                                 :key="participant.uid"
-                                 class="participant-audio-item">
+                            <div v-for="(participant) in participantUserInfos" :key="participant.uid"
+                                class="participant-audio-item">
                                 <video v-if="audioOnly && participant._stream && !participant._isVideoMuted"
-                                       class="hidden-video"
-                                       :srcObject.prop="participant._stream"
-                                       :muted="participant.uid === selfUserInfo.uid"
-                                       playsInline autoPlay/>
+                                    class="hidden-video" :srcObject.prop="participant._stream"
+                                    :muted="participant.uid === selfUserInfo.uid" playsInline autoPlay />
                                 <!-- video 标签不能播放没有视频的流 -->
                                 <audio v-else-if="audioOnly && participant._stream && participant._isVideoMuted"
-                                       class="hidden-video"
-                                       :srcObject.prop="participant._stream"
-                                       :ref="participant.uid + '-audio'"
-                                       :muted="participant.uid === selfUserInfo.uid"
-                                       playsInline autoPlay/>
+                                    class="hidden-video" :srcObject.prop="participant._stream"
+                                    :ref="participant.uid + '-audio'" :muted="participant.uid === selfUserInfo.uid"
+                                    playsInline autoPlay />
                                 <div style="position: relative">
-                                    <img class="avatar"
-                                         v-bind:class="{highlight:participant._volume > 0}"
-                                         :src="participant.portrait" :alt="participant">
-                                    <i v-if="participant._isHost" class="indicator icon-ion-person" style="background: #FD802E"></i>
-                                    <i v-if="participant._isAudience" class="indicator icon-ion-ios-mic-off" style="color: red"></i>
+                                    <img class="avatar" v-bind:class="{ highlight: participant._volume > 0 }"
+                                        :src="participant.portrait" :alt="participant">
+                                    <i v-if="participant._isHost" class="indicator icon-ion-person"
+                                        style="background: #FD802E"></i>
+                                    <i v-if="participant._isAudience" class="indicator icon-ion-ios-mic-off"
+                                        style="color: red"></i>
                                 </div>
                                 <p class="single-line">{{ userName(participant) }}</p>
                             </div>
@@ -146,51 +139,49 @@
                             <p v-if="false">{{ duration }}</p>
                             <div class="action-container">
                                 <div class="action">
-                                    <img v-if="!session.audience && !session.audioMuted" @click="muteAudio" class="action-img"
-                                         src='@/assets/images/av_conference_audio.png'/>
+                                    <img v-if="!session.audience && !session.audioMuted" @click="muteAudio"
+                                        class="action-img" src='@/assets/images/av_conference_audio.png' />
                                     <img v-else @click="muteAudio" class="action-img"
-                                         src='@/assets/images/av_conference_audio_mute.png'/>
+                                        src='@/assets/images/av_conference_audio_mute.png' />
                                     <p>静音</p>
                                 </div>
-                                <div class="action"
-                                     v-if="!session.screenSharing">
-                                    <img v-if="!session.audience && !session.videoMuted" @click="muteVideo" class="action-img"
-                                         src='@/assets/images/av_conference_video.png'/>
+                                <div class="action" v-if="!session.screenSharing">
+                                    <img v-if="!session.audience && !session.videoMuted" @click="muteVideo"
+                                        class="action-img" src='@/assets/images/av_conference_video.png' />
                                     <img v-else @click="muteVideo" class="action-img"
-                                         src='@/assets/images/av_conference_video_mute.png'/>
+                                        src='@/assets/images/av_conference_video_mute.png' />
                                     <p>视频</p>
                                 </div>
                                 <div class="action">
-                                    <img v-if="!session.screenSharing" @click="screenShare"
-                                         class="action-img"
-                                         src='@/assets/images/av_conference_screen_sharing.png'/>
+                                    <img v-if="!session.screenSharing" @click="screenShare" class="action-img"
+                                        src='@/assets/images/av_conference_screen_sharing.png' />
                                     <img v-else @click="screenShare" class="action-img"
-                                         src='@/assets/images/av_conference_screen_sharing_hover.png'/>
+                                        src='@/assets/images/av_conference_screen_sharing_hover.png' />
                                     <p class="single-line">共享屏幕</p>
                                 </div>
                                 <div class="action" @click="chat">
                                     <i class="icon-ion-ios-chatboxes"
-                                       style="width: 40px; height: 40px; font-size: 40px; color: black"
-                                       v-bind:style="{color: showConversationView ? 'white' : 'black'}"/>
+                                        style="width: 40px; height: 40px; font-size: 40px; color: black"
+                                        v-bind:style="{ color: showConversationView ? 'white' : 'black' }" />
                                     <p>聊天</p>
                                 </div>
-                                <div v-if="conferenceManager.conferenceInfo && selfUserInfo.uid !== conferenceManager.conferenceInfo.owner" class="action">
-                                    <img v-if="!conferenceManager.isHandUp" @click="handup"
-                                         class="action-img"
-                                         src='@/assets/images/av_conference_handup.png'/>
+                                <div v-if="conferenceManager.conferenceInfo && selfUserInfo.uid !== conferenceManager.conferenceInfo.owner"
+                                    class="action">
+                                    <img v-if="!conferenceManager.isHandUp" @click="handup" class="action-img"
+                                        src='@/assets/images/av_conference_handup.png' />
                                     <img v-else @click="handup" class="action-img"
-                                         src='@/assets/images/av_conference_handup_hover.png'/>
+                                        src='@/assets/images/av_conference_handup_hover.png' />
                                     <p class="single-line">举手</p>
                                 </div>
                                 <div class="action">
                                     <img @click.stop="members" class="action-img"
-                                         v-bind:style="{filter: showConferenceManageView ? 'invert(100%)' : 'none'}"
-                                         src='@/assets/images/av_conference_members.png'/>
+                                        v-bind:style="{ filter: showConferenceManageView ? 'invert(100%)' : 'none' }"
+                                        src='@/assets/images/av_conference_members.png' />
                                     <p>管理</p>
                                 </div>
                                 <div class="action">
                                     <img @click="hangup" class="action-img"
-                                         src='@/assets/images/av_conference_end_call.png'/>
+                                        src='@/assets/images/av_conference_end_call.png' />
                                     <p>结束</p>
                                 </div>
                             </div>
@@ -203,17 +194,11 @@
                 <div class="title" style="display: none">
                     TODO
                 </div>
-                <ConferenceManageView
-                    v-if="showConferenceManageView"
-                    v-bind:class="{ active: showConferenceManageView}"
-                    :participants="participantUserInfos"
-                    :session="session"
-                />
-                <ConversationView v-if="showConversationView && sharedMiscState.isElectron"
-                                  class="conversation-view"
-                                  style="height: 100%"
-                                  :title="conferenceManager.conferenceInfo.conferenceTitle"
-                                  :input-options="{disableScreenShot:true, disableHistory:true, disableVoip:true, disableChannelMenu:true}"/>
+                <ConferenceManageView v-if="showConferenceManageView" v-bind:class="{ active: showConferenceManageView }"
+                    :participants="participantUserInfos" :session="session" />
+                <ConversationView v-if="showConversationView && sharedMiscState.isElectron" class="conversation-view"
+                    style="height: 100%" :title="conferenceManager.conferenceInfo.conferenceTitle"
+                    :input-options="{ disableScreenShot: true, disableHistory: true, disableVoip: true, disableChannelMenu: true }" />
             </div>
         </div>
     </div>
@@ -224,7 +209,7 @@ import avenginekit from "../../../wfc/av/internal/engine.min";
 import CallSessionCallback from "../../../wfc/av/engine/callSessionCallback";
 import CallState from "../../../wfc/av/engine/callState";
 import localStorageEmitter from "../../../ipc/localStorageEmitter";
-import {currentWindow, isElectron} from "../../../platform";
+import { currentWindow, isElectron } from "../../../platform";
 import ScreenOrWindowPicker from "../ScreenOrWindowPicker";
 import CallEndReason from "../../../wfc/av/engine/callEndReason";
 import ScreenShareControlView from "../ScreenShareControlView";
@@ -248,8 +233,8 @@ import Conversation from "../../../wfc/model/conversation";
 import ConversationInfo from "../../../wfc/model/conversationInfo";
 import ChannelInfo from "../../../wfc/model/channelInfo";
 import ChatRoomInfo from "../../../wfc/model/chatRoomInfo";
-import {vOnClickOutside} from '@vueuse/components'
-import {markRaw} from "vue";
+import { vOnClickOutside } from '@vueuse/components'
+import { markRaw } from "vue";
 import EventType from "../../../wfc/client/wfcEvent";
 
 export default {
@@ -396,9 +381,9 @@ export default {
 
             sessionCallback.didCreateLocalVideoTrack = (stream, screenShare) => {
                 console.log('didCreateLocalVideoTrack', screenShare)
-                    this.selfUserInfo._stream = stream;
-                    this.selfUserInfo._screenShareStream = null;
-                    this.selfUserInfo._isVideoMuted = false;
+                this.selfUserInfo._stream = stream;
+                this.selfUserInfo._screenShareStream = null;
+                this.selfUserInfo._isVideoMuted = false;
                 this.selfUserInfo._isScreenSharing = screenShare;
                 this.autoPlay();
             };
@@ -487,7 +472,7 @@ export default {
                 }
                 if (reason === CallEndReason.RoomNotExist) {
                     console.log('join conference failed', reason, this.session)
-                    let obj = {reason: reason, session: this.session};
+                    let obj = { reason: reason, session: this.session };
                     localStorageEmitter.send(LocalStorageIpcEventType.joinConferenceFailed, obj);
                 }
                 this.session.closeVoipWindow();
@@ -614,7 +599,7 @@ export default {
             };
 
             if (isElectron()) {
-            	avenginekit.setup(sessionCallback);
+                avenginekit.setup(sessionCallback);
             } else {
                 avenginekit.sessionCallback = sessionCallback;
             }
@@ -718,8 +703,8 @@ export default {
 
         chat() {
             if (isElectron()) {
-            	this.showConversationView = !this.showConversationView;
-            	this.toggleSliderView();
+                this.showConversationView = !this.showConversationView;
+                this.toggleSliderView();
             } else {
                 let conversation = new Conversation(ConversationType.ChatRoom, this.session.callId, 0)
                 let chatroomInfo = new ChatRoomInfo();
@@ -852,15 +837,15 @@ export default {
                     this.$modal.show(
                         markRaw(ScreenOrWindowPicker),
                         {}, null, {
-                            width: 800,
-                            height: 600,
-                            name: 'screen-window-picker-modal',
-                            clickToClose: false,
-                        }, {
-                            // 'before-open': beforeOpen,
-                            'before-close': beforeClose,
-                            // 'closed': closed,
-                        })
+                        width: 800,
+                        height: 600,
+                        name: 'screen-window-picker-modal',
+                        clickToClose: false,
+                    }, {
+                        // 'before-open': beforeOpen,
+                        'before-close': beforeClose,
+                        // 'closed': closed,
+                    })
                 } else {
 
                     if (this.session.audience) {
@@ -1316,7 +1301,7 @@ export default {
                     return;
                 }
                 if (event.target.id === "main-content-container") {
-                    currentWindow.setIgnoreMouseEvents(true, {forward: true});
+                    currentWindow.setIgnoreMouseEvents(true, { forward: true });
                 } else {
                     currentWindow.setIgnoreMouseEvents(false);
                 }
@@ -1345,7 +1330,6 @@ export default {
 </script>
 
 <style lang="css" scoped>
-
 .voip-container {
     background: #00000000 !important;
     position: relative;
@@ -1547,5 +1531,4 @@ footer {
     padding-left: 5px;
     content: "\f13f";
 }
-
 </style>

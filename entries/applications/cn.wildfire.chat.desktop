@@ -1,14 +1,14 @@
 [Desktop Entry]
 Encoding=UTF-8
 Name=wf-pc-chat
-Name[zh_CN]=野火IM
+Name[zh_CN]=圈子
 Comment=Wildfire Chat PC Client
-Comment[zh_CN]=野火IM PC客户端
-Exec=/opt/野火IM/野火IM %U
+Comment[zh_CN]=圈子 PC客户端
+Exec=/opt/圈子/圈子 %U
 GenericName=wf-pc-chat
-GenericName[zh_CN]=野火IM
+GenericName[zh_CN]=圈子
 MimeType=application/wf-pc-chat;
-Icon=/opt/野火IM/resources/extraResources/icons/128x128.png
+Icon=/opt/圈子/resources/extraResources/icons/128x128.png
 Keywords=various;keywords;describing;your;application;
 StartupNotify=true
 Terminal=false

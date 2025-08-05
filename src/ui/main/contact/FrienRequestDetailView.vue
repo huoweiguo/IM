@@ -7,7 +7,7 @@
                 </div>
                 <div class="name">
                     <h2>{{ name }}</h2>
-                    <p>你好，野火</p>
+                    <p>你好，圈子</p>
                 </div>
             </div>
             <div class="content">
@@ -15,7 +15,8 @@
                     <li v-if="isFriend">
                         <label>{{ $t('common.alias') }}</label>
                         <div class="alias">
-                            <input type="text" ref="input" :value="user.friendAlias" placeholder="备注名" @keyup.enter="updateFriendAlias"/>
+                            <input type="text" ref="input" :value="user.friendAlias" placeholder="备注名"
+                                @keyup.enter="updateFriendAlias" />
                         </div>
                     </li>
                     <li v-if="!isFriend">
@@ -93,12 +94,12 @@ export default {
         },
         startAudioCall() {
             let conversation = new Conversation(ConversationType.Single, this.user.uid, 0);
-            this.$startVoipCall({audioOnly: true, conversation: conversation});
+            this.$startVoipCall({ audioOnly: true, conversation: conversation });
         },
 
         startVideoCall() {
             let conversation = new Conversation(ConversationType.Single, this.user.uid, 0);
-            this.$startVoipCall({audioOnly: false, conversation: conversation});
+            this.$startVoipCall({ audioOnly: false, conversation: conversation });
         },
     },
     computed: {
@@ -124,7 +125,6 @@ export default {
 </script>
 
 <style lang="css" scoped>
-
 .user-detail-container {
     border-top-right-radius: var(--main-border-radius);
     border-bottom-right-radius: var(--main-border-radius);
@@ -202,7 +202,7 @@ export default {
     font-size: 12px;
 }
 
-.content ul li .alias > input {
+.content ul li .alias>input {
     width: 100%;
     border: none;
     border-radius: 3px;
@@ -212,7 +212,7 @@ export default {
     font-size: 13px;
 }
 
-.content ul li .alias > input:active {
+.content ul li .alias>input:active {
     border: 1px solid #4168e0;
 }
 
@@ -220,7 +220,7 @@ export default {
     border: 1px solid #4168e0;
 }
 
-.content ul li > div {
+.content ul li>div {
     display: inline-block;
     flex: 1;
 }
@@ -248,5 +248,4 @@ export default {
 .footer .action i {
     font-size: 20px;
 }
-
 </style>
