@@ -7,47 +7,25 @@
 
     <div class="input-container">
       <div class="input-field">
-        <input
-          id="phone"
-          type="tel"
-          v-model="phoneNumber"
-          maxlength="11"
-          placeholder="请输入手机号码"
-        />
+        <input id="phone" type="tel" v-model="phoneNumber" maxlength="11" placeholder="请输入手机号码" />
       </div>
 
       <div class="input-field verification-code">
-        <input
-          id="code"
-          type="text"
-          v-model="verificationCode"
-          placeholder="请输入验证码"
-          maxlength="6"
-        />
+        <input id="code" type="text" v-model="verificationCode" placeholder="请输入验证码" maxlength="6" />
         <button class="get-code-btn" @click="getVerificationCode" :disabled="isCountingDown">
           {{ countdown > 0 ? `${countdown}秒后重发` : '获取验证码' }}
         </button>
       </div>
 
       <div class="input-field password-input">
-        <input
-          id="password"
-          :type="showPassword ? 'text' : 'password'"
-          v-model="password"
-          placeholder="请设置6-20位密码"
-        />
+        <input id="password" :type="showPassword ? 'text' : 'password'" v-model="password" placeholder="请设置6-20位密码" />
         <div class="password-strength" :class="passwordStrengthClass">
           {{ passwordStrengthText }}
         </div>
       </div>
 
       <div class="input-field">
-        <input
-          id="invite-code"
-          type="text"
-          v-model="inviteCode"
-          placeholder="请输入邀请码（选填）"
-        />
+        <input id="invite-code" type="text" v-model="inviteCode" placeholder="请输入邀请码（选填）" />
       </div>
     </div>
 
@@ -55,13 +33,8 @@
 
     <div class="agreement">
       <input type="checkbox" id="agree" v-model="agreed" />
-      <label for="agree"
-        >我已阅读并同意<a href="#" @click.prevent="showUserAgreement">《用户协议》</a>和<a
-          href="#"
-          @click.prevent="showPrivacyPolicy"
-          >《隐私政策》</a
-        ></label
-      >
+      <label for="agree">我已阅读并同意<a href="#" @click.prevent="showUserAgreement">《用户协议》</a>和<a href="#"
+          @click.prevent="showPrivacyPolicy">《隐私政策》</a></label>
     </div>
   </div>
 </template>
@@ -69,8 +42,8 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { registerAccount } from '../api/index.js'
-import TopNav from '../../components/TopNav.vue'
+import { registerAccount } from '../../api/index.js'
+import TopNav from '../components/TopNav.vue'
 
 const router = useRouter()
 

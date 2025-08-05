@@ -4,6 +4,11 @@ import { createRouter, createWebHashHistory } from 'vue-router'
 import { createPinia } from 'pinia'
 import routers from './router/index.js'
 
+import ElementPlus from 'element-plus'
+import 'element-plus/dist/index.css'
+import * as ElementPlusIconsVue from '@element-plus/icons-vue'
+import zhCn from 'element-plus/es/locale/lang/zh-cn'
+
 import wfc from './wfc/client/wfc'
 import VueTippy from 'vue-tippy'
 import 'tippy.js/dist/tippy.css'
@@ -178,5 +183,13 @@ app.config.globalProperties.$xss = (html) => {
 };
 
 app.config.globalProperties.$set = (obj, key, value) => obj[key] = value
+
+app.use(ElementPlus, {
+    locale: zhCn // 设置为中文
+})
+for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
+    app.component(key, component)
+}
+
 
 app.mount('#app');

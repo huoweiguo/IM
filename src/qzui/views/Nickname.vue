@@ -40,7 +40,7 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import TopNav from '../../components/TopNav.vue'
+import TopNav from '../components/TopNav.vue'
 const router = useRouter()
 // 昵称相关
 const nickname = ref('勇敢的心12138')

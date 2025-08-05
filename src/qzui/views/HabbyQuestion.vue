@@ -26,7 +26,7 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import TopNav from '../../components/TopNav.vue'
+import TopNav from '../components/TopNav.vue'
 const router = useRouter()
 
 const habbies = ref([

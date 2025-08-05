@@ -7,30 +7,17 @@
 
     <div class="input-container">
       <div class="input-field">
-        <input
-          id="phone"
-          type="tel"
-          v-model="phoneNumber"
-          maxlength="11"
-          placeholder="请输入手机号码"
-        />
+        <input id="phone" type="tel" v-model="phoneNumber" maxlength="11" placeholder="请输入手机号码" />
       </div>
 
       <div class="input-field password-input">
-        <input
-          id="password"
-          :type="showPassword ? 'text' : 'password'"
-          v-model="password"
-          placeholder="请输入密码"
-        />
+        <input id="password" :type="showPassword ? 'text' : 'password'" v-model="password" placeholder="请输入密码" />
         <span class="forget-password" @click="handleForgetPassword">忘记密码</span>
       </div>
     </div>
 
     <div class="login-options">
-      <span class="no-account"
-        >还没有账号？<span class="register" @click="switchToRegister">注册账号</span></span
-      >
+      <span class="no-account">还没有账号？<span class="register" @click="switchToRegister">注册账号</span></span>
       <span class="code-login" @click="switchToCodeLogin">验证码登录</span>
     </div>
 
@@ -38,13 +25,8 @@
 
     <div class="agreement">
       <input type="checkbox" id="agree" v-model="agreed" />
-      <label for="agree"
-        >我已阅读并同意<a href="#" @click.prevent="showUserAgreement">《用户协议》</a>和<a
-          href="#"
-          @click.prevent="showPrivacyPolicy"
-          >《隐私政策》</a
-        ></label
-      >
+      <label for="agree">我已阅读并同意<a href="#" @click.prevent="showUserAgreement">《用户协议》</a>和<a href="#"
+          @click.prevent="showPrivacyPolicy">《隐私政策》</a></label>
     </div>
   </div>
 </template>
@@ -52,13 +34,10 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import TopNav from '../../components/TopNav.vue'
-import { loginAccount } from '../api/index.js'
+import TopNav from '../components/TopNav.vue'
+import { loginAccount } from '../../api/index.js'
 import { ElMessage } from 'element-plus'
-import { useStore } from '../stores/store.js'
-import wfc from '../wfc/client/wfc'
-
-const store = useStore()
+import wfc from '../../wfc/client/wfc'
 
 const router = useRouter()
 
@@ -99,7 +78,7 @@ const handleLogin = () => {
     console.log('登录成功:', res)
     ElMessage.success('登录成功')
     // 登录成功后可以存储用户信息或 token
-    store.setUserInfo(res.data)
+
     // 跳转到首页或其他页面
     router.push('/chat')
   })

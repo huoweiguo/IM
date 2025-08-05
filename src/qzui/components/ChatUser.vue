@@ -271,7 +271,7 @@ const openOtherInfo = () => {
       width: 375,
       height: 820,
       title: '用户信息',
-      url: `${import.meta.env.VITE_API_BASE_URL}/#/otherInfo?id=1`
+      url: `/#/otherInfo?id=1`
     })
   } else {
     console.warn('Electron API 不可用，可能在浏览器环境中运行')
@@ -286,7 +286,7 @@ const openFansWindow = (index) => {
       width: 375,
       height: 720,
       title: '我的粉丝',
-      url: `${import.meta.env.VITE_API_BASE_URL}/#/fans?id=1`
+      url: `/#/fans?id=1`
     })
   } else {
     console.warn('Electron API 不可用，可能在浏览器环境中运行')
@@ -301,7 +301,7 @@ const openKnowWindow = (index) => {
       width: 375,
       height: 720,
       title: '可能认识的人',
-      url: `${import.meta.env.VITE_API_BASE_URL}/#/know?id=1`
+      url: `/#/know?id=1`
     })
   } else {
     console.warn('Electron API 不可用，可能在浏览器环境中运行')
@@ -315,7 +315,7 @@ const openUserInfo = () => {
       width: 375,
       height: 720,
       title: '个人信息',
-      url: `${import.meta.env.VITE_API_BASE_URL}/#/userInfo?id=1`
+      url: `/#/userInfo?id=1`
     })
   } else {
     console.warn('Electron API 不可用，可能在浏览器环境中运行')
@@ -330,7 +330,7 @@ const showDrawer = () => {
         width: 375,
         height: 720,
         title: '群设置',
-        url: `${import.meta.env.VITE_API_BASE_URL}/#/groupSetting`
+        url: `/#/groupSetting`
       })
     } else {
       console.warn('Electron API 不可用，可能在浏览器环境中运行')

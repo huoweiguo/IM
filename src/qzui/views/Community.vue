@@ -18,11 +18,13 @@
             <template #dropdown>
               <el-dropdown-menu>
                 <el-dropdown-item @click="openChatWindow">
-                  <el-icon> <UserFilled /> </el-icon>发起群聊
+                  <el-icon>
+                    <UserFilled />
+                  </el-icon>发起群聊
                 </el-dropdown-item>
-                <el-dropdown-item @click="openScanWindow"
-                  ><el-icon> <StarFilled /> </el-icon>关注我</el-dropdown-item
-                >
+                <el-dropdown-item @click="openScanWindow"><el-icon>
+                    <StarFilled />
+                  </el-icon>关注我</el-dropdown-item>
                 <el-dropdown-item @click="openHelpWindow">
                   <el-icon>
                     <QuestionFilled />
@@ -36,12 +38,8 @@
         </div>
         <div class="community-list">
           <ul>
-            <li
-              v-for="item in list"
-              :key="item.id"
-              :class="{ activeItem: activeId === item.id }"
-              @click="toCommunity(item.id)"
-            >
+            <li v-for="item in list" :key="item.id" :class="{ activeItem: activeId === item.id }"
+              @click="toCommunity(item.id)">
               {{ item.name }}
             </li>
           </ul>
@@ -76,7 +74,7 @@ const openChatWindow = () => {
     window.electronAPI.openNewWindow({
       width: 604,
       height: 440,
-      url: `${import.meta.env.VITE_API_BASE_URL}/#/groupChat`
+      url: `/#/groupChat`
     })
   } else {
     console.warn('Electron API 不可用，可能在浏览器环境中运行')
@@ -90,7 +88,7 @@ const openScanWindow = () => {
       width: 375,
       height: 600,
       title: '扫码关注',
-      url: `${import.meta.env.VITE_API_BASE_URL}/#/publicSphere/scanFocus`
+      url: `/#/publicSphere/scanFocus`
     })
   } else {
     console.warn('Electron API 不可用，可能在浏览器环境中运行')
@@ -103,7 +101,7 @@ const openHelpWindow = () => {
     window.electronAPI.openNewWindow({
       width: 375,
       height: 720,
-      url: `${import.meta.env.VITE_API_BASE_URL}/#/help`
+      url: `/#/help`
     })
   } else {
     console.warn('Electron API 不可用，可能在浏览器环境中运行')

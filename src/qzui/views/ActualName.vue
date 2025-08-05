@@ -33,7 +33,7 @@
 
 <script setup>
 import { ref } from 'vue'
-import TopNav from '../../components/TopNav.vue'
+import TopNav from '../components/TopNav.vue'
 
 // 昵称相关
 const actualName = ref('')

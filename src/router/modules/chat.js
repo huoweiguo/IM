@@ -1,5 +1,5 @@
-import ChatList from '../../src/views/chat/ChatList.vue'
-import ChatHome from '../../src/views/chat/ChatHome.vue'
+import ChatList from '../../qzui/views/chat/ChatList.vue'
+import ChatHome from '../../qzui/views/chat/ChatHome.vue'
 
 export const ChatComp = [
   {

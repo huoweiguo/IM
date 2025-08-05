@@ -97,7 +97,7 @@ const handleIdAuth = () => {
       width: 375,
       height: 800,
       title: '实名认证',
-      url: `${import.meta.env.VITE_API_BASE_URL}/#/idAuth?id=111`
+      url: `/#/idAuth?id=111`
     })
   } else {
     console.warn('Electron API 不可用，可能在浏览器环境中运行')
@@ -109,7 +109,7 @@ const handleSchoolAuth = () => {
       width: 375,
       height: 800,
       title: '学校认证',
-      url: `${import.meta.env.VITE_API_BASE_URL}/#/schoolAuth?id=111`
+      url: `/#/schoolAuth?id=111`
     })
   } else {
     console.warn('Electron API 不可用，可能在浏览器环境中运行')
@@ -125,6 +125,7 @@ const handleSchoolAuth = () => {
   box-sizing: border-box;
   font-family: 'PingFang SC', 'Microsoft YaHei', Arial, sans-serif;
 }
+
 .header {
   display: flex;
   align-items: center;
@@ -132,6 +133,7 @@ const handleSchoolAuth = () => {
   background-color: #fff;
   padding: 16px;
 }
+
 .avatar {
   width: 60px;
   height: 60px;
@@ -139,9 +141,11 @@ const handleSchoolAuth = () => {
   object-fit: cover;
   margin-right: 16px;
 }
+
 .user-info {
   flex: 1;
 }
+
 .nickname-row {
   display: flex;
   align-items: center;
@@ -149,31 +153,38 @@ const handleSchoolAuth = () => {
   font-size: 14px;
   font-weight: bold;
 }
+
 .gender-icon {
   width: 18px;
   height: 18px;
 }
+
 .desc {
   color: #888;
   font-size: 13px;
   margin-top: 2px;
 }
+
 .section {
   background: #fff;
   margin-bottom: 12px;
 }
+
 .cert-section {
   padding-bottom: 8px;
 }
+
 .cert-title {
   padding: 6px 16px 0;
   margin-bottom: 10px;
 }
+
 .cert-list {
   display: flex;
   justify-content: space-around;
   gap: 24px;
 }
+
 .cert-item {
   display: flex;
   flex-direction: column;
@@ -182,11 +193,13 @@ const handleSchoolAuth = () => {
   color: #666;
   cursor: pointer;
 }
+
 .cert-item img {
   width: 48px;
   height: 48px;
   margin-bottom: 4px;
 }
+
 .remark-section {
   display: flex;
   justify-content: space-between;
@@ -195,12 +208,15 @@ const handleSchoolAuth = () => {
   height: 52px;
   padding: 0 16px;
 }
+
 .remark-value {
   color: #888;
 }
+
 .link-section {
   font-size: 15px;
 }
+
 .link-row {
   display: flex;
   justify-content: space-between;
@@ -213,15 +229,19 @@ const handleSchoolAuth = () => {
   background-size: 14px 14px;
   cursor: pointer;
 }
+
 .highlight-yellow {
   color: #e6b200;
 }
+
 .highlight-blue {
   color: #4a90e2;
 }
+
 .switch-section {
   font-size: 15px;
 }
+
 .switch-row {
   display: flex;
   justify-content: space-between;
@@ -234,6 +254,7 @@ const handleSchoolAuth = () => {
   background-size: 14px 14px;
   cursor: pointer;
 }
+
 .group-section {
   display: flex;
   justify-content: space-between;
@@ -247,12 +268,14 @@ const handleSchoolAuth = () => {
   background-size: 14px 14px;
   cursor: pointer;
 }
+
 .footer-btns {
   display: flex;
   justify-content: space-between;
   padding: 0 16px;
   margin-top: 10px;
 }
+
 .chat-btn {
   width: 290px;
   flex: 1;
@@ -265,6 +288,7 @@ const handleSchoolAuth = () => {
   margin-right: 12px;
   cursor: pointer;
 }
+
 .follow-btn {
   display: flex;
   flex-direction: column;
@@ -280,6 +304,7 @@ const handleSchoolAuth = () => {
   width: 24px;
   height: 24px;
 }
+
 .follow-btn span {
   font-size: 12px;
   color: #777;

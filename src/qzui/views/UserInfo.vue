@@ -145,7 +145,7 @@ const handleTipOff = () => {
       width: 375,
       height: 720,
       title: '举报',
-      url: `${import.meta.env.VITE_API_BASE_URL}/#/tipOffUser`
+      url: `/#/tipOffUser`
     })
   } else {
     console.warn('Electron API 不可用，可能在浏览器环境中运行')
@@ -160,9 +160,11 @@ const handleTipOff = () => {
   min-height: 100vh;
   padding: 16px;
 }
+
 .chat-background-list {
   position: relative;
   height: 100%;
+
   ul {
     li {
       display: flex;
@@ -175,6 +177,7 @@ const handleTipOff = () => {
       cursor: pointer;
     }
   }
+
   span {
     position: absolute;
     bottom: 0;
@@ -192,6 +195,7 @@ const handleTipOff = () => {
     border-radius: 8px;
   }
 }
+
 .nav-bar {
   display: flex;
   align-items: center;

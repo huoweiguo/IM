@@ -49,7 +49,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import TopNav from '../../components/TopNav.vue'
+import TopNav from '../components/TopNav.vue'
 
 // 模拟省市区数据
 const provinceData = [

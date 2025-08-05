@@ -4,13 +4,7 @@
 
     <div class="input-container">
       <div class="input-field">
-        <input
-          id="phone"
-          type="tel"
-          v-model="phoneNumber"
-          maxlength="11"
-          placeholder="请输入手机号码"
-        />
+        <input id="phone" type="tel" v-model="phoneNumber" maxlength="11" placeholder="请输入手机号码" />
       </div>
 
       <div class="input-field verification-code">
@@ -21,17 +15,9 @@
       </div>
 
       <div class="input-field">
-        <input
-          id="new-password"
-          :type="showPassword ? 'text' : 'password'"
-          v-model="newPassword"
-          placeholder="请输入新密码"
-        />
-        <span
-          class="toggle-password"
-          @click="showPassword = !showPassword"
-          :class="{ visible: showPassword }"
-        >
+        <input id="new-password" :type="showPassword ? 'text' : 'password'" v-model="newPassword"
+          placeholder="请输入新密码" />
+        <span class="toggle-password" @click="showPassword = !showPassword" :class="{ visible: showPassword }">
           {{ showPassword ? '👁️' : '👁️‍🗨️' }}
         </span>
       </div>
@@ -47,7 +33,7 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { forgotPassword, sendSmsCode } from '../api/index.js'
+import { forgotPassword, sendSmsCode } from '../../api/index.js'
 import { ElMessage } from 'element-plus'
 
 const router = useRouter()

@@ -154,14 +154,13 @@ const list = ref([
   }
 ])
 
-console.log(import.meta.env.VITE_API_BASE_URL, 'import.meta.env.VUE_APP_API_BASE_URL')
 
 const reportIdentity = id => {
   if (window.electronAPI) {
     window.electronAPI.openNewWindow({
       width: 375,
       height: 600,
-      url: `${import.meta.env.VITE_API_BASE_URL}/#/tipoff?id=${id}`
+      url: `/#/tipoff?id=${id}`
     })
   } else {
     console.warn('Electron API 不可用，可能在浏览器环境中运行')
@@ -174,7 +173,7 @@ const openPostingWindow = (id) => {
       width: 375,
       height: 720,
       title: '发贴',
-      url: `${import.meta.env.VITE_API_BASE_URL}/#/posting?id=${id}`
+      url: `/#/posting?id=${id}`
     })
   } else {
     console.warn('Electron API 不可用，可能在浏览器环境中运行')
@@ -187,7 +186,7 @@ const openMyPublishWindow = (id) => {
       width: 375,
       height: 720,
       title: '我的发布',
-      url: `${import.meta.env.VITE_API_BASE_URL}/#/myPublish?id=${id}`
+      url: `/#/myPublish?id=${id}`
     })
   } else {
     console.warn('Electron API 不可用，可能在浏览器环境中运行')
@@ -200,7 +199,7 @@ const openFocusWindow = () => {
     window.electronAPI.openNewWindow({
       width: 375,
       height: 720,
-      url: `${import.meta.env.VITE_API_BASE_URL}/#/focusme`
+      url: `/#/focusme`
     })
   } else {
     console.warn('Electron API 不可用，可能在浏览器环境中运行')
@@ -213,7 +212,7 @@ const toChatList = (doorId) => {
       width: 375,
       height: 720,
       title: '聊天室列表',
-      url: `${import.meta.env.VITE_API_BASE_URL}/#/chatList?id=${doorId}`
+      url: `/#/chatList?id=${doorId}`
     })
   } else {
     console.warn('Electron API 不可用，可能在浏览器环境中运行')

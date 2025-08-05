@@ -60,7 +60,7 @@
 
 <script setup>
 import { ref, reactive } from 'vue'
-import TopNav from '../../../components/TopNav.vue'
+import TopNav from '../../components/TopNav.vue'
 const direction = ref('btt')
 const title = ref('谁可以加入该群')
 const drawer = ref(false)

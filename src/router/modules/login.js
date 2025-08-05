@@ -1,13 +1,13 @@
-import PasswordLogin from '../../src/views/PasswordLogin.vue'
-import Forget from '../../src/views/Forget.vue'
-import Register from '../../src/views/Register.vue'
-import SelectSex from '../../src/views/SelectSex.vue'
-import Nickname from '../../src/views/Nickname.vue'
-import ActualName from '../../src/views/ActualName.vue'
-import Question from '../../src/views/Question.vue'
-import HabbyQuestion from '../../src/views/HabbyQuestion.vue'
-import Login from '../../src/views/Login.vue'
-import PhoneLogin from '../../src/views/PhoneLogin.vue'
+import PasswordLogin from '../../qzui/views/PasswordLogin.vue'
+import Forget from '../../qzui/views/Forget.vue'
+import Register from '../../qzui/views/Register.vue'
+import SelectSex from '../../qzui/views/SelectSex.vue'
+import Nickname from '../../qzui/views/Nickname.vue'
+import ActualName from '../../qzui/views/ActualName.vue'
+import Question from '../../qzui/views/Question.vue'
+import HabbyQuestion from '../../qzui/views/HabbyQuestion.vue'
+import Login from '../../qzui/views/Login.vue'
+import PhoneLogin from '../../qzui/views/PhoneLogin.vue'
 export const login = [
   {
     path: '/login',

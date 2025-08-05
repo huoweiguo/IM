@@ -97,6 +97,7 @@
   font-family: 'PingFang SC', 'Microsoft YaHei', Arial, sans-serif;
   overflow: hidden;
 }
+
 .school-auth-container>div {
   width: calc(100% + 28px);
   padding: 16px 26px 16px 16px;
@@ -105,6 +106,7 @@
   box-sizing: border-box;
   overflow-y: scroll;
 }
+
 .auth-status-bar {
   position: relative;
   background: #eaf2ff;
@@ -113,16 +115,19 @@
   overflow: hidden;
   margin-bottom: 12px;
 }
+
 .auth-status-info {
   display: flex;
   align-items: center;
   justify-content: space-between;
   border-radius: 8px;
 }
+
 .auth-status-info span {
   color: #333;
   font-size: 16px;
 }
+
 .status-btn {
   position: absolute;
   right: 0;
@@ -135,18 +140,21 @@
   cursor: default;
   border-radius: 0 0 0 8px;
 }
+
 .auth-status-desc {
   margin-top: 8px;
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
+
 .auth-tip {
   color: #777;
   font-size: 12px;
   display: flex;
   align-items: center;
 }
+
 .tip-dot {
   display: inline-block;
   width: 6px;
@@ -159,21 +167,24 @@
 .base-info-section {
   background: #fff;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(51,138,255,0.04);
+  box-shadow: 0 2px 8px rgba(51, 138, 255, 0.04);
   margin-bottom: 12px;
 }
+
 .section-title {
   font-weight: bold;
   font-size: 16px;
   margin: 0 0 12px 0;
   color: #222;
 }
+
 .info-list {
   display: flex;
   flex-direction: column;
-  box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.1);
+  box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
 }
+
 .info-item {
   display: flex;
   align-items: center;
@@ -187,36 +198,40 @@
   background-size: 14px 14px;
   cursor: pointer;
 }
+
 .item-label {
   color: #333;
   min-width: 90px;
   font-size: 14px;
 }
+
 .item-value {
   color: #a0a0a0;
   flex: 1;
   text-align: right;
   padding-right: 8px;
 }
+
 .item-edit {
   width: 18px;
   height: 18px;
-  background: url('@/assets/edit-icon.png') no-repeat center center/contain;
   margin-left: 8px;
 }
 
 .auth-material-section {
   background: #fff;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(51,138,255,0.04);
+  box-shadow: 0 2px 8px rgba(51, 138, 255, 0.04);
   margin-bottom: 12px;
 }
+
 .material-tip-box {
   background: #E4EEFF;
   border-radius: 6px;
   padding: 12px;
   margin-bottom: 12px;
 }
+
 .tip-title {
   display: flex;
   align-items: center;
@@ -229,27 +244,32 @@
   background: #3478F5;
   border-radius: 4px;
 }
+
 .tip-list {
   color: #666;
   font-size: 14px;
   margin: 0;
 }
+
 .tip-list li {
   font-size: 14px;
   color: #777;
   line-height: 24px;
   margin-bottom: 5px;
 }
+
 .reference-title {
   color: #338aff;
   font-size: 14px;
   margin-bottom: 8px;
   margin-top: 8px;
 }
+
 .reference-boxes {
   display: flex;
   gap: 12px;
 }
+
 .reference-box {
   flex: 1;
   height: 64px;

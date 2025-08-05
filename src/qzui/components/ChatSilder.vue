@@ -38,7 +38,7 @@ const openMyWindow = () => {
       width: 375,
       height: 720,
       title: '我的',
-      url: `${import.meta.env.VITE_API_BASE_URL}/#/my`
+      url: `/#/my`
     })
   } else {
     console.warn('Electron API 不可用，可能在浏览器环境中运行')

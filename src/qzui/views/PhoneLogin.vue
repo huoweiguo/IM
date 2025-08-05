@@ -6,13 +6,7 @@
     <div class="welcome-text">{{ welcomeText }}</div>
     <div class="input-container">
       <div class="input-field">
-        <input
-          id="phone"
-          type="tel"
-          v-model="phoneNumber"
-          maxlength="11"
-          placeholder="请输入手机号码"
-        />
+        <input id="phone" type="tel" v-model="phoneNumber" maxlength="11" placeholder="请输入手机号码" />
       </div>
 
       <div class="input-field verification-code">
@@ -32,13 +26,8 @@
 
     <div class="agreement">
       <input type="checkbox" id="agree" v-model="agreed" />
-      <label for="agree"
-        >我已阅读并同意<a href="#" @click.prevent="showUserAgreement">《用户协议》</a>和<a
-          href="#"
-          @click.prevent="showPrivacyPolicy"
-          >《隐私政策》</a
-        ></label
-      >
+      <label for="agree">我已阅读并同意<a href="#" @click.prevent="showUserAgreement">《用户协议》</a>和<a href="#"
+          @click.prevent="showPrivacyPolicy">《隐私政策》</a></label>
     </div>
   </div>
 </template>
@@ -46,13 +35,11 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import TopNav from '../../components/TopNav.vue'
-import { loginAccount, sendSmsCode } from '../api/index.js'
+import TopNav from '../components/TopNav.vue'
+import { loginAccount, sendSmsCode } from '../../api/index.js'
 import { ElMessage } from 'element-plus'
-import { useStore } from '../stores/store.js'
-import wfc from '../wfc/client/wfc'
+import wfc from '../../wfc/client/wfc'
 
-const store = useStore()
 
 const router = useRouter()
 
@@ -131,7 +118,6 @@ const handleLogin = () => {
     console.log('登录成功:', res)
     ElMessage.success('登录成功')
     // 登录成功后可以存储用户信息或 token
-    store.setUserInfo(res.data)
 
     // 跳转到首页或其他页面
     router.push('/chat')

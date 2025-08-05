@@ -15,7 +15,7 @@ const openPublicWindow = () => {
       width: 375,
       height: 780,
       title: '公域群',
-      url: `${import.meta.env.VITE_API_BASE_URL}/#/publicSphere/list`
+      url: `/#/publicSphere/list`
     })
   } else {
     console.warn('Electron API 不可用，可能在浏览器环境中运行')

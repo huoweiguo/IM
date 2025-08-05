@@ -8,13 +8,11 @@
 <script setup>
 import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { useStore } from '../stores/store.js'
 const router = useRouter()
-const store = useStore()
 
-onMounted(() => {
-  if (!store.islogin) {
-    router.push('/passwordLogin')
-  }
-})
+// onMounted(() => {
+//   if (!store.islogin) {
+//     router.push('/passwordLogin')
+//   }
+// })
 </script>

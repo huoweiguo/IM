@@ -137,7 +137,7 @@ const handleCalender = () => {
       width: 375,
       height: 720,
       title: '我的日程',
-      url: `${import.meta.env.VITE_API_BASE_URL}/#/my/calender`
+      url: `/#/my/calender`
     })
   } else {
     console.warn('Electron API 不可用，可能在浏览器环境中运行')
@@ -149,7 +149,7 @@ const handleMyPublish = (id) => {
       width: 375,
       height: 720,
       title: '我的发布',
-      url: `${import.meta.env.VITE_API_BASE_URL}/#/myPublish?id=${id}`
+      url: `/#/myPublish?id=${id}`
     })
   } else {
     console.warn('Electron API 不可用，可能在浏览器环境中运行')
@@ -163,7 +163,7 @@ const handleMyFans = () => {
       width: 375,
       height: 720,
       title: '我的粉丝',
-      url: `${import.meta.env.VITE_API_BASE_URL}/#/fans?id=1`
+      url: `/#/fans?id=1`
     })
   } else {
     console.warn('Electron API 不可用，可能在浏览器环境中运行')
@@ -176,7 +176,7 @@ const handleVoucherCenter = () => {
       width: 375,
       height: 720,
       title: '充值',
-      url: `${import.meta.env.VITE_API_BASE_URL}/#/my/voucherCenter`
+      url: `/#/my/voucherCenter`
     })
   } else {
     console.warn('Electron API 不可用，可能在浏览器环境中运行')
@@ -188,7 +188,7 @@ const handleEditUserInfo = () => {
       width: 375,
       height: 720,
       title: '编辑资料',
-      url: `${import.meta.env.VITE_API_BASE_URL}/#/my/editUserInfo`
+      url: `/#/my/editUserInfo`
     })
   } else {
     console.warn('Electron API 不可用，可能在浏览器环境中运行')
@@ -200,7 +200,7 @@ const handleSettings = () => {
       width: 375,
       height: 720,
       title: '设置',
-      url: `${import.meta.env.VITE_API_BASE_URL}/#/my/settings`
+      url: `/#/my/settings`
     })
   } else {
     console.warn('Electron API 不可用，可能在浏览器环境中运行')

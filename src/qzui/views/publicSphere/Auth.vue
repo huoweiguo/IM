@@ -22,7 +22,7 @@
 
 <script setup>
 import { ref } from 'vue'
-import TopNav from '../../../components/TopNav.vue'
+import TopNav from '../../components/TopNav.vue'
 import { useRouter } from 'vue-router'
 const router = useRouter()
 

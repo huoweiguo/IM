@@ -20,7 +20,7 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import TopNav from '../../components/TopNav.vue'
+import TopNav from '../components/TopNav.vue'
 import video from '../assets/video.png'
 import qun from '../assets/qun.png'
 import addFriend from '../assets/addFriend.png'

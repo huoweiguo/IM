@@ -73,7 +73,7 @@ const openChatWindow = () => {
     window.electronAPI.openNewSecondWindow({
       width: 604,
       height: 440,
-      url: `${import.meta.env.VITE_API_BASE_URL}/#/groupChat`
+      url: `/#/groupChat`
     })
   } else {
     console.warn('Electron API 不可用，可能在浏览器环境中运行')
