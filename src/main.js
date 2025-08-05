@@ -2,7 +2,7 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import { createRouter, createWebHashHistory } from 'vue-router'
 import { createPinia } from 'pinia'
-import routers from './routers'
+import routers from './router/index.js'
 
 import wfc from './wfc/client/wfc'
 import VueTippy from 'vue-tippy'
