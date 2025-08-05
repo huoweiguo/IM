@@ -1,34 +1,20 @@
 <template>
     <div class="contact-page">
-        <ContactListPanel class="contact-list-panel"/>
-        <GroupDetailView
-            v-if="sharedContactState.currentGroup"
-            :group="sharedContactState.currentGroup"
-            class="contact-detail-container"/>
-        <ChannelDetailView
-            v-else-if="sharedContactState.currentChannel"
-            :channel="sharedContactState.currentChannel"
-            class="contact-detail-container"/>
-        <OrganizationDetailView
-            v-else-if="sharedContactState.currentOrganization"
-            class="contact-detail-container"/>
-        <DomainInfoView
-            v-else-if="sharedContactState.currentExternalDomain"
-            class="contact-detail-container"/>
-        <ChatroomDetailView
-            v-else-if="sharedContactState.currentChatroom"
-            class="contact-detail-container"/>
-        <UserDetailView
-            v-else-if="sharedContactState.currentFriend"
-            :user="sharedContactState.currentFriend"
-            class="contact-detail-container"/>
-        <FriendRequestDetailView
-            v-else-if="sharedContactState.currentFriendRequest"
+        <ContactListPanel class="contact-list-panel" />
+        <GroupDetailView v-if="sharedContactState.currentGroup" :group="sharedContactState.currentGroup"
+            class="contact-detail-container" />
+        <ChannelDetailView v-else-if="sharedContactState.currentChannel" :channel="sharedContactState.currentChannel"
+            class="contact-detail-container" />
+        <OrganizationDetailView v-else-if="sharedContactState.currentOrganization" class="contact-detail-container" />
+        <DomainInfoView v-else-if="sharedContactState.currentExternalDomain" class="contact-detail-container" />
+        <ChatroomDetailView v-else-if="sharedContactState.currentChatroom" class="contact-detail-container" />
+        <UserDetailView v-else-if="sharedContactState.currentFriend" :user="sharedContactState.currentFriend"
+            class="contact-detail-container" />
+        <FriendRequestDetailView v-else-if="sharedContactState.currentFriendRequest"
             :user="sharedContactState.currentFriendRequest._target"
-            :friend-request="sharedContactState.currentFriendRequest"
-            class="contact-detail-container"/>
+            :friend-request="sharedContactState.currentFriendRequest" class="contact-detail-container" />
         <div v-else class="contact-empty-container">
-            <h1>^~^</h1>
+            <h1 style="font-size: 30px; color: #f0f0f0;text-shadow: 1px 1px 0 #fff;">圈子</h1>
         </div>
     </div>
 </template>
@@ -105,5 +91,4 @@ ul {
     font-size: 17px;
     font-weight: normal;
 }
-
 </style>

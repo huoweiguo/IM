@@ -72,10 +72,9 @@
                 </nav>
             </section>
             <router-view v-slot="{ Component, route }">
-                <keep-alive v-show="route.path !== '/home/ai'">
+                <keep-alive>
                     <component :is="Component" :key="route.path" />
                 </keep-alive>
-                <AI v-show="route.path === '/home/ai'" />
             </router-view>
             <div v-if="sharedMiscState.connectionStatus === -1" class="unconnected">网络连接断开</div>
             <UseDraggable v-if="!sharedMiscState.isElectron && sharedMiscState.isVoipOngoing" class="voip-div-container"

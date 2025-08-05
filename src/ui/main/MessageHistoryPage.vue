@@ -2,16 +2,12 @@
     <section>
         <div class="message-history-page">
             <div class="search-input-container">
-                <input id="searchInput"
-                       ref="input"
-                       autocomplete="off"
-                       v-model="query"
-                       @keydown.esc="cancel"
-                       type="text" :placeholder="$t('common.search')"/>
+                <input id="searchInput" ref="input" autocomplete="off" v-model="query" @keydown.esc="cancel" type="text"
+                    :placeholder="$t('common.search')" />
                 <i class="icon-ion-ios-search"></i>
             </div>
             <div v-if="!query" class="portal">
-                <p>^~^</p>
+                <h1 style="font-size: 30px; color: #f0f0f0;text-shadow: 1px 1px 0 #fff;">圈子</h1>
             </div>
             <div v-else-if="conversationSearchResults.length > 0" class="search-result-container">
                 <div class="conversation-list">
@@ -19,18 +15,19 @@
                         <li v-for="(cresult) in conversationSearchResults"
                             @click="setCurrentConversationSearchResult(cresult)"
                             :key="cresult.conversation.type + cresult.conversation.target + cresult.conversation.line">
-                            <div class="conversation-item"
-                                 v-bind:class="{active:isConversationItemActive(cresult)}">
+                            <div class="conversation-item" v-bind:class="{ active: isConversationItemActive(cresult) }">
                                 <div class="header">
                                     <img class="avatar" draggable="false"
-                                         :src="cresult._conversationInfo.conversation._target.portrait" alt=""/>
+                                        :src="cresult._conversationInfo.conversation._target.portrait" alt="" />
                                 </div>
                                 <div class="content-container">
                                     <p class="title single-line">
                                         {{ cresult._conversationInfo.conversation._target._displayName }} </p>
                                     <p class="desc single-line">
                                         {{
-                                            cresult.matchMessage ? cresult.matchMessage.messageContent.digest(cresult.matchMessage) : `${cresult.matchCount}条相关聊天记录`
+                                            cresult.matchMessage ?
+                                                cresult.matchMessage.messageContent.digest(cresult.matchMessage) :
+                                                `${cresult.matchCount}条相关聊天记录`
                                         }}
                                     </p>
                                 </div>
@@ -52,21 +49,17 @@
                         <i class="icon-ion-ios-arrow-back" @click="currentMessage = null">&nbsp;返回</i>
                     </div>
                     <div class="message-list-container" infinite-wrapper>
-                        <infinite-loading v-if="currentMessage" identifier="oldMessageLoader"
-                                          force-use-infinite-wrapper
-                                          direction="top"
-                                          @infinite="infiniteHandlerTop">
+                        <infinite-loading v-if="currentMessage" identifier="oldMessageLoader" force-use-infinite-wrapper
+                            direction="top" @infinite="infiniteHandlerTop">
                             <!--            <template slot="spinner">加载中...</template>-->
                             <template #no-more>{{ $t('conversation.no_more_message') }}</template>
                             <template #no-results>{{ $t('conversation.no_more_message') }}</template>
                         </infinite-loading>
                         <ul>
-                            <li v-for="(message, index) in messages"
-                                :key="message.uid">
+                            <li v-for="(message, index) in messages" :key="message.uid">
                                 <div class="message-container">
                                     <div class="portrait-container">
-                                        <img
-                                            alt="" :src="message._from.portrait">
+                                        <img alt="" :src="message._from.portrait">
                                     </div>
                                     <div class="name-time-content-container">
                                         <div class="name-time-container">
@@ -76,19 +69,17 @@
                                         </div>
                                         <div class="content">
                                             <MessageContentContainerView :message="message"
-                                                                         @contextmenu.prevent.native="openMessageContextMenu($event, message)"/>
+                                                @contextmenu.prevent.native="openMessageContextMenu($event, message)" />
                                             <a v-if="!currentMessage" class="single-line action"
-                                               @click="showContextMessages(message)">查看上下文</a>
+                                                @click="showContextMessages(message)">查看上下文</a>
                                         </div>
                                     </div>
 
                                 </div>
                             </li>
                         </ul>
-                        <infinite-loading v-if="currentMessage" identifier="newMessageLoader"
-                                          force-use-infinite-wrapper
-                                          direction="bottom"
-                                          @infinite="infiniteHandlerBottom">
+                        <infinite-loading v-if="currentMessage" identifier="newMessageLoader" force-use-infinite-wrapper
+                            direction="bottom" @infinite="infiniteHandlerBottom">
                             <!--            <template slot="spinner">加载中...</template>-->
                             <template #no-more>{{ $t('fav.no_more') }}</template>
                             <template #no-results>{{ $t('fav.all_fav_load') }}</template>
@@ -450,24 +441,23 @@ export default {
     border-radius: 3px;
 }
 
->>> .text-message-container.out {
+>>>.text-message-container.out {
     background-color: #f3f3f3;
     padding-top: 0 !important;
     padding-left: 0 !important;
 }
 
->>> .text-message-container {
+>>>.text-message-container {
     background-color: #f3f3f3;
     padding-top: 0 !important;
     padding-left: 0 !important;
 }
 
->>> .rightarrow::before {
+>>>.rightarrow::before {
     display: none;
 }
 
->>> .leftarrow::before {
+>>>.leftarrow::before {
     display: none;
 }
-
 </style>

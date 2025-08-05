@@ -1,11 +1,11 @@
 <template>
     <section>
         <div v-if="sharedConversationState.currentConversationInfo == null" class="conversation-empty-container">
-            <h1>^~^</h1>
+            <h1 style="font-size: 30px; color: #f0f0f0;text-shadow: 1px 1px 0 #fff;">圈子</h1>
         </div>
         <div v-else class="conversation-container">
             <header>
-                <div class="title-container window-move">
+                <div class="title-container">
                     <div>
                         <h1 class="single-line" @click.stop="toggleConversationInfo">{{ conversationTitle }}</h1>
                         <p class="single-line user-online-status" @click="clickConversationDesc">{{
@@ -1110,8 +1110,6 @@ export default {
     justify-content: space-between;
     align-items: center;
     background-color: #f5f5f5;
-    border-bottom: 1px solid #e6e6e6;
-    border-top-right-radius: var(--main-border-radius);
     position: relative;
 }
 
