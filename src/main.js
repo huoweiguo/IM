@@ -18,6 +18,7 @@ import VueContext from '@madogai/vue-context/dist/vue-context';
 
 import VModal from './vendor/vue-js-modal'
 import './global.css'
+import './qzui/assets/main.css'
 import './wfc.css'
 import './assets/fonts/icomoon/style.css'
 import store from "./store";

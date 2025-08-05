@@ -1,5 +1,5 @@
 <template>
-  <div class="group-chat-nav">
+  <div class="group-chat-nav window-move">
     <!-- <a @click="router.push('/passwordLogin')">登录</a> -->
     <a>私域</a>
     <a>私域群</a>
@@ -32,6 +32,7 @@ const openPublicWindow = () => {
   padding: 0 5px;
   box-sizing: border-box;
   border-bottom: 1px solid #ccc;
+  padding-left: 80px;
 
   a {
     font-size: 14px;
