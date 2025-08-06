@@ -84,6 +84,7 @@
 </template>
 
 <script setup>
+import { createNewWindow } from '@/qzui/utils/electronHelper';
 // 这里可后续添加逻辑
 import { ref, reactive } from 'vue';
 const otherInfo = reactive({
@@ -92,28 +93,20 @@ const otherInfo = reactive({
     isFollow: false,
 });
 const handleIdAuth = () => {
-    if (window.electronAPI) {
-        window.electronAPI.openNewSecondWindow({
-            width: 375,
-            height: 800,
-            title: '实名认证',
-            url: `#/idAuth?id=111`,
-        });
-    } else {
-        console.warn('Electron API 不可用，可能在浏览器环境中运行');
-    }
+    createNewWindow({
+        width: 375,
+        height: 800,
+        title: '实名认证',
+        url: `#/idAuth?id=111`,
+    });
 };
 const handleSchoolAuth = () => {
-    if (window.electronAPI) {
-        window.electronAPI.openNewSecondWindow({
-            width: 375,
-            height: 800,
-            title: '学校认证',
-            url: `#/schoolAuth?id=111`,
-        });
-    } else {
-        console.warn('Electron API 不可用，可能在浏览器环境中运行');
-    }
+    createNewWindow({
+        width: 375,
+        height: 800,
+        title: '学校认证',
+        url: `#/schoolAuth?id=111`,
+    });
 };
 </script>
 

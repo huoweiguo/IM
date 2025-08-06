@@ -11,15 +11,11 @@
 <script setup>
 import { createNewWindow } from '@/qzui/utils/electronHelper';
 const openPublicWindow = () => {
-    if (window.electronAPI) {
-        createNewWindow({
-            width: 375,
-            height: 780,
-            url: `#/publicSphere/list`,
-        });
-    } else {
-        console.warn('Electron API 不可用，可能在浏览器环境中运行');
-    }
+    createNewWindow({
+        width: 375,
+        height: 780,
+        url: `#/publicSphere/list`,
+    });
 };
 </script>
 

@@ -119,6 +119,7 @@
 <script setup>
 import { ref } from 'vue';
 import { Edit } from '@element-plus/icons-vue';
+import { createNewWindow } from '@/qzui/utils/electronHelper';
 const watchSwitch = ref(false);
 const coinList = ref([
     { id: 1, num: 1, received: true },
@@ -128,80 +129,54 @@ const coinList = ref([
     { id: 5, num: 1, received: false },
 ]);
 const handleCalender = () => {
-    // 检查是否在 Electron 环境中
-    if (window.electronAPI) {
-        window.electronAPI.openNewSecondWindow({
-            width: 375,
-            height: 720,
-            title: '我的日程',
-            url: `#/my/calender`,
-        });
-    } else {
-        console.warn('Electron API 不可用，可能在浏览器环境中运行');
-    }
+    createNewWindow({
+        width: 375,
+        height: 720,
+        title: '我的日程',
+        url: `#/my/calender`,
+    });
 };
 const handleMyPublish = (id) => {
-    if (window.electronAPI) {
-        window.electronAPI.openNewSecondWindow({
-            width: 375,
-            height: 720,
-            title: '我的发布',
-            url: `#/myPublish?id=${id}`,
-        });
-    } else {
-        console.warn('Electron API 不可用，可能在浏览器环境中运行');
-    }
+    createNewWindow({
+        width: 375,
+        height: 720,
+        title: '我的发布',
+        url: `#/myPublish?id=${id}`,
+    });
 };
 
 const handleMyFans = () => {
-    // 检查是否在 Electron 环境中
-    if (window.electronAPI) {
-        window.electronAPI.openNewSecondWindow({
-            width: 375,
-            height: 720,
-            title: '我的粉丝',
-            url: `#/fans?id=1`,
-        });
-    } else {
-        console.warn('Electron API 不可用，可能在浏览器环境中运行');
-    }
+    createNewWindow({
+        width: 375,
+        height: 720,
+        title: '我的粉丝',
+        url: `#/fans?id=1`,
+    });
 };
 
 const handleVoucherCenter = () => {
-    if (window.electronAPI) {
-        window.electronAPI.openNewSecondWindow({
-            width: 375,
-            height: 720,
-            title: '充值',
-            url: `#/my/voucherCenter`,
-        });
-    } else {
-        console.warn('Electron API 不可用，可能在浏览器环境中运行');
-    }
+    createNewWindow({
+        width: 375,
+        height: 720,
+        title: '充值',
+        url: `#/my/voucherCenter`,
+    });
 };
 const handleEditUserInfo = () => {
-    if (window.electronAPI) {
-        window.electronAPI.openNewSecondWindow({
-            width: 375,
-            height: 720,
-            title: '编辑资料',
-            url: `#/my/editUserInfo`,
-        });
-    } else {
-        console.warn('Electron API 不可用，可能在浏览器环境中运行');
-    }
+    createNewWindow({
+        width: 375,
+        height: 720,
+        title: '编辑资料',
+        url: `#/my/editUserInfo`,
+    });
 };
 const handleSettings = () => {
-    if (window.electronAPI) {
-        window.electronAPI.openNewSecondWindow({
-            width: 375,
-            height: 720,
-            title: '设置',
-            url: `#/my/settings`,
-        });
-    } else {
-        console.warn('Electron API 不可用，可能在浏览器环境中运行');
-    }
+    createNewWindow({
+        width: 375,
+        height: 720,
+        title: '设置',
+        url: `#/my/settings`,
+    });
 };
 </script>
 

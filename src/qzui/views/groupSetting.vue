@@ -67,17 +67,13 @@
 </template>
 
 <script setup>
+import { createNewWindow } from '@/qzui/utils/electronHelper';
 const openChatWindow = () => {
-    // 检查是否在 Electron 环境中
-    if (window.electronAPI) {
-        window.electronAPI.openNewSecondWindow({
-            width: 604,
-            height: 440,
-            url: `#/groupChat`,
-        });
-    } else {
-        console.warn('Electron API 不可用，可能在浏览器环境中运行');
-    }
+    createNewWindow({
+        width: 604,
+        height: 440,
+        url: `#/groupChat`,
+    });
 };
 </script>
 
