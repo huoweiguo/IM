@@ -5,14 +5,6 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { getItem } from '@/qzui/utils/storageHelper';
 const router = useRouter();
-
-onMounted(() => {
-    if (!getItem('token')) {
-        router.push('/login');
-    }
-});
 </script>

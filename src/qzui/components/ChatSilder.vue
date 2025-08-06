@@ -1,7 +1,7 @@
 <template>
     <div class="chat-slider">
-        <img src="../assets/header.png" class="header-icon" />
-        <ul>
+        <img :src="store.state.contact?.selfUserInfo?.portrait" class="header-icon" />
+        <ul class="tab_ul">
             <li class="chat" :class="{ chat_active: route.path === '/chat' }" @click="$router.push('/chat')">
                 <el-icon class="chat-icon" size="24">
                     <ChatDotRound />
@@ -26,7 +26,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import store from '../../store';
 import { useRoute } from 'vue-router';
 import { createNewWindow } from '@/qzui/utils/electronHelper';
 const route = useRoute();
@@ -39,21 +39,24 @@ const openMyWindow = () => {
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .chat-slider {
-    position: relative;
-    width: 55px;
-    height: 100vh;
-    background-color: rgb(46, 46, 46);
-    padding: 35px 10px;
-    box-sizing: border-box;
+    display: flex;
     flex-direction: column;
+    align-items: center;
+    width: 60px;
+    background-color: rgb(46, 46, 46);
+    box-sizing: border-box;
+    padding: 30px 0;
+
+    .tab_ul {
+        flex: 1;
+        li {
+            margin-bottom: 30px;
+        }
+    }
 
     .bottom_ul {
-        position: absolute;
-        left: 10px;
-        bottom: 30px;
-
         li {
             display: flex;
             justify-content: center;
@@ -62,9 +65,10 @@ const openMyWindow = () => {
 
     .header-icon {
         display: block;
-        width: 35px;
-        height: 35px;
+        width: 40px;
+        height: 40px;
         margin-bottom: 30px;
+        border-radius: 6px;
     }
 
     ul {
@@ -79,7 +83,6 @@ const openMyWindow = () => {
             list-style: none;
             display: flex;
             justify-content: center;
-            margin-bottom: 30px;
             cursor: pointer;
             width: 24px;
             height: 24px;

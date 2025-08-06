@@ -136,7 +136,7 @@ const handleReset = () => {
 
 // 切换到密码登录
 const switchToPasswordLogin = () => {
-    router.push('/login');
+    router.push('/');
 };
 
 // 显示用户协议
@@ -171,10 +171,10 @@ onUnmounted(() => {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    width: 500px;
     height: 100vh;
     box-sizing: border-box;
     margin: auto;
+    padding: 0 36px;
 }
 
 .app-name {

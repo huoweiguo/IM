@@ -91,71 +91,10 @@ const toCommunity = (id) => {
 </script>
 
 <style lang="scss">
-.group-chat-nav {
-    display: flex;
-    align-items: center;
-    width: 100vw;
-    height: 40px;
-    padding: 0 5px;
-    box-sizing: border-box;
-    border-bottom: 1px solid #ccc;
-
-    a {
-        font-size: 14px;
-        margin-right: 20px;
-        color: #333;
-        cursor: pointer;
-
-        &.active {
-            color: rgb(24, 168, 255);
-            font-weight: bold;
-        }
-
-        img {
-            width: 15px;
-            height: 15px;
-            display: block;
-        }
-    }
-}
-
 .group-chat {
-    width: 100vw;
     display: flex;
-
-    .chat-slider {
-        width: 60px;
-        height: 100vh;
-        background-color: rgb(46, 46, 46);
-        padding: 35px 10px;
-        box-sizing: border-box;
-        flex-direction: column;
-
-        .header-icon {
-            display: block;
-            margin-bottom: 30px;
-        }
-
-        ul {
-            padding: 0;
-            margin: 0;
-            width: 36px;
-
-            li {
-                list-style: none;
-                display: flex;
-                justify-content: center;
-                margin-bottom: 30px;
-                cursor: pointer;
-
-                img {
-                    display: flex;
-                    width: 28px;
-                    height: 28px;
-                }
-            }
-        }
-    }
+    width: 100vw;
+    height: calc(100vh - 40px);
 
     .community-chat {
         width: 250px;

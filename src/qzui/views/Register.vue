@@ -35,7 +35,7 @@
         </div>
 
         <button class="login-btn" @click="handleRegister" :disabled="!agreed || isLoading">
-            {{ isLoading ? '注册中...' : '注册并登录' }}
+            {{ isLoading ? '注册中...' : '注册' }}
         </button>
 
         <div class="agreement">
@@ -46,17 +46,12 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
-import { registerAccount } from '../../api/index.js';
+import { registerAccount, sendSmsCode } from '../../api/index.js';
 import { ElMessage } from 'element-plus';
 import wfc from '../../wfc/client/wfc';
 import Config from '../../config';
-import { setItem } from '../../qzui/utils/storageHelper';
-import ConnectionStatus from '../../wfc/client/connectionStatus';
-import EventType from '../../wfc/client/wfcEvent';
-import { isElectron } from '../../platform';
-import IpcEventType from '../../ipcEventType';
 
 const router = useRouter();
 
@@ -71,8 +66,6 @@ const showPassword = ref(false);
 const countdown = ref(0);
 const isCountingDown = ref(false);
 const isLoading = ref(false);
-const clientId = wfc.getClientId();
-let connectionStatusListener = null;
 
 // 密码强度计算
 const passwordStrength = computed(() => {
@@ -114,22 +107,39 @@ const getVerificationCode = () => {
         return;
     }
 
-    console.log('发送验证码到:', purePhone);
+    sendSmsCode({
+        mobile: purePhone,
+        scene: 'BDSJHM', // 注册验证码场景
+    })
+        .then((res) => {
+            if (res.code !== 0) {
+                ElMessage.error(res.msg || '发送验证码失败，请重试');
+                isCountingDown.value = false;
+                countdown.value = 0;
+                return;
+            }
 
-    isCountingDown.value = true;
-    countdown.value = 60;
-    const timer = setInterval(() => {
-        countdown.value--;
-        if (countdown.value <= 0) {
-            clearInterval(timer);
+            ElMessage.success('验证码发送成功');
+            isCountingDown.value = true;
+            countdown.value = 60;
+            const timer = setInterval(() => {
+                countdown.value--;
+                if (countdown.value <= 0) {
+                    clearInterval(timer);
+                    isCountingDown.value = false;
+                }
+            }, 1000);
+        })
+        .catch(() => {
+            ElMessage.error('发送验证码失败，请重试');
             isCountingDown.value = false;
-        }
-    }, 1000);
+            countdown.value = 0;
+        });
 };
 
 // 切换到登录页面
 const switchToLogin = () => {
-    router.push('/login');
+    router.push('/');
 };
 
 // 处理注册
@@ -160,10 +170,8 @@ const handleRegister = () => {
 
     registerAccount({
         account: purePhone,
-        clientId: clientId,
         code: verificationCode.value,
         password: password.value,
-        inviteCode: inviteCode.value,
         terminal: Config.getWFCPlatform(),
     })
         .then((res) => {
@@ -175,22 +183,9 @@ const handleRegister = () => {
             }
 
             console.log('注册成功:', res);
-            ElMessage.success('注册成功，正在登录...');
+            ElMessage.success('注册成功');
 
-            // 存储用户信息
-            const userId = res.data.serviceId;
-            const token = res.data.serviceToken;
-            const portrait = res.data.id;
-
-            setItem('userId', userId);
-            setItem('token', token);
-            setItem('userPortrait', portrait);
-
-            // 连接IM服务器
-            wfc.connect(userId, token);
-
-            // 注册成功后跳转到选择性别页面
-            router.push('/selectSex');
+            router.push('/login');
         })
         .catch((error) => {
             isLoading.value = false;
@@ -198,29 +193,6 @@ const handleRegister = () => {
             ElMessage.error('注册失败，请重试');
         });
 };
-
-// 连接状态处理
-const onConnectionStatusChange = (status) => {
-    if (status === ConnectionStatus.ConnectionStatusLogout || status === ConnectionStatus.ConnectionStatusRejected || status === ConnectionStatus.ConnectionStatusTokenIncorrect) {
-        ElMessage.error('连接失败: ' + ConnectionStatus.desc(status));
-    }
-
-    if (status === ConnectionStatus.ConnectionStatusConnected) {
-        // 登录成功后操作
-        if (isElectron()) {
-            window.ipcRenderer.send(IpcEventType.LOGIN, {
-                userId: wfc.getUserId(),
-                closeWindowToExit: localStorage.getItem(wfc.getUserId() + '-' + 'closeWindowToExit') === '1',
-            });
-        }
-    }
-};
-
-// 组件挂载时添加监听
-onMounted(() => {
-    connectionStatusListener = onConnectionStatusChange;
-    wfc.eventEmitter.on(EventType.ConnectionStatusChanged, connectionStatusListener);
-});
 
 // 显示用户协议
 const showUserAgreement = () => {
@@ -238,10 +210,10 @@ const showPrivacyPolicy = () => {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    width: 500px;
     height: 100vh;
     box-sizing: border-box;
     margin: auto;
+    padding: 0 36px;
 }
 
 .app-name {

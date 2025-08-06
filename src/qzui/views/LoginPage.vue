@@ -5,8 +5,8 @@
 
         <!-- 登录方式选项卡 -->
         <div class="tab-container">
-            <div class="tab" :class="{ active: loginType === 'phone' }" @click="switchToPhoneLogin">手机号登录</div>
             <div class="tab" :class="{ active: loginType === 'password' }" @click="switchToPasswordLogin">密码登录</div>
+            <div class="tab" :class="{ active: loginType === 'phone' }" @click="switchToPhoneLogin">手机号登录</div>
         </div>
 
         <!-- 手机号登录表单 -->
@@ -72,7 +72,7 @@ const appName = '圈子';
 const welcomeText = '你好，欢迎来到圈子';
 
 // 登录类型切换
-const loginType = ref('phone'); // 'phone' 或 'password'
+const loginType = ref('password'); // 'phone' 或 'password'
 
 // 表单数据
 const phoneNumber = ref('');
@@ -108,7 +108,7 @@ const sendVerificationCode = () => {
     }
 
     if (!phoneNumber.value || !/^1[3-9]\d{9}$/.test(phoneNumber.value)) {
-        alert('请输入正确的手机号码');
+        ElMessage.error('请输入正确的手机号码');
         return;
     }
     sendSmsCode({
@@ -143,14 +143,14 @@ const togglePasswordVisibility = () => {
 // 处理登录
 const handleLogin = () => {
     if (!agreed.value) {
-        alert('请先阅读并同意用户协议和隐私政策');
+        ElMessage.error('请先阅读并同意用户协议和隐私政策');
         return;
     }
 
     if (loginType.value === 'phone') {
         // 手机号验证码登录
         if (!phoneNumber.value || !verificationCode.value) {
-            alert('请输入手机号和验证码');
+            ElMessage.error('请输入手机号和验证码');
             return;
         }
 
@@ -165,7 +165,7 @@ const handleLogin = () => {
     } else {
         // 密码登录
         if (!phoneNumber.value || !password.value) {
-            alert('请输入手机号和密码');
+            ElMessage.error('请输入手机号和密码');
             return;
         }
 
@@ -175,7 +175,7 @@ const handleLogin = () => {
             code: '',
             password: password.value,
             scene: 1, // 账号密码登录
-            terminal: 3, // 终端 登录渠道
+            terminal: Config.getWFCPlatform(),
         }).then(handleLoginResponse);
     }
 };
@@ -201,6 +201,17 @@ const handleLoginResponse = (res) => {
 
     // 连接IM服务器
     wfc.connect(userId, token);
+
+    // 登录成功后操作
+    if (isElectron()) {
+        ipcRenderer.send(IpcEventType.LOGIN, {
+            userId: wfc.getUserId(),
+            closeWindowToExit: getItem(wfc.getUserId() + '-' + 'closeWindowToExit') === '1',
+        });
+    }
+
+    // 登录成功后跳转到聊天页面
+    router.push('/chat');
 };
 
 // 忘记密码
@@ -245,7 +256,7 @@ const onConnectionStatusChange = (status) => {
         }
 
         // 跳转到首页
-        router.push('/home');
+        router.push('/chat');
     }
 };
 
@@ -255,9 +266,17 @@ onMounted(() => {
     wfc.eventEmitter.on(EventType.ConnectionStatusChanged, connectionStatusListener);
 
     // 检查是否有保存的用户信息，实现自动登录
-    const userId = getItem('userId');
-    const token = getItem('token');
-    if (userId && token) {
+    let userId = getItem('userId');
+    let token = getItem('token');
+    if (userId) {
+        let autoLogin = getItem(userId + '-' + 'autoLogin') === '1';
+        if (autoLogin && token) {
+            const firstTimeConnect = wfc.connect(userId, token);
+            console.log('firstTimeConnect', firstTimeConnect);
+        } else {
+            isElectron() && ipcRenderer.send(IpcEventType.RESIZE_LOGIN_WINDOW);
+        }
+    } else {
         isElectron() && ipcRenderer.send(IpcEventType.RESIZE_LOGIN_WINDOW);
     }
 });
@@ -275,10 +294,10 @@ onUnmounted(() => {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    width: 500px;
     height: 100vh;
     box-sizing: border-box;
     margin: auto;
+    padding: 0 36px;
 }
 
 .app-name {

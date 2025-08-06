@@ -10,7 +10,7 @@ import LoginPage from '../../qzui/views/LoginPage.vue';
 
 export const login = [
     {
-        path: '/login',
+        path: '/',
         name: 'Login',
         component: LoginPage,
         meta: {
