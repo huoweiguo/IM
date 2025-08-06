@@ -138,7 +138,6 @@ const handleDeleteRecord = () => {
     warningMessage.value = '一旦删除，将再也无法恢复被清空记录(聊天中的他人仍然可以查看这些记录)。该操作无法撒销，确定继续吗?';
     centerDialogVisible.value = true;
 };
-import { createNewWindow } from '@/qzui/utils/electronHelper';
 
 const handleTipOff = () => {
     createNewWindow({
