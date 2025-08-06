@@ -132,20 +132,18 @@
 
 <script setup>
 import { ref } from 'vue';
+import store from '../../store';
 import { createNewWindow } from '@/qzui/utils/electronHelper';
-import usrImg1 from '../assets/usr-1.png';
-import usrImg2 from '../assets/usr-2.png';
-import usrImg3 from '../assets/usr-3.png';
 import grpImg1 from '../assets/grp-1.png';
 import grpImg2 from '../assets/grp-2.png';
-import grpImg3 from '../assets/grp-3.png';
 import grpImg4 from '../assets/grp-4.png';
 const activeIndex = ref(5);
-const chatTitle = ref('相亲相爱一家人(7)');
-const groupName = ref('相亲相爱一家人(7)');
-const drawer = ref(false);
+const chatTitle = ref('');
 const chatDrawer = ref(false);
 const isGroup = ref(false); // 是否是群聊
+
+console.log(store.state);
+
 const messageInfo = ref([
     {
         name: '系统通知',
@@ -154,112 +152,6 @@ const messageInfo = ref([
         count: 50,
         icon: grpImg2,
         isGroup: false,
-    },
-    {
-        name: '官方团队',
-        time: '3月24日 12:00',
-        message: '请问对我们的服务还满意吗?',
-        icon: grpImg3,
-        isGroup: false,
-    },
-    {
-        name: 'anni',
-        time: '3月24日 12:00',
-        message: '请问你还有什么问题吗?',
-        count: 2,
-        icon: usrImg1,
-        isGroup: false,
-    },
-    {
-        name: '小蜜蜂',
-        time: '3月24日 12:00',
-        message: '你在做什么啊?哈哈',
-        count: 1,
-        icon: usrImg2,
-        isGroup: false,
-    },
-    {
-        name: '我是只小小鸟',
-        time: '3月24日 12:00',
-        message: '怎么不回复我呢?',
-        count: 15,
-        icon: usrImg3,
-        isGroup: true,
-    },
-    {
-        name: 'anni',
-        time: '3月24日 12:00',
-        message: '请问你还有什么问题吗?',
-        count: 2,
-        icon: usrImg1,
-        isGroup: false,
-    },
-    {
-        name: '小蜜蜂',
-        time: '3月24日 12:00',
-        message: '你在做什么啊?哈哈',
-        count: 1,
-        icon: usrImg2,
-        isGroup: false,
-    },
-    {
-        name: '我是只小小鸟',
-        time: '3月24日 12:00',
-        message: '怎么不回复我呢?',
-        count: 15,
-        icon: usrImg3,
-        isGroup: true,
-    },
-    {
-        name: 'anni',
-        time: '3月24日 12:00',
-        message: '请问你还有什么问题吗?',
-        count: 2,
-        icon: usrImg1,
-        isGroup: false,
-    },
-    {
-        name: '小蜜蜂',
-        time: '3月24日 12:00',
-        message: '你在做什么啊?哈哈',
-        count: 1,
-        icon: usrImg2,
-        isGroup: false,
-    },
-    {
-        name: '我是只小小鸟',
-        time: '3月24日 12:00',
-        message: '怎么不回复我呢?',
-        count: 15,
-        icon: usrImg3,
-        isGroup: true,
-    },
-
-    {
-        name: '我是只小小鸟',
-        time: '3月24日 12:00',
-        message: '怎么不回复我呢?',
-        count: 15,
-        icon: usrImg3,
-        isGroup: true,
-    },
-
-    {
-        name: '我是只小小鸟',
-        time: '3月24日 12:00',
-        message: '怎么不回复我呢?',
-        count: 15,
-        icon: usrImg3,
-        isGroup: true,
-    },
-
-    {
-        name: '我是只小小鸟',
-        time: '3月24日 12:00',
-        message: '怎么不回复我呢?',
-        count: 15,
-        icon: usrImg3,
-        isGroup: true,
     },
 ]);
 const changeActive = (index, item) => {
