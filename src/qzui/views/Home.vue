@@ -12,7 +12,7 @@ const router = useRouter();
 
 onMounted(() => {
     if (!getItem('token')) {
-        router.push('/passwordLogin');
+        router.push('/login');
     }
 });
 </script>

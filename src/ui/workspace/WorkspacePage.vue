@@ -8,26 +8,26 @@
 
 <script>
 // do not remove the following line
-import ElectronTabs from 'electron-tabs'
-import '../../../node_modules/electron-tabs/src/style.css'
-import {init} from './bridgeServerImpl'
-import wfc from "../../wfc/client/wfc";
-import Config from "../../config";
-import {ipcRenderer, remote} from "../../platform";
-import IpcEventType from "../../ipcEventType";
-import { ipcMain } from "electron";
-import IPCEventType from "../../ipcEventType";
+import ElectronTabs from 'electron-tabs';
+import '../../../node_modules/electron-tabs/src/style.css';
+import { init } from './bridgeServerImpl';
+import wfc from '../../wfc/client/wfc';
+import Config from '../../config';
+import { ipcRenderer, remote } from '../../platform';
+import IpcEventType from '../../ipcEventType';
+import { ipcMain } from 'electron';
+import IPCEventType from '../../ipcEventType';
 
 let tabGroup = null;
 
 export default {
-    name: "WorkspacePage",
+    name: 'WorkspacePage',
     components: {},
     data() {
         return {
             shouldShowWorkspacePortal: true,
             url: Config.OPEN_PLATFORM_WORK_SPACE_URL,
-        }
+        };
     },
 
     created() {
@@ -37,12 +37,12 @@ export default {
         }
 
         ipcRenderer.on('new-open-platform-app-tab', (event, args) => {
-            console.log('new-open-platform-app-tab', args)
+            console.log('new-open-platform-app-tab', args);
             let tabUrl = this._getQuery(args.url, 'url');
             tabUrl = decodeURIComponent(tabUrl);
-            console.log('new-open-platform-app-tab', args, tabUrl)
+            console.log('new-open-platform-app-tab', args, tabUrl);
             this.addTab(tabUrl);
-        })
+        });
     },
     methods: {
         _getQuery(url, key) {
@@ -58,13 +58,11 @@ export default {
 
         onTabActive() {
             let tab = tabGroup.getActiveTab();
-            console.log('onTabActive', tab)
+            console.log('onTabActive', tab);
             this.shouldShowWorkspacePortal = tab.id === 0;
         },
 
-        onTabClose() {
-
-        },
+        onTabClose() {},
 
         // 开放平台UI相关方法 start
         chooseContacts(options, successCB, failCB) {
@@ -80,12 +78,12 @@ export default {
             if (hash) {
                 url = window.location.href.replace(hash, '#/workspace');
             } else {
-                url += "/workspace"
+                url += '/workspace';
             }
 
             url += '?url=' + encodeURIComponent(args.url);
 
-            ipcRenderer.send(IpcEventType.OPEN_H5_APP_WINDOW, {url: url, hostUrl: args.hostUrl})
+            ipcRenderer.send(IpcEventType.OPEN_H5_APP_WINDOW, { url: url, hostUrl: args.hostUrl });
         },
 
         addTab(url, closable = true, name = '工作台') {
@@ -111,7 +109,7 @@ export default {
                     contextIsolation: false,
                     webpreferences: 'nodeIntegration=true, contextIsolation=false',
                     url: url,
-                    preload: process.env.NODE_ENV === 'development' ?  `file://${__dirname}/../../../../../../../../src/ui/workspace/bridgeClientImpl.js` : `file://${__dirname}/preload.js`
+                    preload: process.env.NODE_ENV === 'development' ? `file://${__dirname}/../../../../../../../../src/ui/workspace/bridgeClientImpl.js` : `file://${__dirname}/preload.js`,
                 },
             });
             // tab.webview.addEventListener('new-window', (e) => {
@@ -131,28 +129,26 @@ export default {
 
             tab.webview.addEventListener('page-title-updated', (e) => {
                 tab.setTitle(e.title);
-            })
+            });
             tab.webview.addEventListener('dom-ready', (e) => {
                 //tab.webview.openDevTools();
                 let webContentsId = tab.webview.getWebContentsId();
-                ipcRenderer.send(IpcEventType.WORKSPACE_NEW_TAB_WEB_CONTENT , {id: webContentsId})
-            })
-
-        }
-
+                ipcRenderer.send(IpcEventType.WORKSPACE_NEW_TAB_WEB_CONTENT, { id: webContentsId });
+            });
+        },
 
         // 开放平台UI相关方法 end
     },
 
     mounted() {
-        tabGroup = document.querySelector("tab-group");
-        tabGroup.on('tab-active', this.onTabActive)
+        tabGroup = document.querySelector('tab-group');
+        tabGroup.on('tab-active', this.onTabActive);
         tabGroup.on('tab-removed', () => {
             let tabs = tabGroup.getTabs();
             if (!tabs || tabs.length === 0) {
                 remote.getCurrentWindow().close();
             }
-        })
+        });
 
         this.addTab(this.url, false);
         this.tabGroup = tabGroup;
@@ -161,11 +157,11 @@ export default {
         ipcRenderer.on(IpcEventType.WORKSPACE_ADD_NEW_TAB, async (event, args) => {
             let url = decodeURI(args.url);
             this.addTab(url, true, args.frameName);
-        })
+        });
     },
 
-    computed: {}
-}
+    computed: {},
+};
 </script>
 
 <style scoped>
@@ -190,5 +186,4 @@ export default {
 >>> .etabs-tab {
     height: 32px;
 }
-
 </style>

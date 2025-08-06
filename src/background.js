@@ -17,21 +17,21 @@ import {
     shell,
     Tray,
     desktopCapturer,
-    webContents
+    webContents,
 } from 'electron';
-import Screenshots from "electron-screenshots";
+import Screenshots from 'electron-screenshots';
 import windowStateKeeper from 'electron-window-state';
 import i18n from 'i18n';
 import proto from '../marswrapper.node';
 // import rcProto from '../rc.node';
 
 import pkg from '../package.json';
-import IPCEventType from "./ipcEventType";
-import nodePath from 'path'
-import { init as initProtoMain } from "./wfc/proto/proto_main";
-import createProtocol from "./createProtocol";
+import IPCEventType from './ipcEventType';
+import nodePath from 'path';
+import { init as initProtoMain } from './wfc/proto/proto_main';
+import createProtocol from './createProtocol';
 
-console.log('start crash report', app.getPath('crashDumps'))
+console.log('start crash report', app.getPath('crashDumps'));
 // crashReporter.start({uploadToServer: false});
 crashReporter.start({
     companyName: pkg.company,
@@ -40,37 +40,34 @@ crashReporter.start({
     compress: true,
     ignoreSystemCrashHandler: false,
     extra: {
-        'key': 'application key',
-        'email': 'user email',
-        'comments': 'comment'
-    }
-})
+        key: 'application key',
+        email: 'user email',
+        comments: 'comment',
+    },
+});
 
 // Scheme must be registered before the app is ready
-protocol.registerSchemesAsPrivileged([
-    { scheme: 'app', privileges: { secure: true, standard: true, bypassCSP: true } }
-])
+protocol.registerSchemesAsPrivileged([{ scheme: 'app', privileges: { secure: true, standard: true, bypassCSP: true } }]);
 
-const isDevelopment = process.env.NODE_ENV !== 'production'
+const isDevelopment = process.env.NODE_ENV !== 'production';
 
 const workingDir = isDevelopment ? `${__dirname}/public` : `${__dirname}`;
-
 
 let Locales = {};
 i18n.configure({
     locales: ['en', 'ch'],
     directory: workingDir + '/locales',
-    register: Locales
+    register: Locales,
 });
 Locales.setLocale('ch');
 
-app.commandLine.appendSwitch('js-flags', '--expose-gc')
+app.commandLine.appendSwitch('js-flags', '--expose-gc');
 // 忽略证书错误
 //app.commandLine.appendSwitch('ignore-certificate-errors')
 
 process.on('uncaughtException', (error) => {
-    console.log('--------uncaughtException-----------', error)
-})
+    console.log('--------uncaughtException-----------', error);
+});
 
 let forceQuit = false;
 let downloading = false;
@@ -85,14 +82,14 @@ let conversationWindowMap = new Map();
 let screenshots;
 let tray;
 let trayIcon;
-let downloadFileMap = new Map()
+let downloadFileMap = new Map();
 let settings = {};
 let isFullScreen = false;
 let isMainWindowFocusedWhenStartScreenshot = false;
 let screenShotWindowId = 0;
 let isOsx = process.platform === 'darwin';
 let isWin = !isOsx;
-let userId = ''
+let userId = '';
 
 let isSuspend = false;
 let closeWindowToExit = true;
@@ -113,29 +110,29 @@ let mainMenu = [
                 click() {
                     mainWindow.show();
                     mainWindow.webContents.send('show-settings');
-                }
+                },
             },
             {
-                type: 'separator'
+                type: 'separator',
             },
             {
-                role: 'hide'
+                role: 'hide',
             },
             {
-                role: 'hideothers'
+                role: 'hideothers',
             },
             {
-                role: 'unhide'
+                role: 'unhide',
             },
             {
                 label: Locales.__('Main').Check,
                 accelerator: 'Cmd+U',
                 click() {
                     checkForUpdates();
-                }
+                },
             },
             {
-                type: 'separator'
+                type: 'separator',
             },
             {
                 label: Locales.__('Main').Quit,
@@ -145,49 +142,49 @@ let mainMenu = [
                     forceQuit = true;
                     mainWindow = null;
                     disconnectAndQuit();
-                }
-            }
-        ]
+                },
+            },
+        ],
     },
     {
         label: Locales.__('Edit').Title,
         submenu: [
             {
                 role: 'undo',
-                label: Locales.__('Edit').Undo
+                label: Locales.__('Edit').Undo,
             },
             {
                 role: 'redo',
-                label: Locales.__('Edit').Redo
+                label: Locales.__('Edit').Redo,
             },
             {
-                type: 'separator'
+                type: 'separator',
             },
             {
                 role: 'cut',
-                label: Locales.__('Edit').Cut
+                label: Locales.__('Edit').Cut,
             },
             {
                 role: 'copy',
-                label: Locales.__('Edit').Copy
+                label: Locales.__('Edit').Copy,
             },
             {
                 role: 'paste',
-                label: Locales.__('Edit').Paste
+                label: Locales.__('Edit').Paste,
             },
             {
                 role: 'pasteandmatchstyle',
-                label: Locales.__('Edit').PasteMatch
+                label: Locales.__('Edit').PasteMatch,
             },
             {
                 role: 'delete',
-                label: Locales.__('Edit').Delete
+                label: Locales.__('Edit').Delete,
             },
             {
                 role: 'selectall',
-                label: Locales.__('Edit').SelectAll
-            }
-        ]
+                label: Locales.__('Edit').SelectAll,
+            },
+        ],
     },
     {
         label: Locales.__('View').Title,
@@ -200,7 +197,7 @@ let mainMenu = [
 
                     mainWindow.show();
                     mainWindow.setFullScreen(isFullScreen);
-                }
+                },
             },
             {
                 label: Locales.__('View').ToggleConversations,
@@ -208,7 +205,7 @@ let mainMenu = [
                 click() {
                     mainWindow.show();
                     mainWindow.webContents.send('show-conversations');
-                }
+                },
             },
             {
                 type: 'separator',
@@ -218,13 +215,13 @@ let mainMenu = [
             },
             {
                 role: 'toggledevtools',
-                label: Locales.__('View').ToggleDevtools
+                label: Locales.__('View').ToggleDevtools,
             },
             {
                 role: 'togglefullscreen',
-                label: Locales.__('View').ToggleFull
-            }
-        ]
+                label: Locales.__('View').ToggleFull,
+            },
+        ],
     },
     {
         label: Locales.__('Window').Title,
@@ -232,13 +229,13 @@ let mainMenu = [
         submenu: [
             {
                 label: Locales.__('Window').Min,
-                role: 'minimize'
+                role: 'minimize',
             },
             {
                 label: Locales.__('Window').Close,
-                role: 'close'
-            }
-        ]
+                role: 'close',
+            },
+        ],
     },
     {
         label: Locales.__('Help').Title,
@@ -248,27 +245,27 @@ let mainMenu = [
                 label: Locales.__('Help').FeedBack,
                 click() {
                     shell.openExternal('https://github.com/wildfirechat/vue-pc-chat/issues');
-                }
+                },
             },
             {
                 label: Locales.__('Help').Fork,
                 click() {
                     shell.openExternal('https://github.com/wildfirechat/vue-pc-chat');
-                }
+                },
             },
             {
-                type: 'separator'
+                type: 'separator',
             },
             {
                 role: 'reload',
-                label: Locales.__('Help').Reload
+                label: Locales.__('Help').Reload,
             },
             {
                 role: 'forcereload',
-                label: Locales.__('Help').ForceReload
+                label: Locales.__('Help').ForceReload,
             },
-        ]
-    }
+        ],
+    },
 ];
 let trayMenu = [
     {
@@ -276,16 +273,16 @@ let trayMenu = [
         click() {
             let isVisible = mainWindow.isVisible();
             isVisible ? mainWindow.hide() : mainWindow.show();
-        }
+        },
     },
     {
-        type: 'separator'
+        type: 'separator',
     },
     {
         label: Locales.__('Help').Fork,
         click() {
             shell.openExternal('https://github.com/wildfirechat/vue-pc-chat');
-        }
+        },
     },
     {
         label: Locales.__('View').ToggleDevtools,
@@ -293,10 +290,10 @@ let trayMenu = [
         click() {
             mainWindow.show();
             mainWindow.toggleDevTools();
-        }
+        },
     },
     {
-        type: 'separator'
+        type: 'separator',
     },
     {
         label: Locales.__('Main').Quit,
@@ -310,10 +307,10 @@ let trayMenu = [
             setTimeout(() => {
                 app.exit(0);
             }, 1000);
-        }
-    }
+        },
+    },
 ];
-let blink = null
+let blink = null;
 
 function checkForUpdates() {
     if (downloading) {
@@ -322,20 +319,18 @@ function checkForUpdates() {
             buttons: ['OK'],
             title: pkg.name,
             message: `Downloading...`,
-            detail: `Please leave the app open, the new version is downloading. You'll receive a new dialog when downloading is finished.`
+            detail: `Please leave the app open, the new version is downloading. You'll receive a new dialog when downloading is finished.`,
         });
 
         return;
     }
-
 }
 
 function updateTray(unread = 0) {
     settings.showOnTray = true;
 
     if (settings.showOnTray) {
-        if (tray
-            && updateTray.lastUnread === unread) {
+        if (tray && updateTray.lastUnread === unread) {
             return;
         }
 
@@ -349,7 +344,6 @@ function updateTray(unread = 0) {
             }
             trayIcon = NativeImage.createFromPath(iconPath);
         }
-
 
         // Make sure the last tray has been destroyed
         setTimeout(() => {
@@ -386,8 +380,6 @@ function updateTray(unread = 0) {
         // }
         tray = null;
     }
-
-
 }
 
 function createMenu() {
@@ -404,31 +396,33 @@ function regShortcut() {
     // if(isWin) {
     globalShortcut.register('CommandOrControl+G', () => {
         mainWindow.webContents.toggleDevTools();
-    })
+    });
     // }
     globalShortcut.register('Control+F5', () => {
         mainWindow.webContents.reload();
-    })
+    });
     globalShortcut.register('CommandOrControl+shift+a', () => {
         isMainWindowFocusedWhenStartScreenshot = mainWindow.isFocused();
         console.log('isMainWindowFocusedWhenStartScreenshot', mainWindow.isFocused());
-        screenshots.startCapture()
+        screenshots.startCapture();
     });
     // 调试用，主要用于处理 windows 不能打开子窗口的控制台
     // 打开所有窗口控制台
     globalShortcut.register('ctrl+shift+i', () => {
         let windows = BrowserWindow.getAllWindows();
-        windows.forEach(win => win.openDevTools())
-
+        windows.forEach((win) => win.openDevTools());
     });
     globalShortcut.register('ctrl+shift+d', () => {
         let heapdump = require('@nearform/heap-profiler');
-        console.log('generateHeapSnapshot dir', __dirname)
-        heapdump.generateHeapSnapshot({
-            destination: __dirname + "/" + Date.now() + ".heapsnapshot"
-        }, (err) => {
-            console.log('generateHeapSnapshot cb', err)
-        })
+        console.log('generateHeapSnapshot dir', __dirname);
+        heapdump.generateHeapSnapshot(
+            {
+                destination: __dirname + '/' + Date.now() + '.heapsnapshot',
+            },
+            (err) => {
+                console.log('generateHeapSnapshot cb', err);
+            }
+        );
     });
 }
 
@@ -436,15 +430,15 @@ const downloadHandler = (event, item, webContents) => {
     // 设置保存路径,使Electron不提示保存对话框。
     // item.setSavePath('/tmp/save.pdf')
     let fileName = downloadFileMap.get(item.getURL()).fileName;
-    item.setSaveDialogOptions({ defaultPath: fileName })
+    item.setSaveDialogOptions({ defaultPath: fileName });
 
     item.on('updated', (event, state) => {
         try {
             if (state === 'interrupted') {
-                console.log('Download is interrupted but can be resumed')
+                console.log('Download is interrupted but can be resumed');
             } else if (state === 'progressing') {
                 if (item.isPaused()) {
-                    console.log('Download is paused')
+                    console.log('Download is paused');
                 } else {
                     // console.log(`Received bytes: ${fileName} ${item.getReceivedBytes()}, ${item.getTotalBytes()}`)
                     let downloadFile = downloadFileMap.get(item.getURL());
@@ -452,37 +446,34 @@ const downloadHandler = (event, item, webContents) => {
                     webContents.send('file-download-progress', {
                         messageUid: messageUid,
                         receivedBytes: item.getReceivedBytes(),
-                        totalBytes: item.getTotalBytes()
-                    }
-                    );
+                        totalBytes: item.getTotalBytes(),
+                    });
                 }
             }
-
         } catch (e) {
-            console.log('downloadHandler updated error', e)
+            console.log('downloadHandler updated error', e);
         }
-    })
+    });
     item.once('done', (event, state) => {
         try {
             let downloadFile = downloadFileMap.get(item.getURL());
             if (!downloadFile) {
                 return;
             }
-            let messageUid = downloadFile.messageUid
+            let messageUid = downloadFile.messageUid;
             if (state === 'completed') {
-                console.log('Download successfully')
+                console.log('Download successfully');
                 webContents.send('file-downloaded', { messageUid: messageUid, filePath: item.getSavePath() });
             } else {
                 webContents.send('file-download-failed', { messageUid: messageUid });
-                console.log(`Download failed: ${state}`)
+                console.log(`Download failed: ${state}`);
             }
             downloadFileMap.delete(item.getURL());
-
         } catch (e) {
-            console.log('downloadHandler done error', e)
+            console.log('downloadHandler done error', e);
         }
-    })
-}
+    });
+};
 
 const createMainWindow = async () => {
     let mainWindowState = windowStateKeeper({
@@ -521,23 +512,23 @@ const createMainWindow = async () => {
         frame: !isWin,
     });
     mainWindow.center();
-    const badgeOptions = {}
+    const badgeOptions = {};
 
     if (process.env.WEBPACK_DEV_SERVER_URL) {
         // Load the url of the dev server if in development mode
-        await mainWindow.loadURL(process.env.WEBPACK_DEV_SERVER_URL)
-        //if (!process.env.IS_TEST) mainWindow.webContents.openDevTools()
+        await mainWindow.loadURL(process.env.WEBPACK_DEV_SERVER_URL);
+        if (!process.env.IS_TEST) mainWindow.webContents.openDevTools();
     } else {
-        createProtocol('app')
+        createProtocol('app');
         // Load the index.html when not in development
-        mainWindow.loadURL('app://./index.html')
+        mainWindow.loadURL('app://./index.html');
     }
     mainWindow.webContents.on('did-finish-load', (e) => {
         try {
             mainWindow.show();
             mainWindow.focus();
             if (deepLinkUrl) {
-                onDeepLink(deepLinkUrl)
+                onDeepLink(deepLinkUrl);
             }
             setTimeout(() => mainWindow.setOpacity(1), 1000 / 60);
         } catch (ex) {
@@ -547,13 +538,13 @@ const createMainWindow = async () => {
 
     mainWindow.webContents.on('new-window', (event, url) => {
         event.preventDefault();
-        console.log('new-windows', url)
+        console.log('new-windows', url);
         shell.openExternal(url);
     });
 
     // open url in default browser, electron 22-
     mainWindow.webContents.on('will-navigate', (event, url) => {
-        console.log('will-navigate', url)
+        console.log('will-navigate', url);
         // do default action
         event.preventDefault();
         // console.log('navigate', url)
@@ -561,13 +552,13 @@ const createMainWindow = async () => {
     });
 
     // open url in default browser, electron 22+
-    mainWindow.webContents.setWindowOpenHandler(details => {
-        console.log('main windowOpenHandler', details)
+    mainWindow.webContents.setWindowOpenHandler((details) => {
+        console.log('main windowOpenHandler', details);
         shell.openExternal(details.url);
-        return { action: 'deny' }
+        return { action: 'deny' };
     });
 
-    mainWindow.on('close', e => {
+    mainWindow.on('close', (e) => {
         if (forceQuit || !tray || closeWindowToExit) {
             mainWindow = null;
             disconnectAndQuit();
@@ -575,7 +566,7 @@ const createMainWindow = async () => {
             e.preventDefault();
             if (mainWindow.isFullScreen()) {
                 mainWindow.setFullScreen(false);
-                mainWindow.once('leave-full-screen', () => mainWindow.hide())
+                mainWindow.once('leave-full-screen', () => mainWindow.hide());
             } else {
                 mainWindow.hide();
             }
@@ -607,7 +598,7 @@ const createMainWindow = async () => {
 
     ipcMain.on(IPCEventType.START_SCREEN_SHARE, (event, args) => {
         let pointer = screen.getCursorScreenPoint();
-        let display = screen.getDisplayNearestPoint(pointer)
+        let display = screen.getDisplayNearestPoint(pointer);
         mainWindow.webContents.send(IPCEventType.START_SCREEN_SHARE, { width: display.size.width, ...args });
     });
 
@@ -628,7 +619,7 @@ const createMainWindow = async () => {
                 }
             }
         }
-        if (targetWin && !targetWin.isVisible() || targetWin.isMinimized()) {
+        if ((targetWin && !targetWin.isVisible()) || targetWin.isMinimized()) {
             targetWin.show();
             targetWin.focus();
         }
@@ -651,7 +642,7 @@ const createMainWindow = async () => {
         let args = { hasImage: false };
 
         if (process.platform !== 'linux') {
-            const clipboardEx = require('electron-clipboard-ex')
+            const clipboardEx = require('electron-clipboard-ex');
             // only support windows and mac
             if (clipboardEx) {
                 const filePaths = clipboardEx.readFilePaths();
@@ -659,16 +650,16 @@ const createMainWindow = async () => {
                     args = {
                         files: [],
                     };
-                    filePaths.forEach(path => {
+                    filePaths.forEach((path) => {
                         let stat = fs.statSync(path);
                         if (stat.isFile()) {
                             args.files.push({
                                 path: path,
                                 name: nodePath.basename(path),
                                 size: stat.size,
-                            })
+                            });
                         }
-                    })
+                    });
                 }
             }
 
@@ -695,7 +686,7 @@ const createMainWindow = async () => {
     });
     ipcMain.on(IPCEventType.FILE_COPY, (event, args) => {
         if (process.platform !== 'linux') {
-            const clipboardEx = require('electron-clipboard-ex')
+            const clipboardEx = require('electron-clipboard-ex');
             console.log('copy path', args.path);
             clipboardEx.writeFilePaths([args.path]);
         }
@@ -709,15 +700,15 @@ const createMainWindow = async () => {
         downloadFileMap.set(encodeURI(remotePath), { messageUid: messageUid, fileName: args.fileName, windowId: windowId });
 
         let windows = BrowserWindow.getAllWindows();
-        windows.forEach(w => {
+        windows.forEach((w) => {
             if (w.getMediaSourceId() === windowId) {
-                w.webContents.downloadURL(remotePath)
+                w.webContents.downloadURL(remotePath);
             }
-        })
+        });
     });
 
     ipcMain.on(IPCEventType.SHOW_FILE_WINDOW, async (event, args) => {
-        console.log('on show-file-window', fileWindow, args)
+        console.log('on show-file-window', fileWindow, args);
         if (!fileWindow) {
             let win = createWindow(args.url, 960, 600, 640, 400, true, true);
 
@@ -735,7 +726,7 @@ const createMainWindow = async () => {
     });
 
     ipcMain.on(IPCEventType.SHOW_MULTIMEDIA_PREVIEW_WINDOW, async (event, args) => {
-        console.log('on show-multimedia-preview-window', multimediaPreviewWindow, args)
+        console.log('on show-multimedia-preview-window', multimediaPreviewWindow, args);
         if (!multimediaPreviewWindow) {
             let win = createWindow(args.url, args.size ? args.size.width : 960, args.size ? args.size.height : 600, 640, 520, true, false, true, false, false);
 
@@ -744,7 +735,7 @@ const createMainWindow = async () => {
                 multimediaPreviewWindow = null;
             });
             win.webContents.on('unload', () => {
-                win.loadURL('about:blank')
+                win.loadURL('about:blank');
             });
             win.center();
             win.show();
@@ -756,19 +747,19 @@ const createMainWindow = async () => {
         }
     });
     ipcMain.on(IPCEventType.SHOW_COMPOSITE_MESSAGE_WINDOW, async (event, args) => {
-        console.log('on show-composite-message-window', args)
+        console.log('on show-composite-message-window', args);
         let messageUid = args.messageUid;
         let compositeMessageWin = compositeMessageWindows.get(messageUid);
         if (!compositeMessageWin) {
             let url;
             if (messageUid) {
-                url = args.url + ('?messageUid=' + messageUid)
+                url = args.url + ('?messageUid=' + messageUid);
             } else {
                 url = args.url;
             }
             let win = createWindow(url, 960, 600, 640, 400, false, false);
             if (messageUid) {
-                compositeMessageWindows.set(messageUid, win)
+                compositeMessageWindows.set(messageUid, win);
             }
 
             // win.webContents.openDevTools();
@@ -785,7 +776,7 @@ const createMainWindow = async () => {
     });
 
     ipcMain.on(IPCEventType.OPEN_H5_APP_WINDOW, async (event, args) => {
-        console.log('on open-h5-app-window', args)
+        console.log('on open-h5-app-window', args);
         let win = openPlatformAppHostWindows.get(args.hostUrl);
         if (!win) {
             win = createWindow(args.url, 960, 600, 640, 400, true, true);
@@ -802,29 +793,29 @@ const createMainWindow = async () => {
     });
 
     ipcMain.on(IPCEventType.WORKSPACE_NEW_TAB_WEB_CONTENT, async (event, args) => {
-        console.log('on workspace-new-tab-web-content', args)
+        console.log('on workspace-new-tab-web-content', args);
         let id = args.id;
-        let _webContents = webContents.fromId(id)
-        _webContents.setWindowOpenHandler(details => {
-            console.log('workspace windowOpenHandler', details)
-            mainWindow.webContents.send(IPCEventType.WORKSPACE_ADD_NEW_TAB, { url: encodeURI(details.url), frameName: details.frameName })
-            return { action: 'deny' }
+        let _webContents = webContents.fromId(id);
+        _webContents.setWindowOpenHandler((details) => {
+            console.log('workspace windowOpenHandler', details);
+            mainWindow.webContents.send(IPCEventType.WORKSPACE_ADD_NEW_TAB, { url: encodeURI(details.url), frameName: details.frameName });
+            return { action: 'deny' };
         });
     });
 
     ipcMain.on(IPCEventType.showConversationMessageHistoryPage, async (event, args) => {
-        console.log(`on ${IPCEventType.showConversationMessageHistoryPage}`, conversationMessageHistoryMessageWindow, args)
+        console.log(`on ${IPCEventType.showConversationMessageHistoryPage}`, conversationMessageHistoryMessageWindow, args);
         if (!conversationMessageHistoryMessageWindow) {
-            let url = args.url + (`?type=${args.type}&target=${args.target}&line=${args.line}`)
+            let url = args.url + `?type=${args.type}&target=${args.target}&line=${args.line}`;
             conversationMessageHistoryMessageWindow = createWindow(url, 960, 600, 640, 400, false, false, false, false);
             conversationMessageHistoryMessageWindow.on('close', () => {
                 conversationMessageHistoryMessageWindow = null;
             });
             conversationMessageHistoryMessageWindow.show();
         } else {
-            let url = args.url + (`?type=${args.type}&target=${args.target}&line=${args.line}`)
+            let url = args.url + `?type=${args.type}&target=${args.target}&line=${args.line}`;
             try {
-                await conversationMessageHistoryMessageWindow.loadURL(url)
+                await conversationMessageHistoryMessageWindow.loadURL(url);
             } catch (e) {
                 // 不知道为啥，loadURL 会失败，reload 就好了
                 conversationMessageHistoryMessageWindow.reload();
@@ -835,7 +826,7 @@ const createMainWindow = async () => {
     });
 
     ipcMain.on(IPCEventType.showMessageHistoryPage, async (event, args) => {
-        console.log(`on ${IPCEventType.showMessageHistoryPage}`, messageHistoryMessageWindow, args)
+        console.log(`on ${IPCEventType.showMessageHistoryPage}`, messageHistoryMessageWindow, args);
         if (!messageHistoryMessageWindow) {
             messageHistoryMessageWindow = createWindow(args.url, 960, 600, 640, 400, false, false, true);
             messageHistoryMessageWindow.on('close', () => {
@@ -849,8 +840,8 @@ const createMainWindow = async () => {
     });
 
     ipcMain.on(IPCEventType.showConversationFloatPage, async (event, args) => {
-        console.log(`on ${IPCEventType.showConversationFloatPage}`, messageHistoryMessageWindow, args)
-        let url = args.url + (`?type=${args.type}&target=${args.target}&line=${args.line}`)
+        console.log(`on ${IPCEventType.showConversationFloatPage}`, messageHistoryMessageWindow, args);
+        let url = args.url + `?type=${args.type}&target=${args.target}&line=${args.line}`;
         let key = args.type + '-' + args.target + '-' + args.line;
         let win = conversationWindowMap.get(key);
         if (!win) {
@@ -860,9 +851,8 @@ const createMainWindow = async () => {
                 mainWindow.send('floating-conversation-window-closed', {
                     type: args.type,
                     target: args.target,
-                    line: args.line
-                }
-                );
+                    line: args.line,
+                });
             });
             win.show();
             conversationWindowMap.set(key, win);
@@ -900,7 +890,7 @@ const createMainWindow = async () => {
         mainWindow.center();
         mainWindowState.manage(mainWindow);
 
-        userId = args.userId
+        userId = args.userId;
         // for multi-instance
         // app.requestSingleInstanceLock({userId: args.userId})
     });
@@ -938,10 +928,10 @@ const createMainWindow = async () => {
 
     ipcMain.on('start-secret-server', (event, args) => {
         startSecretDecodeServer(args.port);
-    })
+    });
     ipcMain.on('start-op-server', (event, args) => {
         startOpenPlatformServer(args.port);
-    })
+    });
 
     ipcMain.handle('getMediaSourceId', (event, args) => {
         const senderWindow = BrowserWindow.fromWebContents(event.sender); // BrowserWindow or null
@@ -949,7 +939,7 @@ const createMainWindow = async () => {
     });
 
     ipcMain.handle(IPCEventType.GET_SOURCE, (event, args) => {
-        return desktopCapturer.getSources(args)
+        return desktopCapturer.getSources(args);
     });
 
     powerMonitor.on('resume', () => {
@@ -968,11 +958,11 @@ const createMainWindow = async () => {
             applicationName: pkg.name,
             applicationVersion: pkg.version,
             copyright: 'Made with 💖 by wildfiechat. \n https://github.com/wildfirechat/vue-pc-chat',
-            version: pkg.version
+            version: pkg.version,
         });
     }
 
-    [imagesCacheDir, voicesCacheDir].map(e => {
+    [imagesCacheDir, voicesCacheDir].map((e) => {
         if (!fs.existsSync(e)) {
             fs.mkdirSync(e);
         }
@@ -982,8 +972,8 @@ const createMainWindow = async () => {
     // Protocol handler for win32
     if (process.platform === 'win32') {
         // Keep only command line / deep linked arguments
-        let args = process.argv.slice(1)
-        if (args.length > 0 && args[0].startsWith(DEEP_LINK_PROTOCOL + "://")) {
+        let args = process.argv.slice(1);
+        if (args.length > 0 && args[0].startsWith(DEEP_LINK_PROTOCOL + '://')) {
             deepLinkUrl = args[0];
         }
     }
@@ -992,35 +982,33 @@ const createMainWindow = async () => {
 
 // TODO titleBarStyle
 function createWindow(url, w, h, mw, mh, resizable = true, maximizable = true, showTitle = true, webSecurity = false, minimizable = true) {
-    let win = new BrowserWindow(
-        {
-            width: w,
-            height: h,
-            minWidth: mw,
-            minHeight: mh,
-            resizable: resizable,
-            maximizable: maximizable,
-            minimizable: minimizable,
-            titleBarStyle: showTitle ? 'default' : 'hiddenInset',
-            // titleBarStyle: 'customButtonsOnHover',
-            webPreferences: {
-                scrollBounce: false,
-                nativeWindowOpen: true,
-                nodeIntegration: true,
-                contextIsolation: false,
-                webviewTag: true,
-                webSecurity: webSecurity,
-            },
-            // frame:false
-        }
-    );
+    let win = new BrowserWindow({
+        width: w,
+        height: h,
+        minWidth: mw,
+        minHeight: mh,
+        resizable: resizable,
+        maximizable: maximizable,
+        minimizable: minimizable,
+        titleBarStyle: showTitle ? 'default' : 'hiddenInset',
+        // titleBarStyle: 'customButtonsOnHover',
+        webPreferences: {
+            scrollBounce: false,
+            nativeWindowOpen: true,
+            nodeIntegration: true,
+            contextIsolation: false,
+            webviewTag: true,
+            webSecurity: webSecurity,
+        },
+        // frame:false
+    });
     win.removeMenu();
 
     win.loadURL(url);
-    console.log('create windows url', url)
+    console.log('create windows url', url);
     win.webContents.on('new-window', (event, url) => {
         event.preventDefault();
-        console.log('new-windows', url)
+        console.log('new-windows', url);
         shell.openExternal(url);
     });
     return win;
@@ -1031,7 +1019,7 @@ const DEEP_LINK_PROTOCOL = 'wfc';
 let deepLinkUrl;
 
 function onDeepLink(url) {
-    console.log('onOpenDeepLink', url)
+    console.log('onOpenDeepLink', url);
     deepLinkUrl = url;
     if (mainWindow) {
         mainWindow.webContents.send('deep-link', url);
@@ -1044,7 +1032,7 @@ app.setAsDefaultProtocolClient(DEEP_LINK_PROTOCOL);
 //app.disableHardwareAcceleration();
 app.on('open-url', (event, url) => {
     onDeepLink(url);
-})
+});
 
 app.setName(pkg.name);
 const icon = `${workingDir}/images/dock.png`;
@@ -1052,8 +1040,8 @@ isDevelopment && app.dock && app.dock.setIcon(icon);
 
 // comment the following for multi-instance, start
 if (!app.requestSingleInstanceLock()) {
-    console.log('only allow start one instance!')
-    app.quit()
+    console.log('only allow start one instance!');
+    app.quit();
 }
 // end
 
@@ -1063,32 +1051,32 @@ app.on('second-instance', (event, argv, workingDir, additionalData) => {
     //     app.quit()
     // }
     if (mainWindow) {
-        if (mainWindow.isMinimized()) mainWindow.restore()
-        mainWindow.focus()
-        mainWindow.show()
+        if (mainWindow.isMinimized()) mainWindow.restore();
+        mainWindow.focus();
+        mainWindow.show();
     }
     let url = argv.find((arg) => arg.startsWith(DEEP_LINK_PROTOCOL));
     if (url) {
-        onDeepLink(url)
+        onDeepLink(url);
     }
-})
+});
 
 // windows上，需要正确设置appUserModelId，才能正常显示通知，不然通知的应用标识会显示为：electron.app.xxx
 app.on('will-finish-launching', () => {
-    app.setAppUserModelId(pkg.appId)
-})
+    app.setAppUserModelId(pkg.appId);
+});
 
 function registerLocalResourceProtocol() {
     protocol.registerFileProtocol('local-resource', (request, callback) => {
-        const url = request.url.replace(/^local-resource:\/\//, '')
+        const url = request.url.replace(/^local-resource:\/\//, '');
         // Decode URL to prevent errors when loading filenames with UTF-8 chars or chars like "#"
-        const decodedUrl = decodeURI(url) // Needed in case URL contains spaces
+        const decodedUrl = decodeURI(url); // Needed in case URL contains spaces
         try {
-            return callback(decodedUrl)
+            return callback(decodedUrl);
         } catch (error) {
-            console.error('ERROR: registerLocalResourceProtocol: Could not get file path:', error)
+            console.error('ERROR: registerLocalResourceProtocol: Could not get file path:', error);
         }
-    })
+    });
 
     protocol.registerFileProtocol('file', (request, callback) => {
         const pathname = decodeURIComponent(request.url.replace('file:///', ''));
@@ -1109,7 +1097,7 @@ app.on('ready', () => {
     screenshots = new Screenshots({
         // logger: console.log
         singleWindow: true,
-    })
+    });
 
     const onScreenShotEnd = (result) => {
         console.log('onScreenShotEnd', isMainWindowFocusedWhenStartScreenshot, screenShotWindowId);
@@ -1121,7 +1109,7 @@ app.on('ready', () => {
             isMainWindowFocusedWhenStartScreenshot = false;
         } else if (screenShotWindowId) {
             let windows = BrowserWindow.getAllWindows();
-            let tms = windows.filter(win => win.webContents.id === screenShotWindowId);
+            let tms = windows.filter((win) => win.webContents.id === screenShotWindowId);
             if (tms.length > 0) {
                 if (result) {
                     tms[0].webContents.send('screenshots-ok', result);
@@ -1130,7 +1118,7 @@ app.on('ready', () => {
             }
             screenShotWindowId = 0;
         }
-    }
+    };
 
     // 点击确定按钮回调事件
     screenshots.on('ok', (e, buffer, bounds) => {
@@ -1138,39 +1126,35 @@ app.on('ready', () => {
         let image = NativeImage.createFromBuffer(buffer);
         fs.writeFileSync(filename, image.toPNG());
 
-        console.log('screenshots ok', e)
+        console.log('screenshots ok', e);
         onScreenShotEnd({ filePath: filename });
-    })
+    });
 
     // 点击取消按钮回调事件
-    screenshots.on('cancel', e => {
+    screenshots.on('cancel', (e) => {
         // 执行了preventDefault
         // 点击取消不会关闭截图窗口
         // e.preventDefault()
         // console.log('capture', 'cancel2')
-        console.log('screenshots cancel', e)
-        onScreenShotEnd()
-    })
+        console.log('screenshots cancel', e);
+        onScreenShotEnd();
+    });
     // 点击保存按钮回调事件
     screenshots.on('save', (e, { viewer }) => {
-        console.log('screenshots save', e)
-        onScreenShotEnd()
-    })
-    session.defaultSession.webRequest.onBeforeSendHeaders(
-        (details, callback) => {
-            // 可根据实际需求，配置 Origin，默认置为空
-            // details.requestHeaders.Origin = '';
-            callback({ cancel: false, requestHeaders: details.requestHeaders });
-        }
-    );
+        console.log('screenshots save', e);
+        onScreenShotEnd();
+    });
+    session.defaultSession.webRequest.onBeforeSendHeaders((details, callback) => {
+        // 可根据实际需求，配置 Origin，默认置为空
+        // details.requestHeaders.Origin = '';
+        callback({ cancel: false, requestHeaders: details.requestHeaders });
+    });
     try {
-        updateTray()
+        updateTray();
     } catch (e) {
         // do nothing
     }
-
-}
-);
+});
 
 // app.on('window-all-closed', () => {
 //     if (process.platform !== 'darwin') {
@@ -1188,7 +1172,7 @@ app.on('before-quit', () => {
     tray = null;
     // }
 });
-app.on('activate', e => {
+app.on('activate', (e) => {
     if (!mainWindow.isVisible()) {
         mainWindow.show();
     }
@@ -1202,14 +1186,14 @@ function disconnectAndQuit() {
     proto.disconnect(0);
     setTimeout(() => {
         app.quit();
-    }, 1000)
+    }, 1000);
 }
 
 function clearBlink() {
     if (blink) {
-        clearInterval(blink)
+        clearInterval(blink);
     }
-    blink = null
+    blink = null;
 }
 
 let blinkIcons;
@@ -1217,8 +1201,7 @@ let blinkIcons;
 function execBlink(flag, _interval) {
     let interval = _interval ? _interval : 500;
     if (!blinkIcons) {
-        blinkIcons = [NativeImage.createFromPath(`${workingDir}/images/tray.png`),
-        NativeImage.createFromPath(`${workingDir}/images/Remind_icon.png`)];
+        blinkIcons = [NativeImage.createFromPath(`${workingDir}/images/tray.png`), NativeImage.createFromPath(`${workingDir}/images/Remind_icon.png`)];
     }
 
     let count = 0;
@@ -1234,7 +1217,6 @@ function execBlink(flag, _interval) {
         clearBlink();
         toggleTrayIcon(blinkIcons[0]);
     }
-
 }
 
 function toggleTrayIcon(icon) {
@@ -1249,9 +1231,9 @@ function startSecretDecodeServer(port) {
     if (secretDecodeServer) {
         return;
     }
-    console.log('startSecretDecodeServer', port)
+    console.log('startSecretDecodeServer', port);
     let http = require('http');
-    let url = require('url')
+    let url = require('url');
     let https = require('https');
     secretDecodeServer = http.createServer((req, orgRes) => {
         console.log('req', req.url);
@@ -1265,9 +1247,9 @@ function startSecretDecodeServer(port) {
             return;
         }
 
-        let protocol = mediaUrl.startsWith("https") ? https : http
+        let protocol = mediaUrl.startsWith('https') ? https : http;
 
-        protocol.get(mediaUrl, res => {
+        protocol.get(mediaUrl, (res) => {
             let data = [];
             res.on('data', function (chunk) {
                 data.push(chunk);
@@ -1281,16 +1263,15 @@ function startSecretDecodeServer(port) {
                 let decodedBuff = toBuffer(decodedAb);
 
                 let rawHeaders = res.rawHeaders;
-                for (let i = 0; i < rawHeaders.length;) {
+                for (let i = 0; i < rawHeaders.length; ) {
                     if (rawHeaders[i] !== 'Content-Length' && rawHeaders[i] !== 'content-Length') {
-                        orgRes.setHeader(rawHeaders[i], rawHeaders[i + 1])
+                        orgRes.setHeader(rawHeaders[i], rawHeaders[i + 1]);
                     }
                     i += 2;
                 }
-                orgRes.setHeader('Content-Length', decodedBuff.byteLength)
-                orgRes.end(decodedBuff)
+                orgRes.setHeader('Content-Length', decodedBuff.byteLength);
+                orgRes.end(decodedBuff);
             });
-
         });
     });
     secretDecodeServer.listen(port, 'localhost', function () {
@@ -1302,7 +1283,7 @@ var openPlatformServer;
 
 function startOpenPlatformServer(port) {
     if (openPlatformServer) {
-        return
+        return;
     }
     const WebSocket = require('ws');
     const wss = new WebSocket.Server({ port: port ? port : 7983 });
@@ -1353,7 +1334,7 @@ ipcMain.handle('create-voip-window', async (event, windowOptions) => {
         win.webContents.on('did-finish-load', () => {
             event.sender.send(`voip-window-webContents-did-finish-load`);
         });
-        win.loadURL(windowOptions.url)
+        win.loadURL(windowOptions.url);
 
         return win.id;
     } catch (error) {
@@ -1362,4 +1343,4 @@ ipcMain.handle('create-voip-window', async (event, windowOptions) => {
     }
 });
 
-import './remote.js'
+import './remote.js';

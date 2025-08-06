@@ -1,7 +1,5 @@
 <template>
-    <div class="register-container">
-        <TopNav title="注册" />
-
+    <div class="register-container window-move">
         <div class="app-name">{{ appName }}</div>
         <div class="welcome-text">{{ welcomeText }}</div>
 
@@ -12,7 +10,7 @@
 
             <div class="input-field verification-code">
                 <input id="code" type="text" v-model="verificationCode" placeholder="请输入验证码" maxlength="6" />
-                <button class="get-code-btn" @click="getVerificationCode" :disabled="isCountingDown">
+                <button class="send-code-btn" @click="getVerificationCode" :disabled="isCountingDown">
                     {{ countdown > 0 ? `${countdown}秒后重发` : '获取验证码' }}
                 </button>
             </div>
@@ -22,6 +20,9 @@
                 <div class="password-strength" :class="passwordStrengthClass">
                     {{ passwordStrengthText }}
                 </div>
+                <span class="toggle-password" @click="togglePasswordVisibility">
+                    {{ showPassword ? '隐藏' : '显示' }}
+                </span>
             </div>
 
             <div class="input-field">
@@ -29,7 +30,13 @@
             </div>
         </div>
 
-        <button class="register-btn" @click="handleRegister" :disabled="!agreed">注册并登录</button>
+        <div class="login-options">
+            <span class="no-account">已有账号？<span class="login" @click="switchToLogin">登录</span></span>
+        </div>
+
+        <button class="login-btn" @click="handleRegister" :disabled="!agreed || isLoading">
+            {{ isLoading ? '注册中...' : '注册并登录' }}
+        </button>
 
         <div class="agreement">
             <input type="checkbox" id="agree" v-model="agreed" />
@@ -39,10 +46,17 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { registerAccount } from '../../api/index.js';
-import TopNav from '../components/TopNav.vue';
+import { ElMessage } from 'element-plus';
+import wfc from '../../wfc/client/wfc';
+import Config from '../../config';
+import { setItem } from '../../qzui/utils/storageHelper';
+import ConnectionStatus from '../../wfc/client/connectionStatus';
+import EventType from '../../wfc/client/wfcEvent';
+import { isElectron } from '../../platform';
+import IpcEventType from '../../ipcEventType';
 
 const router = useRouter();
 
@@ -56,6 +70,9 @@ const agreed = ref(false);
 const showPassword = ref(false);
 const countdown = ref(0);
 const isCountingDown = ref(false);
+const isLoading = ref(false);
+const clientId = wfc.getClientId();
+let connectionStatusListener = null;
 
 // 密码强度计算
 const passwordStrength = computed(() => {
@@ -79,10 +96,21 @@ const passwordStrengthText = computed(() => {
     return `密码强度: ${texts[passwordStrength.value - 1] || ''}`;
 });
 
+// 切换密码可见性
+const togglePasswordVisibility = () => {
+    showPassword.value = !showPassword.value;
+};
+
+// 发送验证码
 const getVerificationCode = () => {
     const purePhone = phoneNumber.value.replace(/\D/g, '');
     if (!purePhone || !/^1[3-9]\d{9}$/.test(purePhone)) {
-        alert('请输入正确的手机号码');
+        ElMessage.error('请输入正确的手机号码');
+        return;
+    }
+
+    if (isCountingDown.value) {
+        ElMessage.error('请稍后再获取验证码');
         return;
     }
 
@@ -99,49 +127,109 @@ const getVerificationCode = () => {
     }, 1000);
 };
 
+// 切换到登录页面
+const switchToLogin = () => {
+    router.push('/login');
+};
+
+// 处理注册
 const handleRegister = () => {
+    if (!agreed.value) {
+        ElMessage.error('请先阅读并同意用户协议和隐私政策');
+        return;
+    }
+
     const purePhone = phoneNumber.value.replace(/\D/g, '');
 
     if (!purePhone || !/^1[3-9]\d{9}$/.test(purePhone)) {
-        alert('请输入正确的手机号码');
+        ElMessage.error('请输入正确的手机号码');
         return;
     }
 
     if (!verificationCode.value || verificationCode.value.length !== 6) {
-        alert('请输入6位验证码');
+        ElMessage.error('请输入6位验证码');
         return;
     }
 
     if (!password.value || password.value.length < 6) {
-        alert('密码长度不能少于6位');
+        ElMessage.error('密码长度不能少于6位');
         return;
     }
 
-    router.push('/selectSex');
-
-    console.log('注册信息:', {
-        phone: purePhone,
-        code: verificationCode.value,
-        password: password.value,
-        inviteCode: inviteCode.value,
-    });
+    isLoading.value = true;
 
     registerAccount({
         account: purePhone,
+        clientId: clientId,
         code: verificationCode.value,
         password: password.value,
-        terminal: window.electronAPI.platform === 'Windows' ? 3 : 4,
-    }).then((res) => {
-        console.log(res);
-    });
+        inviteCode: inviteCode.value,
+        terminal: Config.getWFCPlatform(),
+    })
+        .then((res) => {
+            isLoading.value = false;
+
+            if (res.code !== 0) {
+                ElMessage.error(res.msg || '注册失败，请重试');
+                return;
+            }
+
+            console.log('注册成功:', res);
+            ElMessage.success('注册成功，正在登录...');
+
+            // 存储用户信息
+            const userId = res.data.serviceId;
+            const token = res.data.serviceToken;
+            const portrait = res.data.id;
+
+            setItem('userId', userId);
+            setItem('token', token);
+            setItem('userPortrait', portrait);
+
+            // 连接IM服务器
+            wfc.connect(userId, token);
+
+            // 注册成功后跳转到选择性别页面
+            router.push('/selectSex');
+        })
+        .catch((error) => {
+            isLoading.value = false;
+            console.error('注册失败:', error);
+            ElMessage.error('注册失败，请重试');
+        });
 };
 
+// 连接状态处理
+const onConnectionStatusChange = (status) => {
+    if (status === ConnectionStatus.ConnectionStatusLogout || status === ConnectionStatus.ConnectionStatusRejected || status === ConnectionStatus.ConnectionStatusTokenIncorrect) {
+        ElMessage.error('连接失败: ' + ConnectionStatus.desc(status));
+    }
+
+    if (status === ConnectionStatus.ConnectionStatusConnected) {
+        // 登录成功后操作
+        if (isElectron()) {
+            window.ipcRenderer.send(IpcEventType.LOGIN, {
+                userId: wfc.getUserId(),
+                closeWindowToExit: localStorage.getItem(wfc.getUserId() + '-' + 'closeWindowToExit') === '1',
+            });
+        }
+    }
+};
+
+// 组件挂载时添加监听
+onMounted(() => {
+    connectionStatusListener = onConnectionStatusChange;
+    wfc.eventEmitter.on(EventType.ConnectionStatusChanged, connectionStatusListener);
+});
+
+// 显示用户协议
 const showUserAgreement = () => {
-    router.push('/user-agreement');
+    window.open('https://www.baidu.com', '_blank');
 };
 
+// 显示隐私政策
 const showPrivacyPolicy = () => {
-    router.push('/privacy-policy');
+    window.open('https://www.baidu.com', '_blank');
 };
 </script>
 
@@ -150,35 +238,10 @@ const showPrivacyPolicy = () => {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    height: 100vh;
     width: 500px;
-    background-color: #f5f5f5;
+    height: 100vh;
     box-sizing: border-box;
-}
-
-.back-button {
-    background: none;
-    border: none;
-    padding: 8px;
-    margin-right: 10px;
-    cursor: pointer;
-    color: #333;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.back-button svg {
-    width: 24px;
-    height: 24px;
-}
-
-.page-title {
-    font-size: 22px;
-    font-weight: bold;
-    color: #333;
-    margin: 0 auto;
-    transform: translateX(-12px);
+    margin: auto;
 }
 
 .app-name {
@@ -186,32 +249,26 @@ const showPrivacyPolicy = () => {
     font-weight: bold;
     margin-bottom: 10px;
     color: #333;
+    text-align: center;
 }
 
 .welcome-text {
     font-size: 18px;
-    margin-bottom: 30px;
+    margin-bottom: 40px;
     color: #666;
+    text-align: center;
+}
+
+.input-field {
+    width: 100%;
+    max-width: 500px;
 }
 
 .input-container {
     border: 1px solid rgba(170, 170, 170, 0.4);
     border-radius: 8px;
     overflow: hidden;
-    margin-bottom: 10px;
-}
-
-.input-field {
-    position: relative;
-    width: 100%;
-    width: 500px;
-}
-
-.input-field label {
-    display: block;
-    margin-bottom: 8px;
-    font-size: 14px;
-    color: #666;
+    margin-bottom: 20px;
 }
 
 .input-field input {
@@ -234,9 +291,9 @@ const showPrivacyPolicy = () => {
     position: relative;
 }
 
-.get-code-btn {
+.send-code-btn {
     position: absolute;
-    right: 10px;
+    right: 16px;
     top: 50%;
     transform: translateY(-50%);
     background: none;
@@ -246,19 +303,33 @@ const showPrivacyPolicy = () => {
     cursor: pointer;
 }
 
-.get-code-btn:disabled {
+.send-code-btn:disabled {
     color: #999;
     cursor: not-allowed;
 }
 
+.password-input {
+    position: relative;
+}
+
 .password-strength {
     position: absolute;
-    right: 15px;
+    right: 90px;
     top: 50%;
     transform: translateY(-50%);
     cursor: pointer;
     user-select: none;
     font-size: 14px;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #1890ff;
+    font-size: 14px;
+    cursor: pointer;
 }
 
 .password-strength.weak {
@@ -278,7 +349,27 @@ const showPrivacyPolicy = () => {
     font-weight: bold;
 }
 
-.register-btn {
+.login-options {
+    width: 100%;
+    max-width: 500px;
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 12px;
+    margin-top: 12px;
+    font-size: 14px;
+    color: #666;
+}
+
+.no-account {
+    color: #666;
+}
+
+.login {
+    color: #1890ff;
+    cursor: pointer;
+}
+
+.login-btn {
     width: 100%;
     max-width: 500px;
     height: 50px;
@@ -287,16 +378,15 @@ const showPrivacyPolicy = () => {
     border: none;
     border-radius: 8px;
     font-size: 16px;
-    margin: 20px 0;
+    margin-bottom: 20px;
     cursor: pointer;
-    transition: background-color 0.3s;
 }
 
-.register-btn:hover:not(:disabled) {
+.login-btn:hover:not(:disabled) {
     background-color: #40a9ff;
 }
 
-.register-btn:disabled {
+.login-btn:disabled {
     background-color: #d9d9d9;
     cursor: not-allowed;
 }
@@ -307,7 +397,6 @@ const showPrivacyPolicy = () => {
     justify-content: center;
     font-size: 12px;
     color: #666;
-    margin-top: 10px;
 }
 
 .agreement input {
