@@ -5,11 +5,17 @@
         <a>私域群</a>
         <a class="active" @click="openPublicWindow">公域群</a>
         <a title="添加"><img src="../assets/add.png" /></a>
+        <span>{{ windowTitle }}</span>
     </div>
 </template>
 
 <script setup>
 import { createNewWindow } from '@/qzui/utils/electronHelper';
+import { ref } from 'vue';
+import { useRoute } from 'vue-router';
+const route = useRoute();
+const windowTitle = ref('');
+windowTitle.value = route.path;
 const openPublicWindow = () => {
     createNewWindow({
         width: 375,

@@ -1,12 +1,6 @@
 <template>
     <div class="group-chat-outer">
-        <div class="group-chat-nav">
-            <!-- <a @click="router.push('/passwordLogin')">登录</a> -->
-            <a>私聊</a>
-            <a>私域群</a>
-            <a class="active">公域群</a>
-            <a title="添加"><img src="../assets/add.png" /></a>
-        </div>
+        <TopNav />
         <div class="group-chat">
             <ChatSilder />
 
@@ -52,6 +46,7 @@
 <script setup>
 import { ref } from 'vue';
 import { createNewWindow } from '@/qzui/utils/electronHelper';
+import TopNav from '../components/TopNav.vue';
 import ChatSilder from '../components/ChatSilder.vue';
 import CommunityComp from '../components/CommunityComp.vue';
 const activeId = ref(1);

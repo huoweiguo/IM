@@ -7,12 +7,12 @@
 <script setup>
 import { onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { createNewWindow } from '@/qzui/utils/electronHelper';
+import { getItem } from '@/qzui/utils/storageHelper';
 const router = useRouter();
 
-// onMounted(() => {
-//   if (!store.islogin) {
-//     router.push('/passwordLogin')
-//   }
-// })
+onMounted(() => {
+    if (!getItem('token')) {
+        router.push('/passwordLogin');
+    }
+});
 </script>
