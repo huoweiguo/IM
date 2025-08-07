@@ -1,40 +1,50 @@
 <template>
-    <div class="chat-slider">
-        <img :src="store.state.contact?.selfUserInfo?.portrait" class="header-icon" />
-        <ul class="tab_ul">
-            <li class="chat" :class="{ chat_active: route.path === '/chat' }" @click="$router.push('/chat')">
-                <el-icon class="chat-icon" size="24">
-                    <ChatDotRound />
-                </el-icon>
-            </li>
-            <li class="community" :class="{ community_active: route.path === '/community' }" @click="$router.push('/community')"></li>
-            <!-- <li class="friend" @click="openNewWindow"></li> -->
-            <li class="chat" :class="{ chat_active: route.path === '/chatHome' }" @click="$router.push('/chatHome')">
-                <el-icon class="chat-icon" size="24">
-                    <Service />
+    <nav class="chat-slider window-move">
+        <img :src="store.state.contact?.selfUserInfo?.portrait" class="avatar" alt="用户头像" />
+
+        <ul class="nav-list nav-list--main window-move">
+            <li v-for="item in navItems" :key="item.path" :class="['nav-item', { 'is-active': route.path === item.path }]" @click="navigate(item.path)">
+                <el-icon :size="24">
+                    <component :is="item.icon" />
                 </el-icon>
             </li>
         </ul>
-        <ul class="bottom_ul">
-            <li class="chat" :class="{ chat_active: route.path === '/my' }" @click="openMyWindow">
-                <el-icon class="chat-icon" size="24">
-                    <User />
+
+        <ul class="nav-list nav-list--bottom">
+            <li :class="['nav-item', { 'is-active': route.path === '/my' }]" @click="openMyWindow">
+                <el-icon :size="24">
+                    <Setting />
                 </el-icon>
             </li>
         </ul>
-    </div>
+    </nav>
 </template>
 
 <script setup>
+import { computed } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import store from '../../store';
-import { useRoute } from 'vue-router';
 import { createNewWindow } from '@/qzui/utils/electronHelper';
+
 const route = useRoute();
+const router = useRouter();
+
+const navItems = computed(() => [
+    { path: '/chat', icon: 'ChatDotRound' },
+    { path: '/friendlist', icon: 'User' },
+    { path: '/community', icon: 'Baseball' },
+    { path: '/chatHome', icon: 'Service' },
+]);
+
+const navigate = (path) => {
+    router.push(path);
+};
+
 const openMyWindow = () => {
     createNewWindow({
         width: 375,
         height: 720,
-        url: `#/my`,
+        url: '#/my',
     });
 };
 </script>
@@ -44,76 +54,70 @@ const openMyWindow = () => {
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 60px;
-    background-color: rgb(46, 46, 46);
+    width: 63px;
+    height: 100vh;
+    background-color: #2e2e2e;
+    padding: 40px 0;
     box-sizing: border-box;
-    padding: 30px 0;
 
-    .tab_ul {
-        flex: 1;
-        li {
-            margin-bottom: 30px;
-        }
-    }
-
-    .bottom_ul {
-        li {
-            display: flex;
-            justify-content: center;
-        }
-    }
-
-    .header-icon {
-        display: block;
+    .avatar {
         width: 40px;
         height: 40px;
-        margin-bottom: 30px;
         border-radius: 6px;
+        margin-bottom: 30px;
+        cursor: pointer;
+        transition: opacity 0.2s;
+
+        &:hover {
+            opacity: 0.8;
+        }
     }
 
-    ul {
+    .nav-list {
         padding: 0;
         margin: 0;
-        width: 36px;
+        list-style: none;
+        width: 100%;
         display: flex;
         flex-direction: column;
         align-items: center;
 
-        li {
-            list-style: none;
+        &--main {
+            flex: 1;
+        }
+
+        &--bottom {
+            margin-top: auto;
+        }
+
+        .nav-item {
             display: flex;
+            align-items: center;
             justify-content: center;
-            cursor: pointer;
             width: 24px;
             height: 24px;
-            background-repeat: no-repeat;
-            background-size: 24px 24px;
-            background-position: center;
+            margin-bottom: 30px;
+            cursor: pointer;
+            transition: all 0.2s ease;
 
-            &.chat {
-                &:hover,
-                &.chat_active {
-                    .chat-icon {
-                        color: rgba(7, 193, 96, 1);
-                    }
-                }
+            &:last-child {
+                margin-bottom: 0;
             }
 
-            &.community {
-                background-image: url(../assets/community.png);
-
-                &:hover,
-                &.community_active {
-                    background-image: url(../assets/community_fill.png);
-                }
-            }
-
-            &.friend {
-                background-image: url(../assets/friend.png);
-            }
-
-            .chat-icon {
+            .el-icon {
                 color: #777;
+                transition: color 0.2s;
+            }
+
+            &:hover,
+            &.is-active {
+                .el-icon {
+                    color: #07c160;
+                }
+            }
+
+            &:hover {
+                transform: scale(1.1);
             }
         }
     }

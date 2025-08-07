@@ -45,7 +45,7 @@
         </CoolLightBox>
         <notifications v-if="sharedMiscState.isMainWindow" />
         <IpcMain v-if="sharedMiscState.isMainWindow && sharedMiscState.isElectron" />
-        <router-view id="main-content-container" class="main-content-container"></router-view>
+        <router-view></router-view>
     </div>
 </template>
 
@@ -210,18 +210,22 @@ export default {
     opacity: 0;
 }
 
-.main-content-container {
+/* .main-content-container {
+    position: relative;
+    z-index: 1;
+    width: 100vw;
+    height: 100vh;
     z-index: 999;
     position: absolute;
     width: calc(100vw - var(--main-margin-left) - var(--main-margin-right));
     height: calc(100vh - var(--main-margin-top) - var(--main-margin-bottom));
     top: 0;
     left: 0;
-    /* margin: var(--main-margin-top) var(--main-margin-right) var(--main-margin-bottom) var(--main-margin-left);
+    margin: var(--main-margin-top) var(--main-margin-right) var(--main-margin-bottom) var(--main-margin-left);
     display: flex;
     justify-content: center;
-    align-items: center; */
-}
+    align-items: center;
+} */
 
 .container-emoji {
     height: 300px;

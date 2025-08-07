@@ -1,434 +1,318 @@
 <template>
-    <div class="chat-user">
-        <div class="chat-user-container">
-            <ul>
-                <li :class="{ active: 0 === activeIndex }" @click="openFansWindow(0)">
-                    <img :src="grpImg1" class="user-icon" />
-                    <div class="user-info">
-                        <div class="user-name">
-                            <h2>新的粉丝</h2>
-                            <span>3月24日 12:00</span>
-                        </div>
-                        <div class="user-message">
-                            <span>您有个好友待验证</span>
-                            <i>2</i>
-                        </div>
-                    </div>
-                </li>
-                <li :class="{ active: 1 === activeIndex }" @click="openKnowWindow(1)">
-                    <img :src="grpImg4" class="user-icon" />
-                    <div class="user-info">
-                        <div class="user-name">
-                            <h2>可能认识的人</h2>
-                            <span>3月24日 12:00</span>
-                        </div>
-                        <div class="user-message">
-                            <span>发现你朋友的熟人</span>
-                            <i>2</i>
-                        </div>
-                    </div>
-                </li>
-                <li v-for="(item, index) in messageInfo" :key="index" :class="{ active: index + 2 === activeIndex }" @click="changeActive(index + 2, item)">
-                    <img :src="item.icon" class="user-icon" @click="openOtherInfo(item)" />
-                    <div class="user-info">
-                        <div class="user-name">
-                            <h2>{{ item.name }}</h2>
-                            <span>{{ item.time }}</span>
-                        </div>
-                        <div class="user-message">
-                            <span>{{ item.message }}</span>
-                            <i v-if="item.count">{{ item.count }}</i>
-                        </div>
-                    </div>
-                </li>
-            </ul>
-        </div>
-
-        <div class="chat-content-container">
-            <div class="chat-title-info">
-                <span>{{ chatTitle }}</span>
-                <el-icon color="#777" size="18" class="more-icon" @click="showDrawer">
-                    <MoreFilled />
-                </el-icon>
+  <div class="chat-user">
+    <div class="sidebar">
+      <ul class="user-list">
+        <li v-for="(item, index) in menuItems" :key="index" :class="{ active: activeIndex === index }" @click="handleMenuClick(index, item)">
+          <img :src="item.icon" class="avatar" />
+          <div class="info">
+            <div class="header">
+              <h3>{{ item.name }}</h3>
+              <time>{{ item.time }}</time>
             </div>
-            <div class="chat-message-content">
-                <ul>
-                    <li>
-                        <img src="../assets/usr-3.png" class="user-icon" @click="openUserInfo" />
-                        <span class="user-message">hello,你好啊！</span>
-                    </li>
-                    <li class="message-reverse">
-                        <img src="../assets/usr-1.png" class="user-icon" />
-                        <span class="user-message">你好,请问有事情吗?</span>
-                    </li>
-                    <li>
-                        <img src="../assets/usr-3.png" class="user-icon" />
-                        <span class="user-message">没事情，就是随便问问。</span>
-                    </li>
-                    <li>
-                        <img src="../assets/usr-3.png" class="user-icon" />
-                        <span class="user-message">怎么不回复我呢？</span>
-                    </li>
-                    <li>
-                        <img src="../assets/usr-3.png" class="user-icon" />
-                        <span class="user-message">hello,你好啊！</span>
-                    </li>
-                    <li class="message-reverse">
-                        <img src="../assets/usr-1.png" class="user-icon" />
-                        <span class="user-message">你好,请问有事情吗?</span>
-                    </li>
-                    <li>
-                        <img src="../assets/usr-3.png" class="user-icon" />
-                        <span class="user-message">没事情，就是随便问问。</span>
-                    </li>
-                    <li>
-                        <img src="../assets/usr-3.png" class="user-icon" />
-                        <span class="user-message">怎么不回复我呢？</span>
-                    </li>
-                    <li>
-                        <img src="../assets/usr-3.png" class="user-icon" />
-                        <span class="user-message">hello,你好啊！</span>
-                    </li>
-                    <li class="message-reverse">
-                        <img src="../assets/usr-1.png" class="user-icon" />
-                        <span class="user-message">你好,请问有事情吗?</span>
-                    </li>
-                    <li>
-                        <img src="../assets/usr-3.png" class="user-icon" />
-                        <span class="user-message">没事情，就是随便问问。</span>
-                    </li>
-                    <li>
-                        <img src="../assets/usr-3.png" class="user-icon" />
-                        <span class="user-message">怎么不回复我呢？</span>
-                    </li>
-                    <li>
-                        <img src="../assets/usr-3.png" class="user-icon" />
-                        <span class="user-message">hello,你好啊！</span>
-                    </li>
-                    <li class="message-reverse">
-                        <img src="../assets/usr-1.png" class="user-icon" />
-                        <span class="user-message">你好,请问有事情吗?</span>
-                    </li>
-                    <li>
-                        <img src="../assets/usr-3.png" class="user-icon" />
-                        <span class="user-message">没事情，就是随便问问。</span>
-                    </li>
-                    <li>
-                        <img src="../assets/usr-3.png" class="user-icon" />
-                        <span class="user-message">怎么不回复我呢？</span>
-                    </li>
-                </ul>
+            <div class="preview">
+              <p>{{ item.message }}</p>
+              <span v-if="item.count" class="badge">{{ item.count }}</span>
             </div>
-            <div class="chat-message-input">
-                <textarea placeholder="文明上网，理性发言"></textarea>
-            </div>
-        </div>
-        <!--单聊-->
-        <el-drawer v-model="chatDrawer" direction="rtl" :with-header="false" size="310px">
-            <van-cell title="单元格" name="search" />
-        </el-drawer>
+          </div>
+        </li>
+      </ul>
     </div>
+
+    <div class="chat-area">
+      <div class="chat-header">
+        <h2>{{ chatTitle || '选择聊天' }}</h2>
+        <el-icon color="#777" size="18" class="more-btn" @click="showDrawer">
+          <MoreFilled />
+        </el-icon>
+      </div>
+      
+      <div class="messages">
+        <div v-for="(msg, index) in messageList" :key="index" :class="['message', msg.type]">
+          <img :src="msg.avatar" class="avatar" @click="openUserProfile" />
+          <div class="content">{{ msg.content }}</div>
+        </div>
+      </div>
+      
+      <div class="input-area">
+        <textarea v-model="newMessage" placeholder="文明上网，理性发言" @keyup.enter="sendMessage"></textarea>
+      </div>
+    </div>
+
+    <el-drawer v-model="chatDrawer" direction="rtl" :with-header="false" size="310px">
+      <div class="drawer-content">聊天设置</div>
+    </el-drawer>
+  </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import store from '../../store';
-import { createNewWindow } from '@/qzui/utils/electronHelper';
-import grpImg1 from '../assets/grp-1.png';
-import grpImg2 from '../assets/grp-2.png';
-import grpImg4 from '../assets/grp-4.png';
-const activeIndex = ref(5);
-const chatTitle = ref('');
-const chatDrawer = ref(false);
-const isGroup = ref(false); // 是否是群聊
+import { ref, computed } from 'vue'
+import { createNewWindow } from '@/qzui/utils/electronHelper'
+import grpImg1 from '../assets/grp-1.png'
+import grpImg2 from '../assets/grp-2.png'
+import grpImg4 from '../assets/grp-4.png'
+import userAvatar from '../assets/usr-3.png'
+import myAvatar from '../assets/usr-1.png'
 
-console.log(store.state);
+const activeIndex = ref(0)
+const chatTitle = ref('')
+const chatDrawer = ref(false)
+const newMessage = ref('')
 
-const messageInfo = ref([
-    {
-        name: '系统通知',
-        time: '3月24日 12:00',
-        message: '请问你还有什么问题吗?',
-        count: 50,
-        icon: grpImg2,
-        isGroup: false,
-    },
-]);
-const changeActive = (index, item) => {
-    activeIndex.value = index;
-    chatTitle.value = item.name;
-    isGroup.value = item.isGroup;
-};
-const openOtherInfo = () => {
-    createNewWindow({
-        width: 375,
-        height: 820,
-        title: '用户信息',
-        url: `#/otherInfo?id=1`,
-    });
-};
+const menuItems = ref([
+  {
+    name: '新的粉丝',
+    time: '3月24日 12:00',
+    message: '您有个好友待验证',
+    count: 2,
+    icon: grpImg1,
+    action: () => openFansWindow()
+  },
+  {
+    name: '可能认识的人',
+    time: '3月24日 12:00',
+    message: '发现你朋友的熟人',
+    count: 2,
+    icon: grpImg4,
+    action: () => openKnowWindow()
+  },
+  {
+    name: '系统通知',
+    time: '3月24日 12:00',
+    message: '请问你还有什么问题吗?',
+    count: 50,
+    icon: grpImg2,
+    isGroup: false
+  }
+])
 
-const openFansWindow = (index) => {
-    activeIndex.value = index;
-    createNewWindow({
-        width: 375,
-        height: 720,
-        title: '我的粉丝',
-        url: `#/fans?id=1`,
-    });
-};
+const messageList = ref([
+  { type: 'received', avatar: userAvatar, content: 'hello,你好啊！' },
+  { type: 'sent', avatar: myAvatar, content: '你好,请问有事情吗?' },
+  { type: 'received', avatar: userAvatar, content: '没事情，就是随便问问。' },
+  { type: 'received', avatar: userAvatar, content: '怎么不回复我呢？' }
+])
 
-const openKnowWindow = (index) => {
-    activeIndex.value = index;
-    createNewWindow({
-        width: 375,
-        height: 720,
-        title: '可能认识的人',
-        url: `#/know?id=1`,
-    });
-};
+const handleMenuClick = (index, item) => {
+  activeIndex.value = index
+  chatTitle.value = item.name
+  if (item.action) item.action()
+}
 
-const openUserInfo = () => {
-    createNewWindow({
-        width: 375,
-        height: 720,
-        title: '个人信息',
-        url: `#/userInfo?id=1`,
-    });
-};
+const openFansWindow = () => {
+  createNewWindow({
+    width: 375,
+    height: 720,
+    title: '我的粉丝',
+    url: '#/fans?id=1'
+  })
+}
+
+const openKnowWindow = () => {
+  createNewWindow({
+    width: 375,
+    height: 720,
+    title: '可能认识的人',
+    url: '#/know?id=1'
+  })
+}
+
+const openUserProfile = () => {
+  createNewWindow({
+    width: 375,
+    height: 720,
+    title: '个人信息',
+    url: '#/userInfo?id=1'
+  })
+}
+
+const sendMessage = () => {
+  if (!newMessage.value.trim()) return
+  messageList.value.push({
+    type: 'sent',
+    avatar: myAvatar,
+    content: newMessage.value
+  })
+  newMessage.value = ''
+}
 
 const showDrawer = () => {
-    if (isGroup.value) {
-        // 群聊
-        createNewWindow({
-            width: 375,
-            height: 720,
-            title: '群设置',
-            url: `#/groupSetting`,
-        });
-    } else {
-        // 单聊
-        chatDrawer.value = true;
-    }
-};
+  chatDrawer.value = true
+}
 </script>
 
 <style lang="scss" scoped>
 .chat-user {
-    display: flex;
-    justify-content: space-between;
-    flex: 1;
+  display: flex;
+  height: 100vh;
 }
 
-.chat-user-container {
-    width: 250px;
-    height: 100vh;
-    padding-bottom: 40px;
-    background-color: #efefef;
+.sidebar {
+  width: 250px;
+  background: #efefef;
+  border-right: 1px solid #ddd;
+  overflow: hidden;
+}
+
+.user-list {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  
+  li {
+    display: flex;
+    align-items: center;
+    padding: 15px 10px;
+    cursor: pointer;
+    border-bottom: 1px solid #e5e5e5;
+    
+    &:hover {
+      background: #e8e8e8;
+    }
+    
+    &.active {
+      background: #dfdfdf;
+    }
+  }
+}
+
+.avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.info {
+  flex: 1;
+  min-width: 0;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
+  
+  h3 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+  }
+  
+  time {
+    font-size: 12px;
+    color: #999;
+  }
+}
+
+.preview {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  
+  p {
+    margin: 0;
+    font-size: 12px;
+    color: #777;
+    white-space: nowrap;
     overflow: hidden;
-    border-right: 1px solid #ddd;
-
-    ul {
-        width: 265px;
-        margin: 0;
-        padding: 0;
-        height: 100%;
-        overflow-y: scroll;
-
-        li {
-            list-style: none;
-            display: flex;
-            align-items: center;
-            padding: 15px 10px;
-            cursor: pointer;
-
-            &.active {
-                background-color: #dfdfdf;
-            }
-
-            .user-icon {
-                width: 44px;
-                height: 44px;
-                overflow: hidden;
-                margin-right: 10px;
-            }
-
-            .user-info {
-                display: flex;
-                flex: 1;
-                flex-direction: column;
-
-                .user-name {
-                    display: flex;
-                    align-items: center;
-                    justify-content: space-between;
-                    margin-bottom: 5px;
-
-                    h2 {
-                        font-size: 14px;
-                        padding: 0;
-                        margin: 0;
-                        color: #333;
-                        font-weight: 500;
-                    }
-
-                    span {
-                        font-size: 12px;
-                        color: #777;
-                    }
-                }
-
-                .user-message {
-                    display: flex;
-                    align-items: center;
-                    justify-content: space-between;
-                    font-size: 14px;
-
-                    span {
-                        color: #777;
-                        font-size: 12px;
-                    }
-
-                    i {
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        width: 12px;
-                        height: 12px;
-                        background-color: rgb(253, 58, 58);
-                        color: #fff;
-                        font-size: 10px;
-                        border-radius: 50%;
-                        font-style: normal;
-                    }
-                }
-            }
-        }
-    }
+    text-overflow: ellipsis;
+  }
 }
 
-.chat-content-container {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-
-    .chat-title-info {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        height: 50px;
-        padding: 0 20px;
-        border-bottom: 1px solid #ddd;
-
-        .more-icon {
-            cursor: pointer;
-        }
-    }
-
-    .chat-message-content {
-        height: calc(100vh - 205px);
-        box-sizing: border-box;
-        padding: 20px 0;
-        overflow: hidden;
-
-        ul {
-            padding: 0 20px;
-            height: 100%;
-            box-sizing: border-box;
-            overflow-y: scroll;
-
-            li {
-                list-style: none;
-                display: flex;
-                margin-bottom: 15px;
-
-                .user-icon {
-                    width: 36px;
-                    height: 36px;
-                    margin-right: 10px;
-                    cursor: pointer;
-                }
-
-                .user-message {
-                    padding: 8px;
-                    font-size: 14px;
-                    border-radius: 3px;
-                }
-
-                &.message-reverse {
-                    flex-direction: row-reverse;
-
-                    .user-icon {
-                        margin-left: 10px;
-                        margin-right: 0;
-                    }
-
-                    .user-message {
-                        background-color: #e2f3ff;
-                    }
-                }
-            }
-        }
-    }
-
-    .chat-message-input {
-        height: 200px;
-        border-top: 1px solid #ddd;
-        box-sizing: border-box;
-        overflow: hidden;
-
-        textarea {
-            width: 100%;
-            height: 100%;
-            padding: 15px;
-            border: none;
-            outline: none;
-            box-sizing: border-box;
-        }
-    }
+.badge {
+  background: #fd3a3a;
+  color: white;
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 10px;
+  min-width: 16px;
+  text-align: center;
 }
 
-.chat-user-list {
-    ul {
-        display: grid;
-        grid-template-columns: repeat(5, 1fr);
-        gap: 5px;
-        padding: 20px;
-        box-sizing: border-box;
-        padding: 0;
+.chat-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
 
-        li {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 50px;
-            cursor: pointer;
+.chat-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+  height: 50px;
+  border-bottom: 1px solid #ddd;
+  
+  h2 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 500;
+  }
+}
 
-            .add-user {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                width: 36px;
-                height: 36px;
-                border: 1px solid #ddd;
-                border-radius: 4px;
-            }
+.more-btn {
+  cursor: pointer;
+  padding: 5px;
+}
 
-            img {
-                width: 36px;
-                height: 36px;
-            }
+.messages {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+}
 
-            span {
-                width: 100%;
-                height: 25px;
-                font-size: 12px;
-                white-space: nowrap;
-                text-overflow: ellipsis;
-                overflow: hidden;
-                text-align: center;
-            }
-        }
+.message {
+  display: flex;
+  margin-bottom: 15px;
+  align-items: flex-start;
+  
+  &.sent {
+    flex-direction: row-reverse;
+    
+    .avatar {
+      margin-right: 0;
+      margin-left: 10px;
     }
+    
+    .content {
+      background: #e2f3ff;
+    }
+  }
+  
+  .content {
+    max-width: 70%;
+    padding: 8px 12px;
+    background: white;
+    border-radius: 4px;
+    font-size: 14px;
+    line-height: 1.4;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+  }
+}
+
+.input-area {
+  height: 120px;
+  border-top: 1px solid #ddd;
+  
+  textarea {
+    width: 100%;
+    height: 100%;
+    border: none;
+    outline: none;
+    padding: 15px;
+    font-size: 14px;
+    resize: none;
+    
+    &::placeholder {
+      color: #999;
+    }
+  }
+}
+
+.drawer-content {
+  padding: 20px;
 }
 </style>

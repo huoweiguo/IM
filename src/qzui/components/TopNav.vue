@@ -1,21 +1,15 @@
 <template>
     <div class="group-chat-nav window-move">
-        <!-- <a @click="router.push('/passwordLogin')">登录</a> -->
-        <a>私域</a>
+        <a>私聊</a>
         <a>私域群</a>
-        <a class="active" @click="openPublicWindow">公域群</a>
+        <a @click="openPublicWindow">公域群</a>
         <a title="添加"><img src="../assets/add.png" /></a>
-        <span>{{ windowTitle }}</span>
     </div>
 </template>
 
 <script setup>
 import { createNewWindow } from '@/qzui/utils/electronHelper';
-import { ref } from 'vue';
-import { useRoute } from 'vue-router';
-const route = useRoute();
-const windowTitle = ref('');
-windowTitle.value = route.path;
+
 const openPublicWindow = () => {
     createNewWindow({
         width: 375,
@@ -30,11 +24,8 @@ const openPublicWindow = () => {
     display: flex;
     align-items: center;
     width: 100vw;
-    height: 40px;
-    padding: 0 5px;
-    box-sizing: border-box;
+    padding: 10px 20px;
     border-bottom: 1px solid #ccc;
-    padding-left: 80px;
 
     a {
         font-size: 14px;
