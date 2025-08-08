@@ -1,8 +1,10 @@
-import { ChatComp } from './modules/chat';
 import { login } from './modules/login';
+import ChatList from '../qzui/views/ChatList.vue';
+import ChatHome from '../qzui/views/ChatHome.vue';
 import Home from '../qzui/views/Home.vue';
 import Community from '../qzui/views/Community.vue';
 import Chat from '../qzui/views/Chat.vue';
+import FriendList from '../qzui/views/FriendList.vue';
 import Friend from '../qzui/views/Friend.vue';
 import GroupChat from '../qzui/views/GroupChat.vue';
 import PublicSphereList from '../qzui/views/publicSphere/PublicList.vue';
@@ -35,7 +37,6 @@ import Settings from '../qzui/views/my/Settings.vue';
 
 const routes = [
     ...login, // 登录
-    ...ChatComp, // 聊天
     {
         path: '/home',
         name: 'Home',
@@ -52,6 +53,33 @@ const routes = [
         meta: {
             requiresAuth: false,
             title: '聊天',
+        },
+    },
+    {
+        path: '/friendlist',
+        name: 'FriendList',
+        component: FriendList,
+        meta: {
+            requiresAuth: false,
+            title: '好友列表',
+        },
+    },
+    {
+        path: '/chatList',
+        name: 'chatList',
+        component: ChatList,
+        meta: {
+            requiresAuth: false,
+            title: '聊天室列表',
+        },
+    },
+    {
+        path: '/chatHome',
+        name: 'chatHome',
+        component: ChatHome,
+        meta: {
+            requiresAuth: false,
+            title: '聊天室',
         },
     },
     {

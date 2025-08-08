@@ -1,14 +1,12 @@
 <template>
-    <div class="group-chat-outer">
-        <TopNav />
-        <div class="group-chat">
-            <ChatSilder />
-
-            <div class="community-chat">
-                <div class="community-search">
-                    <input type="text" class="search-input" placeholder="请输入搜索内容" />
+    <Layout>
+        <div class="community-container">
+            <aside class="sidebar">
+                <div class="header">
+                    <input v-model="searchText" type="text" class="search-input" placeholder="搜索社区..."
+                        @input="filterCommunities" />
                     <el-dropdown placement="bottom">
-                        <img src="../assets/user.png" />
+                        <img src="../assets/user.png" class="action-btn" />
                         <template #dropdown>
                             <el-dropdown-menu>
                                 <el-dropdown-item @click="openChatWindow">
@@ -16,51 +14,79 @@
                                         <UserFilled />
                                     </el-icon>发起群聊
                                 </el-dropdown-item>
-                                <el-dropdown-item @click="openScanWindow"><el-icon>
+                                <el-dropdown-item @click="openScanWindow">
+                                    <el-icon>
                                         <StarFilled />
-                                    </el-icon>关注我</el-dropdown-item>
+                                    </el-icon>关注我
+                                </el-dropdown-item>
                                 <el-dropdown-item @click="openHelpWindow">
                                     <el-icon>
                                         <QuestionFilled />
-                                    </el-icon>
-                                    帮助
+                                    </el-icon>帮助
                                 </el-dropdown-item>
                             </el-dropdown-menu>
                         </template>
                     </el-dropdown>
-                    <img src="../assets/plus.png" />
+                    <img src="../assets/plus.png" class="action-btn" @click="createCommunity" />
                 </div>
-                <div class="community-list">
+
+                <nav class="community-nav">
                     <ul>
-                        <li v-for="item in list" :key="item.id" :class="{ activeItem: activeId === item.id }"
-                            @click="toCommunity(item.id)">
-                            {{ item.name }}
+                        <li v-for="community in filteredList" :key="community.id"
+                            :class="{ active: activeId === community.id }" @click="selectCommunity(community.id)">
+                            <span class="community-icon" :class="`icon-${(community.id % 7) + 1}`"></span>
+                            {{ community.name }}
                         </li>
                     </ul>
-                </div>
-            </div>
+                </nav>
+            </aside>
 
-            <!--社区圈-->
-            <CommunityComp />
+            <main class="content">
+                <CommunityComp />
+            </main>
         </div>
-    </div>
+    </Layout>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import { createNewWindow } from '@/qzui/utils/electronHelper';
-import { getItem, setItem } from "@/ui/util/storageHelper";
-import TopNav from '../components/TopNav.vue';
-import ChatSilder from '../components/ChatSilder.vue';
+import { ref, computed } from 'vue';
+import Layout from '../components/Layout.vue';
 import CommunityComp from '../components/CommunityComp.vue';
-import { communityUserList } from '@/api/community';
+import { createNewWindow } from '@/qzui/utils/electronHelper';
+
+const searchText = ref('');
 const activeId = ref(1);
-const list = ref([]);
+
+const communities = ref([
+    { name: 'A22社区群', id: 1 },
+    { name: 'A23一家人', id: 2 },
+    { name: 'A24节日福利', id: 3 },
+    { name: 'B22闺蜜群', id: 4 },
+    { name: 'C22美妆群', id: 5 },
+    { name: 'D22干饭群', id: 6 },
+    { name: 'B52旅游结伴群', id: 7 },
+    { name: 'J20撸猫社区', id: 8 },
+]);
+
+const filteredList = computed(() => {
+    if (!searchText.value) return communities.value;
+    return communities.value.filter((c) => c.name.toLowerCase().includes(searchText.value.toLowerCase()));
+});
+
+const selectCommunity = (id) => {
+    activeId.value = id;
+};
+
+const createCommunity = () => {
+    // TODO: 创建社区功能
+    console.log('创建社区');
+};
+
 const openChatWindow = () => {
     createNewWindow({
         width: 604,
         height: 440,
-        url: `#/groupChat`,
+        url: '#/groupChat',
     });
 };
 
@@ -69,7 +95,7 @@ const openScanWindow = () => {
         width: 375,
         height: 600,
         title: '扫码关注',
-        url: `#/publicSphere/scanFocus`,
+        url: '#/publicSphere/scanFocus',
     });
 };
 
@@ -77,122 +103,130 @@ const openHelpWindow = () => {
     createNewWindow({
         width: 375,
         height: 720,
-        url: `#/help`,
+        url: '#/help',
     });
 };
-
-const toCommunity = (id) => {
-    activeId.value = id;
-};
-
-const getCommunityListByUserId = async () => {
-    const userId = getItem('userPortrait') ? getItem('userPortrait') : ''
-    const res = await communityUserList(userId);
-}
-
-onMounted(() => {
-    getCommunityListByUserId()
-})
 </script>
 
-<style lang="scss">
-.group-chat {
+<style lang="scss" scoped>
+.community-container {
     display: flex;
-    width: 100vw;
-    height: calc(100vh - 40px);
+}
 
-    .community-chat {
-        width: 250px;
-        height: 100vh;
-        flex-shrink: 0;
-        background-color: #efefef;
-        overflow: hidden;
-        border-right: 1px solid #ddd;
+.sidebar {
+    width: 250px;
+    background: #efefef;
+    border-right: 1px solid #ddd;
+    display: flex;
+    flex-direction: column;
+}
 
-        .community-search {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 10px;
-            background-color: #fff;
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 10px;
+    background: #fff;
+    border-bottom: 1px solid #ddd;
+}
 
-            .search-input {
-                width: 160px;
-                height: 32px;
-                border-radius: 18px;
-                background-color: #fff;
-                border: 1px solid #ddd;
-                outline: none;
-                padding: 0 10px;
-                margin-right: 5px;
-                box-sizing: border-box;
-            }
+.search-input {
+    flex: 1;
+    width: 160px;
+    height: 32px;
+    border-radius: 16px;
+    border: 1px solid #ddd;
+    padding: 0 12px;
+    outline: none;
+    font-size: 14px;
 
-            img {
-                width: 24px;
-                height: 24px;
-                margin: 0 3px;
-                outline: none;
-                cursor: pointer;
-            }
+    &:focus {
+        border-color: #409eff;
+    }
+}
+
+.action-btn {
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+
+    &:hover {
+        opacity: 0.7;
+    }
+}
+
+.community-nav {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px 0;
+
+    ul {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+
+    li {
+        display: flex;
+        align-items: center;
+        height: 52px;
+        padding: 0 10px 0 44px;
+        cursor: pointer;
+        font-size: 14px;
+        position: relative;
+        transition: background-color 0.2s;
+
+        &:hover {
+            background: #e8e8e8;
         }
 
-        .community-list {
-            padding-bottom: 40px;
-            padding-top: 10px;
-
-            ul {
-                width: 290px;
-                padding: 0;
-                margin: 0;
-                padding-right: 20px;
-                height: calc(100vh - 56px);
-                overflow-y: scroll;
-                box-sizing: border-box;
-
-                li {
-                    display: flex;
-                    align-items: center;
-                    height: 52px;
-                    background-repeat: no-repeat;
-                    background-position: center left;
-                    background-size: 28px 28px;
-                    padding-left: 44px;
-                    font-size: 14px;
-                    background-image: url(../assets/radio-1.png);
-                    background-position: 10px center;
-                    cursor: pointer;
-
-                    &:nth-child(2n) {
-                        background-image: url(../assets/radio-2.png);
-                    }
-
-                    &:nth-child(3n) {
-                        background-image: url(../assets/radio-3.png);
-                    }
-
-                    &:nth-child(4n) {
-                        background-image: url(../assets/radio-4.png);
-                    }
-
-                    &:nth-child(5n) {
-                        background-image: url(../assets/radio-5.png);
-                    }
-
-                    &:nth-child(6n) {
-                        background-image: url(../assets/radio-6.png);
-                    }
-
-                    &:nth-child(7n) {
-                        background-image: url(../assets/radio-7.png);
-                    }
-
-                    &.activeItem {
-                        background-color: rgba(202, 221, 255, 1);
-                    }
-                }
-            }
+        &.active {
+            background: rgba(202, 221, 255, 0.8);
         }
     }
+}
+
+.community-icon {
+    position: absolute;
+    left: 10px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background-size: contain;
+
+    &.icon-1 {
+        background-image: url(../assets/radio-1.png);
+    }
+
+    &.icon-2 {
+        background-image: url(../assets/radio-2.png);
+    }
+
+    &.icon-3 {
+        background-image: url(../assets/radio-3.png);
+    }
+
+    &.icon-4 {
+        background-image: url(../assets/radio-4.png);
+    }
+
+    &.icon-5 {
+        background-image: url(../assets/radio-5.png);
+    }
+
+    &.icon-6 {
+        background-image: url(../assets/radio-6.png);
+    }
+
+    &.icon-7 {
+        background-image: url(../assets/radio-7.png);
+    }
+}
+
+.content {
+    flex: 1;
+    overflow: hidden;
 }
 </style>

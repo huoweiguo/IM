@@ -134,7 +134,7 @@ app.use(Voip);
 const i18n = createI18n({
     // 使用localStorage存储语言状态是为了保证页面刷新之后还是保持原来选择的语言状态
     locale: getItem('lang') ? getItem('lang') : 'zh-CN', // 定义默认语言为中文
-    allowComposition: true,
+    // allowComposition: true,
     messages: {
         'zh-CN': require('@/assets/lang/zh-CN.json'),
         'zh-TW': require('@/assets/lang/zh-TW.json'),

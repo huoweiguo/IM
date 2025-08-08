@@ -192,15 +192,17 @@ const handleLoginResponse = (res) => {
 
     // 存储用户信息
     const userId = res.data.serviceId;
-    const token = res.data.serviceToken;
+    const apptoken = res.data.token;
+    const servicetoken = res.data.serviceToken;
     const portrait = res.data.id;
 
     setItem('userId', userId);
-    setItem('token', token);
+    setItem('token', servicetoken);
+    setItem('apptoken', apptoken);
     setItem('userPortrait', portrait);
 
     // 连接IM服务器
-    wfc.connect(userId, token);
+    wfc.connect(userId, servicetoken);
 
     // 登录成功后操作
     if (isElectron()) {
