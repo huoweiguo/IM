@@ -83,7 +83,7 @@
 <script setup>
 import { ref } from 'vue';
 import { EditPen, Help, Check } from '@element-plus/icons-vue';
-import { createNewWindow } from '@/qzui/utils/electronHelper';
+import { createNewWindow } from '@/qzui/util/electronHelper';
 
 // 图标导入
 import deleteIcon from '../assets/delete_icon.png';

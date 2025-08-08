@@ -25,7 +25,7 @@
 import { computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import store from '../../store';
-import { createNewWindow } from '@/qzui/utils/electronHelper';
+import { createNewWindow } from '@/qzui/util/electronHelper';
 
 const route = useRoute();
 const router = useRouter();

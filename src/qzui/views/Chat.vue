@@ -2,14 +2,14 @@
     <Layout>
         <div class="group-chat">
             <TopNav />
-            <ChatUser style="flex: 1" />
+            <ConversationPage style="flex: 1" />
         </div>
     </Layout>
 </template>
 
 <script setup>
 import Layout from '../components/Layout.vue';
-import ChatUser from '../components/ChatUser.vue';
+import ConversationPage from '../main/ConversationPage.vue';
 import TopNav from '../components/TopNav.vue';
 </script>
 

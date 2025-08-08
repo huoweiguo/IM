@@ -53,7 +53,7 @@
 
 <script setup>
 import { ref } from 'vue';
-import { createNewWindow } from '@/qzui/utils/electronHelper';
+import { createNewWindow } from '@/qzui/util/electronHelper';
 import deleteIcon from '../assets/delete_icon.png';
 import headerImg from '../assets/header1.png';
 import img1 from '../assets/img1.png';

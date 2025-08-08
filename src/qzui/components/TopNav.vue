@@ -8,7 +8,7 @@
 </template>
 
 <script setup>
-import { createNewWindow } from '@/qzui/utils/electronHelper';
+import { createNewWindow } from '@/qzui/util/electronHelper';
 
 const openPublicWindow = () => {
     createNewWindow({
@@ -21,6 +21,8 @@ const openPublicWindow = () => {
 
 <style lang="scss" scoped>
 .group-chat-nav {
+    position: relative;
+    z-index: 99999;
     display: flex;
     align-items: center;
     width: 100vw;

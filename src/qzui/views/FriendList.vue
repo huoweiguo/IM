@@ -1,10 +1,12 @@
 <template>
-    <Layout> 好友列表 </Layout>
+    <Layout>
+        <ContactPage />
+    </Layout>
 </template>
 
 <script setup>
-import { ref } from 'vue';
 import Layout from '../components/Layout.vue';
+import ContactPage from '../main/ContactPage.vue';
 </script>
 
 <style lang="scss"></style>

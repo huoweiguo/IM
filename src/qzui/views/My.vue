@@ -119,7 +119,7 @@
 <script setup>
 import { ref } from 'vue';
 import { Edit } from '@element-plus/icons-vue';
-import { createNewWindow } from '@/qzui/utils/electronHelper';
+import { createNewWindow } from '@/qzui/util/electronHelper';
 const watchSwitch = ref(false);
 const coinList = ref([
     { id: 1, num: 1, received: true },
