@@ -84,7 +84,7 @@
 </template>
 
 <script setup>
-import { createNewWindow } from '@/qzui/utils/electronHelper';
+import { createNewWindow } from '@/qzui/util/electronHelper';
 // 这里可后续添加逻辑
 import { ref, reactive } from 'vue';
 const otherInfo = reactive({

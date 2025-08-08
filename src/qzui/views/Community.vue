@@ -44,7 +44,7 @@
 import { ref, computed } from 'vue';
 import Layout from '../components/Layout.vue';
 import CommunityComp from '../components/CommunityComp.vue';
-import { createNewWindow } from '@/qzui/utils/electronHelper';
+import { createNewWindow } from '@/qzui/util/electronHelper';
 
 const searchText = ref('');
 const activeId = ref(1);

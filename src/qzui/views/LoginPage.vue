@@ -59,7 +59,7 @@ import { ElMessage } from 'element-plus';
 import wfc from '../../wfc/client/wfc';
 import Config from '../../config';
 import store from '../../store';
-import { clear, getItem, setItem } from '../../qzui/utils/storageHelper';
+import { clear, getItem, setItem } from '../../qzui/util/storageHelper';
 import ConnectionStatus from '../../wfc/client/connectionStatus';
 import EventType from '../../wfc/client/wfcEvent';
 import { ipcRenderer, isElectron } from '../../platform';
