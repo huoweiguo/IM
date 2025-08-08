@@ -12,11 +12,13 @@
                         <template #dropdown>
                             <el-dropdown-menu>
                                 <el-dropdown-item @click="openChatWindow">
-                                    <el-icon> <UserFilled /> </el-icon>发起群聊
+                                    <el-icon>
+                                        <UserFilled />
+                                    </el-icon>发起群聊
                                 </el-dropdown-item>
-                                <el-dropdown-item @click="openScanWindow"
-                                    ><el-icon> <StarFilled /> </el-icon>关注我</el-dropdown-item
-                                >
+                                <el-dropdown-item @click="openScanWindow"><el-icon>
+                                        <StarFilled />
+                                    </el-icon>关注我</el-dropdown-item>
                                 <el-dropdown-item @click="openHelpWindow">
                                     <el-icon>
                                         <QuestionFilled />
@@ -30,7 +32,8 @@
                 </div>
                 <div class="community-list">
                     <ul>
-                        <li v-for="item in list" :key="item.id" :class="{ activeItem: activeId === item.id }" @click="toCommunity(item.id)">
+                        <li v-for="item in list" :key="item.id" :class="{ activeItem: activeId === item.id }"
+                            @click="toCommunity(item.id)">
                             {{ item.name }}
                         </li>
                     </ul>
@@ -44,22 +47,15 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { createNewWindow } from '@/qzui/utils/electronHelper';
+import { getItem, setItem } from "@/ui/util/storageHelper";
 import TopNav from '../components/TopNav.vue';
 import ChatSilder from '../components/ChatSilder.vue';
 import CommunityComp from '../components/CommunityComp.vue';
+import { communityUserList } from '@/api/community';
 const activeId = ref(1);
-const list = ref([
-    { name: 'A22社区群', id: 1 },
-    { name: 'A23一家人', id: 2 },
-    { name: 'A24节日福利', id: 3 },
-    { name: 'B22闺蜜群', id: 4 },
-    { name: 'C22美妆群', id: 5 },
-    { name: 'D22干饭群', id: 6 },
-    { name: 'B52旅游结伴群', id: 7 },
-    { name: 'J20撸猫社区', id: 8 },
-]);
+const list = ref([]);
 const openChatWindow = () => {
     createNewWindow({
         width: 604,
@@ -88,6 +84,15 @@ const openHelpWindow = () => {
 const toCommunity = (id) => {
     activeId.value = id;
 };
+
+const getCommunityListByUserId = async () => {
+    const userId = getItem('userPortrait') ? getItem('userPortrait') : ''
+    const res = await communityUserList(userId);
+}
+
+onMounted(() => {
+    getCommunityListByUserId()
+})
 </script>
 
 <style lang="scss">

@@ -7,7 +7,8 @@
                     <ChatDotRound />
                 </el-icon>
             </li>
-            <li class="community" :class="{ community_active: route.path === '/community' }" @click="$router.push('/community')"></li>
+            <li class="community" :class="{ community_active: route.path === '/community' }"
+                @click="$router.push('/community')"></li>
             <!-- <li class="friend" @click="openNewWindow"></li> -->
             <li class="chat" :class="{ chat_active: route.path === '/chatHome' }" @click="$router.push('/chatHome')">
                 <el-icon class="chat-icon" size="24">
@@ -48,9 +49,11 @@ const openMyWindow = () => {
     background-color: rgb(46, 46, 46);
     box-sizing: border-box;
     padding: 30px 0;
+    flex-shrink: 0;
 
     .tab_ul {
         flex: 1;
+
         li {
             margin-bottom: 30px;
         }
@@ -91,6 +94,7 @@ const openMyWindow = () => {
             background-position: center;
 
             &.chat {
+
                 &:hover,
                 &.chat_active {
                     .chat-icon {

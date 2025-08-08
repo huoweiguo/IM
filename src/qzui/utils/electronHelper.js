@@ -24,6 +24,7 @@ export async function createNewWindow(options) {
         };
         try {
             const newWindow = await BrowserWindow.new(windowOptions);
+            newWindow.webContents.openDevTools({ mode: 'detach' });
             return newWindow;
         } catch (error) {
             console.error('创建窗口失败:', error);
