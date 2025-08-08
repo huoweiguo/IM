@@ -270,13 +270,18 @@ onMounted(() => {
     // 检查是否有保存的用户信息，实现自动登录
     let userId = getItem('userId');
     let token = getItem('token');
+
     if (userId) {
-        let autoLogin = getItem(userId + '-' + 'autoLogin') === '1';
-        if (autoLogin && token) {
+        let autoLogin = store.state.misc.enableAutoLogin;
+
+        if (!autoLogin && token) {
             const firstTimeConnect = wfc.connect(userId, token);
             console.log('firstTimeConnect', firstTimeConnect);
-        } else {
-            isElectron() && ipcRenderer.send(IpcEventType.RESIZE_LOGIN_WINDOW);
+            isElectron() && ipcRenderer.send(IpcEventType.LOGIN);
+            if (firstTimeConnect) {
+                // 登录成功后跳转到聊天页面
+                router.push('/chat');
+            }
         }
     } else {
         isElectron() && ipcRenderer.send(IpcEventType.RESIZE_LOGIN_WINDOW);
