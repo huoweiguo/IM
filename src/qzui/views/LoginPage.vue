@@ -274,7 +274,7 @@ onMounted(() => {
     if (userId) {
         let autoLogin = store.state.misc.enableAutoLogin;
 
-        if (!autoLogin && token) {
+        if (autoLogin && token) {
             const firstTimeConnect = wfc.connect(userId, token);
             console.log('firstTimeConnect', firstTimeConnect);
             isElectron() && ipcRenderer.send(IpcEventType.LOGIN);
@@ -282,6 +282,8 @@ onMounted(() => {
                 // 登录成功后跳转到聊天页面
                 router.push('/chat');
             }
+        } else {
+            isElectron() && ipcRenderer.send(IpcEventType.RESIZE_LOGIN_WINDOW);
         }
     } else {
         isElectron() && ipcRenderer.send(IpcEventType.RESIZE_LOGIN_WINDOW);
