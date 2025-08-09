@@ -51,6 +51,7 @@ getUserCenter().then((res) => {
     .chat-content {
         flex: 1;
         display: flex;
+        width: 100%;
     }
 }
 </style>

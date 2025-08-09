@@ -1,7 +1,7 @@
 import { login } from './modules/login';
 import ChatList from '../qzui/views/ChatList.vue';
 import ChatHome from '../qzui/views/ChatHome.vue';
-import Home from '../qzui/views/Home.vue';
+// import Home from '../qzui/views/Home.vue';
 import Community from '../qzui/views/Community.vue';
 import Chat from '../qzui/views/Chat.vue';
 import FriendList from '../qzui/views/FriendList.vue';
@@ -53,10 +53,10 @@ const routes = [
     {
         path: '/home',
         name: 'Home',
-        component: Home,
+        component: Chat,
         meta: {
             requiresAuth: false,
-            title: '首页',
+            title: '聊天',
         },
     },
     {

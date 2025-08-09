@@ -15,6 +15,7 @@ import TopNav from '../components/TopNav.vue';
 
 <style lang="scss">
 .group-chat {
+    flex: 1;
     display: flex;
     flex-direction: column;
     height: 100%;

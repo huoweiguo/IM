@@ -1,35 +1,41 @@
 <template>
     <section>
         <div v-if="sharedConversationState.currentConversationInfo == null" class="conversation-empty-container">
-            <h1 style="font-size: 30px; color: #f0f0f0;text-shadow: 1px 1px 0 #fff;">圈子</h1>
+            <h1 style="font-size: 30px; color: #f0f0f0; text-shadow: 1px 1px 0 #fff">圈子</h1>
         </div>
         <div v-else class="conversation-container">
             <header>
                 <div class="title-container">
                     <div>
                         <h1 class="single-line" @click.stop="toggleConversationInfo">{{ conversationTitle }}</h1>
-                        <p class="single-line user-online-status" @click="clickConversationDesc">{{
-                            targetUserOnlineStateDesc }}</p>
-                        <p v-if="isExternalDomainSingleConversation" class="single-line domain-desc">{{ domainName }}
-                        </p>
+                        <p class="single-line user-online-status" @click="clickConversationDesc">{{ targetUserOnlineStateDesc }}</p>
+                        <p v-if="isExternalDomainSingleConversation" class="single-line domain-desc">{{ domainName }}</p>
                     </div>
                     <div v-bind:style="{ marginTop: sharedMiscState.isElectronWindowsOrLinux ? '30px' : '0' }">
                         <a v-if="sharedMiscState.isElectron" href="#" @click.prevent>
-                            <i class="icon-ion-pin" style="display: inline-block"
-                                v-bind:class="{ active: isWindowAlwaysTop }" @click.prevent="setWindowAlwaysTop" />
+                            <i class="icon-ion-pin" style="display: inline-block" v-bind:class="{ active: isWindowAlwaysTop }" @click.prevent="setWindowAlwaysTop" />
                         </a>
                         <a href="#" @click.prevent>
-                            <i class="icon-ion-ios-settings-strong" style="display: inline-block" ref="setting"
+                            <i
+                                class="icon-ion-ios-settings-strong"
+                                style="display: inline-block"
+                                ref="setting"
                                 v-bind:class="{ active: showConversationInfo }"
-                                @click.prevent="toggleConversationInfo" />
+                                @click.prevent="toggleConversationInfo"
+                            />
                         </a>
                     </div>
                 </div>
             </header>
-            <div ref="conversationContentContainer" class="conversation-content-container"
-                @dragover="dragEvent($event, 'dragover')" @dragleave="dragEvent($event, 'dragleave')"
-                @dragenter="dragEvent($event, 'dragenter')" @drop="dragEvent($event, 'drop')"
-                :dummy_just_for_reactive="currentVoiceMessage">
+            <div
+                ref="conversationContentContainer"
+                class="conversation-content-container"
+                @dragover="dragEvent($event, 'dragover')"
+                @dragleave="dragEvent($event, 'dragleave')"
+                @dragenter="dragEvent($event, 'dragenter')"
+                @drop="dragEvent($event, 'drop')"
+                :dummy_just_for_reactive="currentVoiceMessage"
+            >
                 <div v-if="ongoingCalls && ongoingCalls.length > 0" class="ongoing-call-container">
                     <div v-for="(value, index) in ongoingCalls" :key="index" class="ongoing-call-item">
                         <p>{{ value.messageContent.digest(value) }}</p>
@@ -41,35 +47,38 @@
                         <p>{{ $t('conversation.drag_to_send_to', [conversationTitle]) }}</p>
                     </div>
                 </div>
-                <div ref="conversationMessageList" class="conversation-message-list" v-on:scroll="onScroll"
-                    infinite-wrapper>
-                    <infinite-loading :identifier="loadingIdentifier" :distance="10" :force-use-infinite-wrapper="true"
-                        direction="top" @infinite="infiniteHandler">
+                <div ref="conversationMessageList" class="conversation-message-list" v-on:scroll="onScroll" infinite-wrapper>
+                    <infinite-loading :identifier="loadingIdentifier" :distance="10" :force-use-infinite-wrapper="true" direction="top" @infinite="infiniteHandler">
                         <!--            <template slot="spinner">加载中...</template>-->
                         <template #no-more>{{ $t('conversation.no_more_message') }}</template>
                         <template #no-results>{{ $t('conversation.all_message_load') }}</template>
                     </infinite-loading>
-                    <div v-for="(message) in sharedConversationState.currentConversationMessageList"
-                        :ref="message.messageId" :key="message.messageId">
+                    <div v-for="message in sharedConversationState.currentConversationMessageList" :ref="message.messageId" :key="message.messageId">
                         <!--todo 不同的消息类型 notification in out-->
 
                         <NotificationMessageContentView :message="message" v-if="isNotificationMessage(message)" />
-                        <RecallNotificationMessageContentView :message="message"
-                            v-else-if="isRecallNotificationMessage(message)" />
+                        <RecallNotificationMessageContentView :message="message" v-else-if="isRecallNotificationMessage(message)" />
                         <ContextableNotificationMessageContentContainerView
                             v-else-if="isContextableNotificationMessage(message)"
                             @click.native.capture="sharedConversationState.enableMessageMultiSelection ? clickMessageItem($event, message) : null"
                             @openMessageContextMenu="openMessageContextMenu"
-                            @openMessageSenderContextMenu="openMessageSenderContextMenu" :message="message" />
+                            @openMessageSenderContextMenu="openMessageSenderContextMenu"
+                            :message="message"
+                        />
                         <NormalOutMessageContentView
                             @click.native.capture="sharedConversationState.enableMessageMultiSelection ? clickMessageItem($event, message) : null"
-                            :message="message" @openMessageContextMenu="openMessageContextMenu"
+                            :message="message"
+                            @openMessageContextMenu="openMessageContextMenu"
                             @openMessageSenderContextMenu="openMessageSenderContextMenu"
-                            v-else-if="message.direction === 0" />
+                            v-else-if="message.direction === 0"
+                        />
                         <NormalInMessageContentView
                             @click.native.capture="sharedConversationState.enableMessageMultiSelection ? clickMessageItem($event, message) : null"
-                            :message="message" @openMessageContextMenu="openMessageContextMenu"
-                            @openMessageSenderContextMenu="openMessageSenderContextMenu" v-else />
+                            :message="message"
+                            @openMessageContextMenu="openMessageContextMenu"
+                            @openMessageSenderContextMenu="openMessageSenderContextMenu"
+                            v-else
+                        />
                     </div>
                 </div>
                 <div v-if="sharedConversationState.inputtingUser" class="inputting-container">
@@ -79,35 +88,45 @@
                 <div v-if="unreadMessageCount > 0" class="unread-count-tip-container" @click="showUnreadMessage">
                     {{ '' + this.unreadMessageCount + '条新消息' }}
                 </div>
-                <div v-show="!sharedConversationState.enableMessageMultiSelection && !sharedContactState.showChannelMenu"
-                    v-on:mousedown="dragStart" class="divider-handler"></div>
-                <MessageInputView :conversationInfo="sharedConversationState.currentConversationInfo"
-                    v-show="!sharedConversationState.enableMessageMultiSelection" :input-options="inputOptions"
-                    :muted="muted" ref="messageInputView" />
-                <MultiSelectActionView v-show="sharedConversationState.enableMessageMultiSelection"
-                    :conversation-info="conversationInfo" />
+                <div v-show="!sharedConversationState.enableMessageMultiSelection && !sharedContactState.showChannelMenu" v-on:mousedown="dragStart" class="divider-handler"></div>
+                <MessageInputView
+                    :conversationInfo="sharedConversationState.currentConversationInfo"
+                    v-show="!sharedConversationState.enableMessageMultiSelection"
+                    :input-options="inputOptions"
+                    :muted="muted"
+                    ref="messageInputView"
+                />
+                <MultiSelectActionView v-show="sharedConversationState.enableMessageMultiSelection" :conversation-info="conversationInfo" />
                 <SingleConversationInfoView
                     v-if="showConversationInfo && sharedConversationState.currentConversationInfo.conversation.type === 0"
                     v-v-on-click-outside="hideConversationInfo"
                     :conversation-info="sharedConversationState.currentConversationInfo"
-                    v-bind:class="{ active: showConversationInfo }" class="conversation-info-container" />
+                    v-bind:class="{ active: showConversationInfo }"
+                    class="conversation-info-container"
+                />
                 <GroupConversationInfoView
                     v-if="showConversationInfo && sharedConversationState.currentConversationInfo.conversation.type === 1"
                     v-v-on-click-outside="hideConversationInfo"
                     :conversation-info="sharedConversationState.currentConversationInfo"
-                    v-bind:class="{ active: showConversationInfo }" class="conversation-info-container" />
+                    v-bind:class="{ active: showConversationInfo }"
+                    class="conversation-info-container"
+                />
 
                 <SecretConversationInfoView
                     v-if="showConversationInfo && sharedConversationState.currentConversationInfo.conversation.type === 5"
                     v-v-on-click-outside="hideConversationInfo"
                     :conversation-info="sharedConversationState.currentConversationInfo"
-                    v-bind:class="{ active: showConversationInfo }" class="conversation-info-container" />
+                    v-bind:class="{ active: showConversationInfo }"
+                    class="conversation-info-container"
+                />
 
                 <ChannelConversationInfoView
                     v-if="showConversationInfo && sharedConversationState.currentConversationInfo.conversation.type === 3"
                     v-v-on-click-outside="hideConversationInfo"
                     :conversation-info="sharedConversationState.currentConversationInfo"
-                    v-bind:class="{ active: showConversationInfo }" class="conversation-info-container" />
+                    v-bind:class="{ active: showConversationInfo }"
+                    class="conversation-info-container"
+                />
 
                 <vue-context ref="menu" v-slot="{ data: message }" :close-on-scroll="true" v-on:close="onMenuClose">
                     <!--          更多menu item-->
@@ -151,8 +170,7 @@
                         <a @click.prevent="cancelSpeechToText(message)">{{ $t('common.cancelSpeech2text') }}</a>
                     </li>
                 </vue-context>
-                <vue-context ref="messageSenderContextMenu" v-slot="{ data: message }" :close-on-scroll="true"
-                    v-on:close="onMessageSenderContextMenuClose">
+                <vue-context ref="messageSenderContextMenu" v-slot="{ data: message }" :close-on-scroll="true" v-on:close="onMessageSenderContextMenuClose">
                     <!--          更多menu item，比如添加到通讯录等-->
                     <li>
                         <a @click.prevent="mentionMessageSender(message)">{{ mentionMessageSenderTitle(message) }}</a>
@@ -164,57 +182,57 @@
 </template>
 
 <script>
-import SingleConversationInfoView from "../../main/conversation/SingleConversationInfoView";
-import SecretConversationInfoView from "../../main/conversation/SecretConversationInfoView";
-import GroupConversationInfoView from "../../main/conversation/GroupConversationInfoView";
-import MessageInputView from "../../main/conversation/MessageInputView";
-import NormalOutMessageContentView from "../../main/conversation/message/NormalOutMessageContentContainerView";
-import NormalInMessageContentView from "../../main/conversation/message/NormalInMessageContentContainerView";
-import NotificationMessageContentView from "../../main/conversation/message/NotificationMessageContentView";
-import RecallNotificationMessageContentView from "../../main/conversation/message/RecallNotificationMessageContentView";
-import NotificationMessageContent from "../../../wfc/messages/notification/notificationMessageContent";
-import TextMessageContent from "../../../wfc/messages/textMessageContent";
-import store from "../../../store";
-import wfc from "../../../wfc/client/wfc";
-import { numberValue } from "../../../wfc/util/longUtil";
+import SingleConversationInfoView from '../../main/conversation/SingleConversationInfoView';
+import SecretConversationInfoView from '../../main/conversation/SecretConversationInfoView';
+import GroupConversationInfoView from '../../main/conversation/GroupConversationInfoView';
+import MessageInputView from '../../main/conversation/MessageInputView';
+import NormalOutMessageContentView from '../../main/conversation/message/NormalOutMessageContentContainerView';
+import NormalInMessageContentView from '../../main/conversation/message/NormalInMessageContentContainerView';
+import NotificationMessageContentView from '../../main/conversation/message/NotificationMessageContentView';
+import RecallNotificationMessageContentView from '../../main/conversation/message/RecallNotificationMessageContentView';
+import NotificationMessageContent from '../../../wfc/messages/notification/notificationMessageContent';
+import TextMessageContent from '../../../wfc/messages/textMessageContent';
+import store from '../../../store';
+import wfc from '../../../wfc/client/wfc';
+import { numberValue } from '../../../wfc/util/longUtil';
 import InfiniteLoading from '@imndx/vue-infinite-loading';
-import MultiSelectActionView from "../../main/conversation/MessageMultiSelectActionView";
-import ScaleLoader from 'vue-spinner/src/ScaleLoader'
-import ForwardType from "../../main/conversation/message/forward/ForwardType";
-import { fs, isElectron, shell } from "../../../platform";
-import FileMessageContent from "../../../wfc/messages/fileMessageContent";
-import ImageMessageContent from "../../../wfc/messages/imageMessageContent";
-import { copyImg, copyText } from "../../util/clipboard";
-import Message from "../../../wfc/messages/message";
-import { downloadFile } from "../../../platformHelper";
-import VideoMessageContent from "../../../wfc/messages/videoMessageContent";
-import localStorageEmitter from "../../../ipc/localStorageEmitter";
-import SoundMessageContent from "../../../wfc/messages/soundMessageContent";
-import MessageContentType from "../../../wfc/messages/messageContentType";
-import BenzAMRRecorder from "benz-amr-recorder";
-import ConversationType from "../../../wfc/model/conversationType";
-import GroupMemberType from "../../../wfc/model/groupMemberType";
-import CompositeMessageContent from "../../../wfc/messages/compositeMessageContent";
-import EventType from "../../../wfc/client/wfcEvent";
-import MultiCallOngoingMessageContent from "../../../wfc/av/messages/multiCallOngoingMessageContent";
-import JoinCallRequestMessageContent from "../../../wfc/av/messages/joinCallRequestMessageContent";
-import RichNotificationMessageContent from "../../../wfc/messages/notification/richNotificationMessageContent";
-import MessageStatus from "../../../wfc/messages/messageStatus";
-import MediaMessageContent from "../../../wfc/messages/mediaMessageContent";
-import ArticlesMessageContent from "../../../wfc/messages/articlesMessageContent";
-import ContextableNotificationMessageContentContainerView from "./message/ContextableNotificationMessageContentContainerView";
-import ChannelConversationInfoView from "./ChannelConversationInfoView";
-import FriendRequestView from "../contact/FriendRequestView";
-import { currentWindow, ipcRenderer } from "../../../platform";
-import appServerApi from "../../../api/appServerApi";
-import Config from "../../../config";
-import IPCEventType from "../../../ipcEventType";
-import { imageThumbnail } from "../../util/imageUtil";
-import GroupInfo from "../../../wfc/model/groupInfo";
-import { vOnClickOutside } from '@vueuse/components'
-import WfcUtil from "../../../wfc/util/wfcUtil";
-import CallStartMessageContent from "../../../wfc/av/messages/callStartMessageContent";
-import SendMixMediaMessageView from "../view/SendMixMediaMessageView.vue";
+import MultiSelectActionView from '../../main/conversation/MessageMultiSelectActionView';
+import ScaleLoader from 'vue-spinner/src/ScaleLoader';
+import ForwardType from '../../main/conversation/message/forward/ForwardType';
+import { fs, isElectron, shell } from '../../../platform';
+import FileMessageContent from '../../../wfc/messages/fileMessageContent';
+import ImageMessageContent from '../../../wfc/messages/imageMessageContent';
+import { copyImg, copyText } from '../../util/clipboard';
+import Message from '../../../wfc/messages/message';
+import { downloadFile } from '../../../platformHelper';
+import VideoMessageContent from '../../../wfc/messages/videoMessageContent';
+import localStorageEmitter from '../../../ipc/localStorageEmitter';
+import SoundMessageContent from '../../../wfc/messages/soundMessageContent';
+import MessageContentType from '../../../wfc/messages/messageContentType';
+import BenzAMRRecorder from 'benz-amr-recorder';
+import ConversationType from '../../../wfc/model/conversationType';
+import GroupMemberType from '../../../wfc/model/groupMemberType';
+import CompositeMessageContent from '../../../wfc/messages/compositeMessageContent';
+import EventType from '../../../wfc/client/wfcEvent';
+import MultiCallOngoingMessageContent from '../../../wfc/av/messages/multiCallOngoingMessageContent';
+import JoinCallRequestMessageContent from '../../../wfc/av/messages/joinCallRequestMessageContent';
+import RichNotificationMessageContent from '../../../wfc/messages/notification/richNotificationMessageContent';
+import MessageStatus from '../../../wfc/messages/messageStatus';
+import MediaMessageContent from '../../../wfc/messages/mediaMessageContent';
+import ArticlesMessageContent from '../../../wfc/messages/articlesMessageContent';
+import ContextableNotificationMessageContentContainerView from './message/ContextableNotificationMessageContentContainerView';
+import ChannelConversationInfoView from './ChannelConversationInfoView';
+import FriendRequestView from '../contact/FriendRequestView';
+import { currentWindow, ipcRenderer } from '../../../platform';
+import appServerApi from '../../../api/appServerApi';
+import Config from '../../../config';
+import IPCEventType from '../../../ipcEventType';
+import { imageThumbnail } from '../../util/imageUtil';
+import GroupInfo from '../../../wfc/model/groupInfo';
+import { vOnClickOutside } from '@vueuse/components';
+import WfcUtil from '../../../wfc/util/wfcUtil';
+import CallStartMessageContent from '../../../wfc/av/messages/callStartMessageContent';
+import SendMixMediaMessageView from '../view/SendMixMediaMessageView.vue';
 
 var amr;
 export default {
@@ -241,7 +259,7 @@ export default {
         title: {
             type: String,
             required: false,
-        }
+        },
     },
     data() {
         return {
@@ -287,9 +305,9 @@ export default {
                 let isFile;
                 if (e.dataTransfer.items && e.dataTransfer.items.length > 0) {
                     if (e.dataTransfer.items[0].kind === 'file') {
-                        if (typeof (e.dataTransfer.items[0].webkitGetAsEntry) == "function") {
+                        if (typeof e.dataTransfer.items[0].webkitGetAsEntry == 'function') {
                             isFile = e.dataTransfer.items[0].webkitGetAsEntry().isFile;
-                        } else if (typeof (e.dataTransfer.items[0].getAsEntry) == "function") {
+                        } else if (typeof e.dataTransfer.items[0].getAsEntry == 'function') {
                             isFile = e.dataTransfer.items[0].getAsEntry().isFile;
                         }
 
@@ -297,7 +315,7 @@ export default {
                             this.$notify({
                                 // title: '不支持',
                                 text: this.$t('conversation.not_support_send_folder'),
-                                type: 'warn'
+                                type: 'warn',
                             });
                             return true;
                         }
@@ -310,28 +328,32 @@ export default {
                         {
                             conversation: this.conversationInfo.conversation,
                             files: [...e.dataTransfer.files],
-                        }, null, {
-                        name: 'send-mix-multi-media-message-modal',
-                        width: 600,
-                        height: 480,
-                        clickToClose: true,
-                    }, {
-                        'before-close': null,
-                    });
+                        },
+                        null,
+                        {
+                            name: 'send-mix-multi-media-message-modal',
+                            width: 600,
+                            height: 480,
+                            clickToClose: true,
+                        },
+                        {
+                            'before-close': null,
+                        }
+                    );
 
-                    return
+                    return;
                 }
                 let length = e.dataTransfer.files.length;
                 if (length > 0 && length <= 5) {
                     for (let i = 0; i < length; i++) {
-                        this.$eventBus.$emit('uploadFile', e.dataTransfer.files[i])
+                        this.$eventBus.$emit('uploadFile', e.dataTransfer.files[i]);
                         store.sendFile(this.sharedConversationState.currentConversationInfo.conversation, e.dataTransfer.files[i]);
                     }
                 } else if (length > 5) {
                     this.$notify({
                         // title: '大文件提示',
                         text: this.$t('conversation.drag_to_send_limit_tip'),
-                        type: 'warn'
+                        type: 'warn',
                     });
                 }
 
@@ -350,7 +372,6 @@ export default {
                         content.imageHeight = ih;
                         wfc.sendConversationMessage(this.conversationInfo.conversation, content);
                     } else {
-
                         // TODO blob uri
                     }
                 }
@@ -368,7 +389,7 @@ export default {
 
         setWindowAlwaysTop() {
             this.isWindowAlwaysTop = !currentWindow.isAlwaysOnTop();
-            currentWindow.setAlwaysOnTop(this.isWindowAlwaysTop)
+            currentWindow.setAlwaysOnTop(this.isWindowAlwaysTop);
         },
 
         clickConversationDesc() {
@@ -384,7 +405,9 @@ export default {
                         width: 600,
                         height: 250,
                         clickToClose: false,
-                    }, {})
+                    },
+                    {}
+                );
             }
         },
 
@@ -399,7 +422,7 @@ export default {
                     this.$refs['conversationMessageList'].style.flexGrow = this.saveMessageListViewFlexGrow;
                 }
             }
-            this.sharedPickState.messages.forEach(m => console.log(m.messageId));
+            this.sharedPickState.messages.forEach((m) => console.log(m.messageId));
             store.toggleMessageMultiSelection(message);
         },
 
@@ -420,9 +443,12 @@ export default {
         },
 
         isNotificationMessage(message) {
-            return message && message.messageContent instanceof NotificationMessageContent
-                && message.messageContent.type !== MessageContentType.RecallMessage_Notification
-                && message.messageContent.type !== MessageContentType.Rich_Notification;
+            return (
+                message &&
+                message.messageContent instanceof NotificationMessageContent &&
+                message.messageContent.type !== MessageContentType.RecallMessage_Notification &&
+                message.messageContent.type !== MessageContentType.Rich_Notification
+            );
         },
 
         isContextableNotificationMessage(message) {
@@ -454,9 +480,9 @@ export default {
 
             // 当用户往上滑动一段距离之后，收到新消息，不自动滚到到最后
             if (e.target.scrollHeight > e.target.clientHeight + e.target.scrollTop + e.target.clientHeight / 2) {
-                store.setShouldAutoScrollToBottom(false)
+                store.setShouldAutoScrollToBottom(false);
             } else {
-                store.setShouldAutoScrollToBottom(true)
+                store.setShouldAutoScrollToBottom(true);
                 this.clearConversationUnreadStatus();
             }
         },
@@ -466,7 +492,7 @@ export default {
                 return;
             }
             this.isHandlerDragging = true;
-            console.log('drag start')
+            console.log('drag start');
         },
 
         drag(e) {
@@ -487,10 +513,9 @@ export default {
             // Resize box A
             // * 8px is the left/right spacing between .handler and its inner pseudo-element
             // * Set flex-grow to 0 to prevent it from growing
-            this.$refs['conversationMessageList'].style.height = (Math.max(boxAminHeight, pointerRelativeYpos)) + 'px';
+            this.$refs['conversationMessageList'].style.height = Math.max(boxAminHeight, pointerRelativeYpos) + 'px';
             this.$refs['conversationMessageList'].style.flexGrow = 0;
             this.messageInputViewResized = true;
-
         },
 
         dragEnd() {
@@ -498,30 +523,27 @@ export default {
         },
 
         onMenuClose() {
-            this.$eventBus.$emit('contextMenuClosed')
+            this.$eventBus.$emit('contextMenuClosed');
         },
         onMessageSenderContextMenuClose() {
-            console.log('onMessageSenderContextMenuClose')
+            console.log('onMessageSenderContextMenuClose');
         },
 
         // message context menu
         isCopyable(message) {
-            return message
-                && (message.messageContent instanceof TextMessageContent
-                    || message.messageContent instanceof ImageMessageContent
-                    || ((message.messageContent instanceof VideoMessageContent
-                        || message.messageContent instanceof FileMessageContent) && this.isLocalFile(message))
-                );
+            return (
+                message &&
+                (message.messageContent instanceof TextMessageContent ||
+                    message.messageContent instanceof ImageMessageContent ||
+                    ((message.messageContent instanceof VideoMessageContent || message.messageContent instanceof FileMessageContent) && this.isLocalFile(message)))
+            );
         },
         isDownloadable(message) {
-            return message && (message.messageContent instanceof ImageMessageContent
-                || message.messageContent instanceof FileMessageContent
-                || message.messageContent instanceof VideoMessageContent);
+            return message && (message.messageContent instanceof ImageMessageContent || message.messageContent instanceof FileMessageContent || message.messageContent instanceof VideoMessageContent);
         },
 
         isForwardable(message) {
-            if (message
-                && ((message.messageContent instanceof SoundMessageContent) || (message.messageContent instanceof CallStartMessageContent))) {
+            if (message && (message.messageContent instanceof SoundMessageContent || message.messageContent instanceof CallStartMessageContent)) {
                 return false;
             }
             return true;
@@ -531,8 +553,7 @@ export default {
             if (!message) {
                 return false;
             }
-            return [MessageContentType.VOIP_CONTENT_TYPE_START,
-            MessageContentType.CONFERENCE_CONTENT_TYPE_INVITE].indexOf(message.messageContent.type) <= -1;
+            return [MessageContentType.VOIP_CONTENT_TYPE_START, MessageContentType.CONFERENCE_CONTENT_TYPE_INVITE].indexOf(message.messageContent.type) <= -1;
         },
 
         isRecallable(message) {
@@ -574,11 +595,7 @@ export default {
         },
 
         isSupportSpeechToText(message) {
-            if (message
-                && message.messageContent.type === MessageContentType.Voice
-                && Config.ASR_SERVER
-                && !message.messageContent._speechText
-                && !message.messageContent._speechToTextInProgress) {
+            if (message && message.messageContent.type === MessageContentType.Voice && Config.ASR_SERVER && !message.messageContent._speechText && !message.messageContent._speechToTextInProgress) {
                 return true;
             }
             return false;
@@ -595,12 +612,16 @@ export default {
             if (!message) {
                 return false;
             }
-            return [MessageContentType.VOIP_CONTENT_TYPE_START,
-            MessageContentType.Voice,
-            MessageContentType.Video,
-            MessageContentType.Composite_Message,
-            MessageContentType.Articles,
-            MessageContentType.CONFERENCE_CONTENT_TYPE_INVITE].indexOf(message.messageContent.type) === -1;
+            return (
+                [
+                    MessageContentType.VOIP_CONTENT_TYPE_START,
+                    MessageContentType.Voice,
+                    MessageContentType.Video,
+                    MessageContentType.Composite_Message,
+                    MessageContentType.Articles,
+                    MessageContentType.CONFERENCE_CONTENT_TYPE_INVITE,
+                ].indexOf(message.messageContent.type) === -1
+            );
         },
 
         isMulticheckable(message) {
@@ -613,14 +634,14 @@ export default {
         copy(message) {
             let content = message.messageContent;
             if (content instanceof TextMessageContent) {
-                let selectedText = window.getSelection().toString()
+                let selectedText = window.getSelection().toString();
                 if (selectedText) {
                     copyText(selectedText);
                 } else {
-                    copyText(content.content)
+                    copyText(content.content);
                 }
             } else if (content instanceof ImageMessageContent) {
-                copyImg(content.remotePath)
+                copyImg(content.remotePath);
             } else if (content instanceof MediaMessageContent) {
                 if (isElectron()) {
                     ipcRenderer.send(IPCEventType.FILE_COPY, { path: content.localPath });
@@ -629,11 +650,11 @@ export default {
         },
         download(message) {
             if (!store.isDownloadingMessage(message.messageId)) {
-                downloadFile(message)
-                store.addDownloadingMessage(message.messageUid)
+                downloadFile(message);
+                store.addDownloadingMessage(message.messageUid);
             } else {
                 // TODO toast 下载中
-                console.log('file isDownloading')
+                console.log('file isDownloading');
             }
         },
 
@@ -655,18 +676,18 @@ export default {
             let audioMessage = message.messageContent;
             audioMessage._speechText = '';
             audioMessage._speechToTextInProgress = true;
-            this.scrollToMessageItemView(message)
+            this.scrollToMessageItemView(message);
             try {
                 const res = await fetch(Config.ASR_SERVER, {
-                    method: "POST",
+                    method: 'POST',
                     body: JSON.stringify({
                         url: audioMessage.remotePath,
                         noReuse: false,
                         noLlm: false,
                     }),
                     headers: {
-                        "Content-Type": "application/json",
-                        "Accept": "*/*",
+                        'Content-Type': 'application/json',
+                        Accept: '*/*',
                     },
                 });
 
@@ -678,7 +699,7 @@ export default {
 
                 const reader = res.body.getReader();
                 const decoder = new TextDecoder();
-                let result = "";
+                let result = '';
 
                 while (true) {
                     const { value, done } = await reader.read();
@@ -687,12 +708,12 @@ export default {
                     let text = decoder.decode(value, { stream: true });
                     text = text.replace(/\r\n|\n|\r/g, '');
                     if (text) {
-                        result += text.replaceAll('data:', '')
+                        result += text.replaceAll('data:', '');
                         console.log('speech2text', text, text.replaceAll('data:', ''));
                         audioMessage._speechText = result;
                         this.$nextTick(() => {
-                            this.scrollToMessageItemView(message)
-                        })
+                            this.scrollToMessageItemView(message);
+                        });
                     }
                 }
                 audioMessage._speechToTextInProgress = false;
@@ -708,7 +729,7 @@ export default {
                 this.$refs[message.messageId][0].scrollIntoView({
                     behavior: 'smooth',
                     block: 'nearest',
-                })
+                });
             }
         },
 
@@ -727,7 +748,7 @@ export default {
 
         delMessage(message) {
             let target = this.conversationInfo.conversation._target;
-            let isSuperGroup = false
+            let isSuperGroup = false;
             if (target instanceof GroupInfo) {
                 isSuperGroup = target.superGroup === 1;
             }
@@ -739,17 +760,17 @@ export default {
                 cancelText: isSuperGroup || !this.sharedMiscState.isElectron ? '取消' : '远程删除',
                 cancelCallback: () => {
                     if (!(isSuperGroup || !this.sharedMiscState.isElectron)) {
-                        wfc.deleteRemoteMessageByUid(message.messageUid, null, null)
+                        wfc.deleteRemoteMessageByUid(message.messageUid, null, null);
                     }
                 },
                 confirmCallback: () => {
                     if (this.sharedMiscState.isElectron) {
                         wfc.deleteMessage(message.messageId);
                     } else {
-                        wfc.deleteRemoteMessageByUid(message.messageUid, null, null)
+                        wfc.deleteRemoteMessageByUid(message.messageUid, null, null);
                     }
-                }
-            })
+                },
+            });
         },
 
         forward(message) {
@@ -762,7 +783,7 @@ export default {
         _forward(message) {
             this.forward(message).catch((reason) => {
                 // do nothing
-                console.log('foward errro', reason)
+                console.log('foward errro', reason);
             });
         },
 
@@ -791,22 +812,23 @@ export default {
         },
 
         favMessage(message) {
-            appServerApi.favMessage(message)
-                .then(data => {
+            appServerApi
+                .favMessage(message)
+                .then((data) => {
                     this.$notify({
                         // title: '收藏成功',
                         text: '收藏成功',
-                        type: 'info'
+                        type: 'info',
                     });
                 })
-                .catch(err => {
-                    console.log('fav error', err)
+                .catch((err) => {
+                    console.log('fav error', err);
                     this.$notify({
                         // title: '收藏失败',
                         text: '收藏失败',
-                        type: 'error'
+                        type: 'error',
                     });
-                })
+                });
         },
 
         multiSelect(message) {
@@ -815,15 +837,19 @@ export default {
 
         infiniteHandler($state) {
             console.log('to load more message');
-            store.loadConversationHistoryMessages(() => {
-                console.log('loaded', this.enableLoadRemoteHistoryMessage)
-                $state.loaded(!this.enableLoadRemoteHistoryMessage);
-                this.enableLoadRemoteHistoryMessage = true;
-            }, () => {
-                console.log('complete')
-                $state.complete()
-                this.enableLoadRemoteHistoryMessage = true;
-            }, this.enableLoadRemoteHistoryMessage);
+            store.loadConversationHistoryMessages(
+                () => {
+                    console.log('loaded', this.enableLoadRemoteHistoryMessage);
+                    $state.loaded(!this.enableLoadRemoteHistoryMessage);
+                    this.enableLoadRemoteHistoryMessage = true;
+                },
+                () => {
+                    console.log('complete');
+                    $state.complete();
+                    this.enableLoadRemoteHistoryMessage = true;
+                },
+                this.enableLoadRemoteHistoryMessage
+            );
         },
 
         playVoice(message) {
@@ -838,15 +864,15 @@ export default {
             });
             amr.onEnded(() => {
                 message._isPlaying = false;
-                store.playVoice(null)
+                store.playVoice(null);
                 if (message.status === MessageStatus.Unread) {
                     wfc.updateMessageStatus(message.messageId, MessageStatus.Played);
                 }
-            })
+            });
         },
         mentionMessageSenderTitle(message) {
             if (!message) {
-                return ''
+                return '';
             }
             let displayName = wfc.getGroupMemberDisplayName(message.conversation.target, message.from);
             return '@' + displayName;
@@ -857,16 +883,18 @@ export default {
         },
 
         onReceiveMessage(message, hasMore) {
-            if (this.conversationInfo && this.conversationInfo.conversation.equal(message.conversation)
-                && message.messageContent instanceof MultiCallOngoingMessageContent
-                && Config.ENABLE_MULTI_CALL_AUTO_JOIN
+            if (
+                this.conversationInfo &&
+                this.conversationInfo.conversation.equal(message.conversation) &&
+                message.messageContent instanceof MultiCallOngoingMessageContent &&
+                Config.ENABLE_MULTI_CALL_AUTO_JOIN
             ) {
                 // 自己是不是已经在通话中
-                console.log('MultiCallOngoingMessageContent', message.messageContent)
+                console.log('MultiCallOngoingMessageContent', message.messageContent);
                 if (message.messageContent.targets.indexOf(wfc.getUserId()) >= 0) {
                     return;
                 }
-                let index = this.ongoingCalls.findIndex(call => call.messageContent.callId === message.messageContent.callId);
+                let index = this.ongoingCalls.findIndex((call) => call.messageContent.callId === message.messageContent.callId);
                 if (index > -1) {
                     this.ongoingCalls[index] = message;
                 } else {
@@ -874,15 +902,15 @@ export default {
                 }
                 if (!this.ongoingCallTimer) {
                     this.ongoingCallTimer = setInterval(() => {
-                        this.ongoingCalls = this.ongoingCalls.filter(call => {
-                            return (new Date().getTime() - (numberValue(call.timestamp) - numberValue(wfc.getServerDeltaTime()))) < 3 * 1000;
-                        })
+                        this.ongoingCalls = this.ongoingCalls.filter((call) => {
+                            return new Date().getTime() - (numberValue(call.timestamp) - numberValue(wfc.getServerDeltaTime())) < 3 * 1000;
+                        });
                         if (this.ongoingCalls.length === 0) {
                             clearInterval(this.ongoingCallTimer);
                             this.ongoingCallTimer = 0;
                         }
                         console.log('ongoing calls', this.ongoingCalls.length);
-                    }, 1000)
+                    }, 1000);
                 }
             }
         },
@@ -894,7 +922,7 @@ export default {
 
         showUnreadMessage() {
             let messageListElement = this.$refs['conversationMessageList'];
-            messageListElement.scroll({ top: messageListElement.scrollHeight, left: 0, behavior: 'auto' })
+            messageListElement.scroll({ top: messageListElement.scrollHeight, left: 0, behavior: 'auto' });
             this.unreadMessageCount = 0;
         },
 
@@ -915,7 +943,7 @@ export default {
             if (message.conversation.type === ConversationType.Group) {
                 this.$refs.messageSenderContextMenu.open(event, message);
             }
-        }
+        },
     },
 
     mounted() {
@@ -923,19 +951,19 @@ export default {
         document.addEventListener('mouseup', this.dragEnd);
         document.addEventListener('mousemove', this.drag);
 
-        this.$eventBus.$on('send-file', args => {
+        this.$eventBus.$on('send-file', (args) => {
             let fileMessageContent = new FileMessageContent(null, args.remoteUrl, args.name, args.size);
             let message = new Message(null, fileMessageContent);
-            this.forward(message)
+            this.forward(message);
         });
 
-        this.$eventBus.$on('forward-fav', args => {
+        this.$eventBus.$on('forward-fav', (args) => {
             let favItem = args.favItem;
             let message = favItem.toMessage();
             this.forward(message);
         });
 
-        wfc.eventEmitter.on(EventType.ReceiveMessage, this.onReceiveMessage)
+        wfc.eventEmitter.on(EventType.ReceiveMessage, this.onReceiveMessage);
     },
 
     beforeUnmount() {
@@ -952,10 +980,10 @@ export default {
         }
         this.popupItem = this.$refs['setting'];
         // refer to http://iamdustan.com/smoothscroll/
-        console.log('conversationView updated', this.sharedConversationState.currentConversationInfo, this.sharedConversationState.shouldAutoScrollToBottom, this.sharedMiscState.isPageHidden)
+        console.log('conversationView updated', this.sharedConversationState.currentConversationInfo, this.sharedConversationState.shouldAutoScrollToBottom, this.sharedMiscState.isPageHidden);
         if (this.sharedConversationState.shouldAutoScrollToBottom && !this.sharedMiscState.isPageHidden) {
             let messageListElement = this.$refs['conversationMessageList'];
-            messageListElement.scroll({ top: messageListElement.scrollHeight, left: 0, behavior: 'auto' })
+            messageListElement.scroll({ top: messageListElement.scrollHeight, left: 0, behavior: 'auto' });
             this.clearConversationUnreadStatus();
         } else {
             // 用户滑动到上面之后，收到新消息，不自动滑动到最下面
@@ -972,7 +1000,11 @@ export default {
         }
 
         // 切换到新的会话
-        if (this.conversationInfo && this.sharedConversationState.currentConversationInfo && !this.conversationInfo.conversation.equal(this.sharedConversationState.currentConversationInfo.conversation)) {
+        if (
+            this.conversationInfo &&
+            this.sharedConversationState.currentConversationInfo &&
+            !this.conversationInfo.conversation.equal(this.sharedConversationState.currentConversationInfo.conversation)
+        ) {
             this.showConversationInfo = false;
             this.ongoingCalls = [];
             if (this.ongoingCallTimer) {
@@ -992,7 +1024,7 @@ export default {
             let info = this.sharedConversationState.currentConversationInfo;
             if (info.conversation._target) {
                 if (info.conversation.type === ConversationType.Group) {
-                    return info.conversation._target._displayName + " (" + info.conversation._target.memberCount + ")";
+                    return info.conversation._target._displayName + ' (' + info.conversation._target.memberCount + ')';
                 } else {
                     return info.conversation._target._displayName;
                 }
@@ -1030,7 +1062,7 @@ export default {
             } else if (info.conversation.type === ConversationType.Channel) {
                 let desc = info.conversation._target.desc;
                 if (!desc) {
-                    desc = 'channel'
+                    desc = 'channel';
                 }
                 return desc;
             } else {
@@ -1079,7 +1111,7 @@ export default {
     // },
 
     directives: {
-        vOnClickOutside
+        vOnClickOutside,
     },
 };
 </script>
@@ -1112,7 +1144,6 @@ export default {
     background-color: #f5f5f5;
     position: relative;
 }
-
 
 .title-container h1 {
     font-size: 16px;
@@ -1267,7 +1298,7 @@ export default {
 }
 
 .domain-desc {
-    color: #F0A040;
+    color: #f0a040;
     font-size: 10px;
 }
 

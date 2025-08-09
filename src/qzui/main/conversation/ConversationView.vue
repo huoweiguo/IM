@@ -12,9 +12,9 @@
                         <p v-if="isExternalDomainSingleConversation" class="single-line domain-desc">{{ domainName }}</p>
                     </div>
                     <div v-bind:style="{ marginTop: sharedMiscState.isElectronWindowsOrLinux ? '30px' : '0' }">
-                        <a v-if="sharedMiscState.isElectron" href="#" @click.prevent>
+                        <!-- <a v-if="sharedMiscState.isElectron" href="#" @click.prevent>
                             <i class="icon-ion-pin" style="display: inline-block" v-bind:class="{ active: isWindowAlwaysTop }" @click.prevent="setWindowAlwaysTop" />
-                        </a>
+                        </a> -->
                         <a href="#" @click.prevent>
                             <i
                                 class="icon-ion-ios-settings-strong"

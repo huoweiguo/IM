@@ -25,7 +25,6 @@ const openPublicWindow = () => {
     z-index: 99999;
     display: flex;
     align-items: center;
-    width: 100vw;
     padding: 10px 20px;
     border-bottom: 1px solid #ccc;
 
