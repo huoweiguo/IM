@@ -507,10 +507,16 @@ const createMainWindow = async () => {
             zoomFactor: 1.0,
 
             // 如果想打包之后的版本，不能打开调试控制台，请取消下面的注释
-            devTools: !app.isPackaged,
+            // devTools: !app.isPackaged,
         },
         frame: !isWin,
     });
+
+    // 额外为Windows平台设置，防止菜单显示
+    if (isWin) {
+        mainWindow.setMenu(null);
+    }
+
     mainWindow.center();
     const badgeOptions = {};
 
