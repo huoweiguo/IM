@@ -1,5 +1,5 @@
 <template>
-    <ElectronWindowsControlButtonView style="position: fixed; top: 0; right: 0; z-index: 9999999" :maximizable="false" v-if="!store.state?.misc?.isElectronWindowsOrLinux" />
+    <ElectronWindowsControlButtonView style="position: fixed; top: 0; right: 0; z-index: 9999999" :maximizable="false" v-if="store.state?.misc?.isElectronWindowsOrLinux" />
     <div class="layout">
         <view class="chat-silder">
             <ChatSilder />
