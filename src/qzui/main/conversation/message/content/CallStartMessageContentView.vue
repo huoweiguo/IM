@@ -1,40 +1,37 @@
 <template>
-    <div class="call-start-message-container"
-         @click="startCall"
-         v-bind:class="{out:message.direction === 0}">
+    <div class="call-start-message-container" @click="startCall" v-bind:class="{ out: message.direction === 0 }">
         <i class="icon-ion-android-call"></i>
         <p class="text" v-html="this.$xss(this.textContent)"></p>
     </div>
 </template>
 
 <script>
-import Message from "../../../../../wfc/messages/message";
-import CallEndReason from "../../../../../wfc/av/engine/callEndReason";
-import store from "../../../../../store";
-import {numberValue} from "../../../../../wfc/util/longUtil";
+import Message from '../../../../../wfc/messages/message';
+import CallEndReason from '../../../../../wfc/av/engine/callEndReason';
+import store from '../../../../../store';
+import { numberValue } from '../../../../../wfc/util/longUtil';
 
 export default {
-    name: "CallStartMessageContentView",
+    name: 'CallStartMessageContentView',
     props: {
         message: {
             type: Message,
             required: true,
-        }
+        },
     },
     data() {
         return {
             sharedMiscState: store.state.misc,
             sharedContactState: store.state.contact,
-        }
+        };
     },
-    mounted() {
-    },
+    mounted() {},
 
     methods: {
         startCall() {
             let callStartMsgContent = this.message.messageContent;
             let audioOnly = callStartMsgContent.audioOnly;
-            this.$startVoipCall({audioOnly: audioOnly, conversation: this.message.conversation});
+            this.$startVoipCall({ audioOnly: audioOnly, conversation: this.message.conversation });
         },
     },
 
@@ -44,9 +41,9 @@ export default {
             let desc = this.$t('voip.desc');
             if (voip.endTime > 0 && voip.connectTime > 0) {
                 let duration = parseInt((numberValue(voip.endTime) - numberValue(voip.connectTime)) / 1000);
-                desc = `通话时长：${duration}''`
+                desc = `通话时长：${duration}''`;
             } else if (voip.connectTime > 0) {
-                desc = '通话中'
+                desc = '通话中';
             } else {
                 let reason = voip.status;
                 switch (reason) {
@@ -96,14 +93,13 @@ export default {
                         desc = ' 已达最大通话人数';
                         break;
                     default:
-                        break
-
+                        break;
                 }
             }
             return desc;
-        }
-    }
-}
+        },
+    },
+};
 </script>
 
 <style lang="css" scoped>
@@ -123,13 +119,12 @@ export default {
 }
 
 .call-start-message-container.out {
-    background-color: #a8bdff;
+    background-color: #95ec69;
 }
-
 
 .call-start-message-container .text {
     color: #050505;
     font-size: 13px;
+    padding: 0;
 }
-
 </style>
