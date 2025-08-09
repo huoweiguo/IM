@@ -1,4 +1,5 @@
 <template>
+    <ElectronWindowsControlButtonView style="position: absolute; top: 0; right: 0" :maximizable="false" v-if="store.state?.misc?.isElectronWindowsOrLinux" />
     <div class="layout">
         <view class="chat-silder">
             <ChatSilder />
@@ -18,6 +19,8 @@ import { clear } from '../util/storageHelper';
 import wfc from '@/wfc/client/wfc';
 import IpcEventType from '@/ipcEventType';
 import { ipcRenderer, isElectron } from '@/platform';
+import store from '../../store';
+import ElectronWindowsControlButtonView from '../common/ElectronWindowsControlButtonView.vue';
 const router = useRouter();
 
 const logout = () => {
