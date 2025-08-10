@@ -45,7 +45,9 @@
         </CoolLightBox>
         <notifications v-if="sharedMiscState.isMainWindow" />
         <IpcMain v-if="sharedMiscState.isMainWindow && sharedMiscState.isElectron" />
-        <router-view></router-view>
+        <keep-alive>
+            <router-view></router-view>
+        </keep-alive>
     </div>
 </template>
 

@@ -107,7 +107,7 @@
 
 <script setup>
 import { ref } from 'vue';
-import { createNewWindow } from '@/qzui/utils/electronHelper';
+import { createNewWindow } from '@/qzui/util/electronHelper';
 const disturb = ref(false);
 const isTop = ref(false);
 const dialogTitle = ref('');

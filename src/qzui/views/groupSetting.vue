@@ -67,7 +67,7 @@
 </template>
 
 <script setup>
-import { createNewWindow } from '@/qzui/utils/electronHelper';
+import { createNewWindow } from '@/qzui/util/electronHelper';
 const openChatWindow = () => {
     createNewWindow({
         width: 604,

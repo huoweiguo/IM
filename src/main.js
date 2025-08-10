@@ -142,6 +142,10 @@ const i18n = createI18n({
     },
 });
 app.use(i18n);
+// 添加全局$t兼容性
+app.config.globalProperties.$t = function (key, params) {
+    return i18n.global.t(key, params);
+};
 
 app.use(Notifications);
 const router = createRouter({

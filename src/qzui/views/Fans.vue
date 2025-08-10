@@ -3,7 +3,7 @@
         <div class="fans-list" ref="scrollableDiv">
             <div v-for="fan in fans" :key="fan.id" class="fan-item">
                 <div class="fan-avatar">
-                    <img :src="fan.avatar" alt="粉丝头像">
+                    <img :src="fan.avatar" alt="粉丝头像" />
                 </div>
                 <div class="fan-info-container">
                     <div class="fan-info">
@@ -24,28 +24,25 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import { getFansNoticeList } from '../../api/follow'
-import { getItem, setItem } from "../../ui/util/storageHelper";
-import { formatCommentTime } from '../utils/timeformat'
+import { ref, onMounted } from 'vue';
+import { getFansNoticeList } from '../../api/follow';
+import { getItem, setItem } from '../../ui/util/storageHelper';
+import { formatCommentTime } from '../util/timeformat.js';
 import { throttle } from 'lodash-es';
-const fans = ref([])
+const fans = ref([]);
 const scrollableDiv = ref(null);
 
 const formatTime = (timestamp) => {
-    return new Date(timestamp).toLocaleString()
-}
+    return new Date(timestamp).toLocaleString();
+};
 
 const getFollowList = async () => {
-    const userId = getItem('userPortrait') ? getItem('userPortrait') : ''
-    const res = await getFansNoticeList(userId)
-    fans.value = res.data || []
-}
+    const userId = getItem('userPortrait') ? getItem('userPortrait') : '';
+    const res = await getFansNoticeList(userId);
+    fans.value = res.data || [];
+};
 
-
-const toggleFollow = (id) => {
-
-}
+const toggleFollow = (id) => {};
 
 const handleScroll = throttle((event) => {
     const element = event.target;
@@ -56,12 +53,11 @@ const handleScroll = throttle((event) => {
     }
 }, 100);
 
-
 onMounted(() => {
     // 获取新的粉丝通知
-    getFollowList()
+    getFollowList();
     scrollableDiv.value.addEventListener('scroll', handleScroll);
-})
+});
 </script>
 
 <style lang="scss" scoped>
@@ -130,7 +126,7 @@ h1 {
 
 .fan-info h3 {
     font-size: 14px;
-    color: #636B89;
+    color: #636b89;
 }
 
 .fan-time {
@@ -156,7 +152,7 @@ h1 {
     top: 0;
     width: 50px;
     height: 20px;
-    background-color: #3478F5;
+    background-color: #3478f5;
     color: white;
     border: none;
     border-radius: 4px;

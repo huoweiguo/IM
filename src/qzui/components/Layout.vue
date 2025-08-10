@@ -1,4 +1,5 @@
 <template>
+    <ElectronWindowsControlButtonView style="position: fixed; top: 0; right: 0; z-index: 9999999" :maximizable="false" v-if="store.state?.misc?.isElectronWindowsOrLinux" />
     <div class="layout">
         <view class="chat-silder">
             <ChatSilder />
@@ -14,10 +15,12 @@ import { getUserCenter } from '@/api/index.js';
 import ChatSilder from '../components/ChatSilder.vue';
 import { ElMessage } from 'element-plus';
 import { useRouter } from 'vue-router';
-import { clear } from '../utils/storageHelper';
+import { clear } from '../util/storageHelper';
 import wfc from '@/wfc/client/wfc';
 import IpcEventType from '@/ipcEventType';
 import { ipcRenderer, isElectron } from '@/platform';
+import store from '../../store';
+import ElectronWindowsControlButtonView from '../common/ElectronWindowsControlButtonView.vue';
 const router = useRouter();
 
 const logout = () => {
@@ -30,7 +33,7 @@ const logout = () => {
 
 getUserCenter().then((res) => {
     console.log(9999, res);
-    if (res.code == -9) {
+    if (res.code == -9 || res.code == -11) {
         ElMessage.error('登录过期，请重新登录');
         logout();
         router.push('/');
@@ -51,6 +54,7 @@ getUserCenter().then((res) => {
     .chat-content {
         flex: 1;
         display: flex;
+        width: 100%;
     }
 }
 </style>

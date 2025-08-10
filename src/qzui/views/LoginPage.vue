@@ -59,7 +59,7 @@ import { ElMessage } from 'element-plus';
 import wfc from '../../wfc/client/wfc';
 import Config from '../../config';
 import store from '../../store';
-import { clear, getItem, setItem } from '../../qzui/utils/storageHelper';
+import { clear, getItem, setItem } from '../../qzui/util/storageHelper';
 import ConnectionStatus from '../../wfc/client/connectionStatus';
 import EventType from '../../wfc/client/wfcEvent';
 import { ipcRenderer, isElectron } from '../../platform';
@@ -270,11 +270,18 @@ onMounted(() => {
     // 检查是否有保存的用户信息，实现自动登录
     let userId = getItem('userId');
     let token = getItem('token');
+
     if (userId) {
-        let autoLogin = getItem(userId + '-' + 'autoLogin') === '1';
+        let autoLogin = store.state.misc.enableAutoLogin;
+
         if (autoLogin && token) {
             const firstTimeConnect = wfc.connect(userId, token);
             console.log('firstTimeConnect', firstTimeConnect);
+            isElectron() && ipcRenderer.send(IpcEventType.LOGIN);
+            if (firstTimeConnect) {
+                // 登录成功后跳转到聊天页面
+                router.push('/chat');
+            }
         } else {
             isElectron() && ipcRenderer.send(IpcEventType.RESIZE_LOGIN_WINDOW);
         }

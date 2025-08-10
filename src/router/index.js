@@ -1,7 +1,7 @@
 import { login } from './modules/login';
 import ChatList from '../qzui/views/ChatList.vue';
 import ChatHome from '../qzui/views/ChatHome.vue';
-import Home from '../qzui/views/Home.vue';
+// import Home from '../qzui/views/Home.vue';
 import Community from '../qzui/views/Community.vue';
 import Chat from '../qzui/views/Chat.vue';
 import FriendList from '../qzui/views/FriendList.vue';
@@ -34,16 +34,29 @@ import OtherInfo from '../qzui/views/OtherInfo.vue';
 import SchoolAuth from '../qzui/views/schoolAuth.vue';
 import IdAuth from '../qzui/views/IdAuth.vue';
 import Settings from '../qzui/views/my/Settings.vue';
+//
+import Single from '../qzui/voip/Single';
+import SingleRemoteControl from '../qzui/voip/SingleRemoteControl.vue';
+import Multi from '../qzui/voip/Multi';
+import Conference from '../qzui/voip/conference/Conference';
+import FileRecordPage from '../qzui/fileRecord/FileRecordPage';
+import WorkspacePage from '../qzui/workspace/WorkspacePage';
+import CompositeMessagePage from '../qzui/main/CompositeMessagePage';
+import MessagePage from '../qzui/main/MessagePage.vue';
+import MultimediaPreviewPage from '../qzui/main/MultimediaPreviewPage.vue';
+import MessageHistoryPage from '../qzui/main/MessageHistoryPage.vue';
+import ConversationMessageHistoryPage from '../qzui/main/ConversationMessageHistoryPage.vue';
+import ConversationFloatPage from '../qzui/main/ConversationFloatPage.vue';
 
 const routes = [
     ...login, // 登录
     {
         path: '/home',
         name: 'Home',
-        component: Home,
+        component: Chat,
         meta: {
             requiresAuth: false,
-            title: '首页',
+            title: '聊天',
         },
     },
     {
@@ -54,6 +67,66 @@ const routes = [
             requiresAuth: false,
             title: '聊天',
         },
+    },
+    {
+        name: 'voip-single',
+        path: '/voip/single',
+        component: Single,
+    },
+    {
+        name: 'voip-single-rc',
+        path: '/voip/single-rc',
+        component: SingleRemoteControl,
+    },
+    {
+        name: 'voip-multi',
+        path: '/voip/multi',
+        component: Multi,
+    },
+    {
+        name: 'voip-conference',
+        path: '/voip/conference',
+        component: Conference,
+    },
+    {
+        name: 'files',
+        path: '/files',
+        component: FileRecordPage,
+    },
+    {
+        name: 'workspace',
+        path: '/workspace',
+        component: WorkspacePage,
+    },
+    {
+        name: 'composite-message',
+        path: '/composite',
+        component: CompositeMessagePage,
+    },
+    {
+        name: 'message',
+        path: '/message',
+        component: MessagePage,
+    },
+    {
+        name: 'mmpreview',
+        path: '/mmpreview',
+        component: MultimediaPreviewPage,
+    },
+    {
+        name: 'message-history',
+        path: '/message-history',
+        component: MessageHistoryPage,
+    },
+    {
+        name: 'conversation-message-history',
+        path: '/conversation-message-history',
+        component: ConversationMessageHistoryPage,
+    },
+    {
+        name: 'conversation-window',
+        path: '/conversation-window',
+        component: ConversationFloatPage,
     },
     {
         path: '/friendlist',
