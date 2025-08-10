@@ -32,9 +32,10 @@
 
                 <nav class="community-nav">
                     <ul>
-                        <li v-for="community in filteredList" :key="community.id"
-                            :class="{ active: activeId === community.id }" @click="selectCommunity(community.id)">
-                            <span class="community-icon" :class="`icon-${(community.id % 7) + 1}`"></span>
+                        <li v-for="community in filteredList" :key="community.communityId"
+                            :class="{ active: activeId === community.communityId }"
+                            @click="selectCommunity(community.communityId)">
+                            <span class="community-icon" :class="`icon-${(community.communityId % 7) + 1}`"></span>
                             {{ community.name }}
                         </li>
                     </ul>
@@ -49,24 +50,18 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import Layout from '../components/Layout.vue';
 import CommunityComp from '../components/CommunityComp.vue';
 import { createNewWindow } from '@/qzui/utils/electronHelper';
+import { getItem, setItem } from "@/ui/util/storageHelper";
+import { communityUserList } from '@/api/community';
+import emitter from '@/utils/eventBus.js'
 
 const searchText = ref('');
-const activeId = ref(1);
+const activeId = ref();
 
-const communities = ref([
-    { name: 'A22社区群', id: 1 },
-    { name: 'A23一家人', id: 2 },
-    { name: 'A24节日福利', id: 3 },
-    { name: 'B22闺蜜群', id: 4 },
-    { name: 'C22美妆群', id: 5 },
-    { name: 'D22干饭群', id: 6 },
-    { name: 'B52旅游结伴群', id: 7 },
-    { name: 'J20撸猫社区', id: 8 },
-]);
+const communities = ref([]);
 
 const filteredList = computed(() => {
     if (!searchText.value) return communities.value;
@@ -75,6 +70,8 @@ const filteredList = computed(() => {
 
 const selectCommunity = (id) => {
     activeId.value = id;
+    setItem('communityId', id)
+    emitter.emit('changeCommunityId', id)
 };
 
 const createCommunity = () => {
@@ -106,11 +103,31 @@ const openHelpWindow = () => {
         url: '#/help',
     });
 };
+
+const getCommunityUserList = async () => {
+    const userId = getItem('userPortrait') ? getItem('userPortrait') : '';
+    const res = await communityUserList(userId);
+    if (res.code === 0) {
+        communities.value = res.data || [];
+        if (communities.value.length > 0) {
+            activeId.value = communities.value[0].communityId;
+            console.log('activeId', activeId.value);
+            emitter.emit('changeCommunityId', communities.value[0].communityId.toString())
+            // 设置当前社区id
+            setItem('communityId', activeId.value.toString())
+        }
+    }
+}
+
+onMounted(() => {
+    getCommunityUserList()
+})
 </script>
 
 <style lang="scss" scoped>
 .community-container {
     display: flex;
+    width: 100%;
 }
 
 .sidebar {

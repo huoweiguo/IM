@@ -5,6 +5,7 @@ import { isElectron, BrowserWindow } from '@/platform.js';
  * 创建新窗口
  * @returns {Promise<Object>} 新创建的窗口对象
  */
+let newWindow = null;
 export async function createNewWindow(options) {
     if (isElectron()) {
         let hash = window.location.hash;
@@ -21,9 +22,10 @@ export async function createNewWindow(options) {
                 contextIsolation: false,
             },
             url: url,
+            title: options.title || 'QZUI',
         };
         try {
-            const newWindow = await BrowserWindow.new(windowOptions);
+            newWindow = await BrowserWindow.new(windowOptions);
             newWindow.webContents.openDevTools({ mode: 'detach' });
             return newWindow;
         } catch (error) {
@@ -33,5 +35,11 @@ export async function createNewWindow(options) {
     } else {
         console.warn('Electron API 不可用，可能在浏览器环境中运行');
         return null;
+    }
+}
+
+export function closeNewWindow() {
+    if (newWindow) {
+        newWindow.close();
     }
 }

@@ -1,12 +1,12 @@
 <template>
     <div class="friend-container">
-        <div class="friend-content">
+        <div class="friend-content" ref="scrollableDiv">
             <ul>
                 <li v-for="item in list" :key="item.id">
                     <img class="header-img" :src="item.avatar" />
                     <div class="friend-info">
                         <div class="friend-name">
-                            <h2>{{ item.name }}</h2>
+                            <h2>{{ item.realName ? item.realName : item.nickName }}</h2>
                             <!-- <el-dropdown placement="bottom">
                 <img :src="downIcon" class="down-icon" />
                 <template #dropdown>
@@ -19,11 +19,12 @@
 </el-dropdown> -->
                         </div>
                         <div class="friend-text">{{ item.content }}</div>
-                        <div class="friend-imgs" v-if="item.imgs.length > 0">
-                            <img v-for="(img, index) in item.imgs" :key="index" :src="img" />
+                        <div class="friend-imgs" v-if="item.mediaResourcesList?.length > 0">
+                            <img v-for="(img, index) in item.mediaResourcesList" :key="index" :src="img.fileUrl" />
                         </div>
                         <div class="friend-time">
-                            <div>{{ item.time }} <img :src="deleteIcon" @click="deletePost(item.id)" /></div>
+                            <div>{{ formatCommentTime(item.createTime) }} <img :src="deleteIcon"
+                                    @click="deletePost(item.id)" /></div>
                             <!-- <div class="friend-circle">
                 <el-tooltip class="box-item" effect="dark" placement="left">
                   <template #content>
@@ -52,83 +53,19 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { createNewWindow } from '@/qzui/utils/electronHelper';
+import { dynamicListByUserId } from '@/api/community';
+import { throttle } from 'lodash-es';
+import { formatCommentTime } from '@/qzui/utils/timeformat';
 import deleteIcon from '../assets/delete_icon.png';
 import headerImg from '../assets/header1.png';
-import img1 from '../assets/img1.png';
-import img2 from '../assets/img2.png';
-import img3 from '../assets/img3.png';
+const scrollableDiv = ref(null);
+const startTime = ref('');
 
 const centerDialogVisible = ref(false);
 const curIndex = ref(0);
-const navItem = ref(['最新', '热门', '关注']);
-const list = ref([
-    {
-        id: 1,
-        name: '张三',
-        avatar: headerImg,
-        content: '我是一只小肥羊，每天在草原上快乐的奔跑',
-        time: '01-01 12:00',
-        imgs: [img1, img2, img3, img2],
-    },
-    {
-        id: 2,
-        name: '李四',
-        avatar: headerImg,
-        content: '我是一只小肥羊，每天在草原上快乐的奔跑',
-        time: '刚刚',
-        imgs: [img1, img2, img3],
-    },
-    {
-        id: 3,
-        name: '王五',
-        avatar: headerImg,
-        content: '我是一只小肥羊，每天在草原上快乐的奔跑,我是一只小肥羊，每天在草原上快乐的奔跑,我是一只小肥羊，每天在草原上快乐的奔跑。',
-        time: '23小时前',
-        imgs: [],
-    },
-    {
-        id: 4,
-        name: '赵六',
-        avatar: headerImg,
-        content: '今天天气真好',
-        time: '五分钟前',
-        imgs: [img1, img2, img3],
-    },
-    {
-        id: 5,
-        name: '张三',
-        avatar: headerImg,
-        content: '我是一只小肥羊，每天在草原上快乐的奔跑',
-        time: '01-01 12:00',
-        imgs: [img1, img2, img3],
-    },
-    {
-        id: 6,
-        name: '李四',
-        avatar: headerImg,
-        content: '我是一只小肥羊，每天在草原上快乐的奔跑',
-        time: '刚刚',
-        imgs: [img1, img2, img3],
-    },
-    {
-        id: 7,
-        name: '王五',
-        avatar: headerImg,
-        content: '我是一只小肥羊，每天在草原上快乐的奔跑,我是一只小肥羊，每天在草原上快乐的奔跑,我是一只小肥羊，每天在草原上快乐的奔跑。',
-        time: '23小时前',
-        imgs: [],
-    },
-    {
-        id: 8,
-        name: '赵六',
-        avatar: headerImg,
-        content: '今天天气真好',
-        time: '五分钟前',
-        imgs: [img1, img2, img3],
-    },
-]);
+const list = ref([]);
 const reportIdentity = (id) => {
     createNewWindow({
         width: 375,
@@ -137,33 +74,34 @@ const reportIdentity = (id) => {
     });
 };
 
-const openPostingWindow = (id) => {
-    createNewWindow({
-        width: 375,
-        height: 720,
-        url: `#/posting?id=${id}`,
-    });
-};
-
-const openFocusWindow = () => {
-    createNewWindow({
-        width: 375,
-        height: 720,
-        url: `#/focusme`,
-    });
-};
-
-const toChatList = (doorId) => {
-    createNewWindow({
-        width: 375,
-        height: 720,
-        url: `#/chatList?id=${doorId}`,
-    });
-};
 const deletePost = (id) => {
-    console.log(id);
     centerDialogVisible.value = true;
 };
+
+const getMyPublishList = async (start_time = '') => {
+    const res = await dynamicListByUserId(5, start_time);
+    if (res.code === 0) {
+        console.log(res.data, 'res.data');
+        list.value = res.data || [];
+        if (res.data.length > 0) {
+            startTime.value = res.data[res.data.length - 1].create_time;
+        }
+    }
+}
+
+const handleScroll = throttle((event) => {
+    const element = event.target;
+    // 判断是否滚动到底部
+    const isBottom = element.scrollHeight - element.scrollTop === element.clientHeight;
+    if (isBottom) {
+        console.log('已经滚动到底部scroll');
+    }
+}, 100);
+
+onMounted(() => {
+    getMyPublishList(startTime.value);
+    scrollableDiv.value.addEventListener('scroll', handleScroll);
+})
 </script>
 
 <style lang="scss" scoped>
@@ -191,7 +129,7 @@ const deletePost = (id) => {
             display: flex;
             align-items: center;
 
-            & > div {
+            &>div {
                 display: flex;
                 align-items: center;
                 margin-right: 8px;
@@ -345,7 +283,7 @@ const deletePost = (id) => {
                     color: rgba(170, 170, 170, 1);
                     font-size: 14px;
 
-                    & > div {
+                    &>div {
                         display: flex;
                         align-items: center;
 

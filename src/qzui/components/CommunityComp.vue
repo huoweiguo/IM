@@ -15,7 +15,8 @@
 
         <nav class="feed-nav">
             <div class="nav-tabs">
-                <span v-for="(tab, index) in navTabs" :key="index" :class="{ active: activeTab === index }" @click="activeTab = index">
+                <span v-for="(tab, index) in navTabs" :key="index" :class="{ active: activeTab === index }"
+                    @click="activeTab = index">
                     {{ tab }}
                 </span>
             </div>
@@ -26,8 +27,54 @@
             </div>
         </nav>
 
-        <main class="feed-content">
+        <!--最新-->
+        <main class="feed-content" v-show="activeTab === 0">
             <article v-for="post in posts" :key="post.id" class="post-card">
+                <img class="avatar" :src="post.avatar" @click="openUserProfile(post.userId)" />
+
+                <div class="post-content">
+                    <header class="post-header">
+                        <h3 class="username" @click="openUserProfile(post.userId)">{{ post.realName ? post.realName :
+                            post.nickName }}</h3>
+                        <el-dropdown placement="bottom">
+                            <img :src="moreIcon" class="more-btn" />
+                            <template #dropdown>
+                                <el-dropdown-menu>
+                                    <el-dropdown-item @click="reportUser(post.id)">举报身份</el-dropdown-item>
+                                    <el-dropdown-item @click="reportContent(post.id)">举报内容</el-dropdown-item>
+                                    <el-dropdown-item @click="blockUser(post.userId)">屏蔽TA的圈</el-dropdown-item>
+                                </el-dropdown-menu>
+                            </template>
+                        </el-dropdown>
+                    </header>
+
+                    <p class="post-text">{{ post.content }}</p>
+
+                    <div v-if="post.mediaResourcesList?.length" class="post-images">
+                        <img v-for="(img, index) in post.mediaResourcesList" :key="index" :src="img.fileUrl"
+                            @click="previewImage(img.fileUrl)" />
+                    </div>
+
+                    <footer class="post-footer">
+                        <time class="post-time">{{ formatCommentTime(post.createTime) }}</time>
+                        <div class="post-actions">
+                            <img :src="deleteIcon" @click="confirmDelete(post.id)" class="delete-btn" />
+                            <el-dropdown placement="left">
+                                <span class="action-menu">···</span>
+                                <template #dropdown>
+                                    <el-dropdown-item> <img src="../assets/comment.png" />评论 </el-dropdown-item>
+                                    <el-dropdown-item> <img src="../assets/like.png" />点赞 </el-dropdown-item>
+                                </template>
+                            </el-dropdown>
+                        </div>
+                    </footer>
+                </div>
+            </article>
+        </main>
+
+        <!--热门-->
+        <main class="feed-content" v-show="activeTab === 1">
+            <article v-for="post in hots" :key="post.id" class="post-card">
                 <img class="avatar" :src="post.avatar" @click="openUserProfile(post.userId)" />
 
                 <div class="post-content">
@@ -47,12 +94,55 @@
 
                     <p class="post-text">{{ post.content }}</p>
 
-                    <div v-if="post.imgs.length" class="post-images">
+                    <div v-if="post.imgs?.length" class="post-images">
                         <img v-for="(img, index) in post.imgs" :key="index" :src="img" @click="previewImage(img)" />
                     </div>
 
                     <footer class="post-footer">
                         <time class="post-time">{{ post.time }}</time>
+                        <div class="post-actions">
+                            <img :src="deleteIcon" @click="confirmDelete(post.id)" class="delete-btn" />
+                            <el-dropdown placement="left">
+                                <span class="action-menu">···</span>
+                                <template #dropdown>
+                                    <el-dropdown-item> <img src="../assets/comment.png" />评论 </el-dropdown-item>
+                                    <el-dropdown-item> <img src="../assets/like.png" />点赞 </el-dropdown-item>
+                                </template>
+                            </el-dropdown>
+                        </div>
+                    </footer>
+                </div>
+            </article>
+        </main>
+
+        <!--关注-->
+        <main class="feed-content" v-show="activeTab === 2">
+            <article v-for="post in follows" :key="post.id" class="post-card">
+                <img class="avatar" :src="post.avatar" @click="openUserProfile(post.userId)" />
+
+                <div class="post-content">
+                    <header class="post-header">
+                        <h3 class="username" @click="openUserProfile(post.userId)">{{ post.name }}</h3>
+                        <el-dropdown placement="bottom">
+                            <img :src="moreIcon" class="more-btn" />
+                            <template #dropdown>
+                                <el-dropdown-menu>
+                                    <el-dropdown-item @click="reportUser(post.id)">举报身份</el-dropdown-item>
+                                    <el-dropdown-item @click="reportContent(post.id)">举报内容</el-dropdown-item>
+                                    <el-dropdown-item @click="blockUser(post.userId)">屏蔽TA的圈</el-dropdown-item>
+                                </el-dropdown-menu>
+                            </template>
+                        </el-dropdown>
+                    </header>
+
+                    <p class="post-text">{{ post.content }}</p>
+
+                    <div v-if="post.imgs?.length" class="post-images">
+                        <img v-for="(img, index) in post.imgs" :key="index" :src="img" @click="previewImage(img)" />
+                    </div>
+
+                    <footer class="post-footer">
+                        <time class="post-time">{{ formatCommentTime(post.createTime) }}</time>
                         <div class="post-actions">
                             <img :src="deleteIcon" @click="confirmDelete(post.id)" class="delete-btn" />
                             <el-dropdown placement="left">
@@ -81,9 +171,14 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onUnmounted } from 'vue';
 import { EditPen, Help, Check } from '@element-plus/icons-vue';
 import { createNewWindow } from '@/qzui/utils/electronHelper';
+import emitter from '@/utils/eventBus'
+import { dynamicList } from '@/api/community';
+import { getItem, setItem } from "@/ui/util/storageHelper";
+import { formatCommentTime } from '@/qzui/utils/timeformat';
+const userId = ref(getItem('userPortrait') ? getItem('userPortrait') : '');
 
 // 图标导入
 import deleteIcon from '../assets/delete_icon.png';
@@ -92,6 +187,8 @@ import headerImg from '../assets/header1.png';
 import img1 from '../assets/img1.png';
 import img2 from '../assets/img2.png';
 import img3 from '../assets/img3.png';
+
+const communityId = ref();
 
 // 头像图片
 const chatAvatars = ['../assets/el1.png', '../assets/el2.png', '../assets/el3.png'];
@@ -105,45 +202,15 @@ const deletingPostId = ref(null);
 const navTabs = ['最新', '热门', '关注'];
 
 // 帖子数据
-const posts = ref([
-    {
-        id: 1,
-        userId: 101,
-        name: '张三',
-        avatar: headerImg,
-        content: '我是一只小肥羊，每天在草原上快乐的奔跑',
-        time: '01-01 12:00',
-        imgs: [img1, img2, img3, img2],
-    },
-    {
-        id: 2,
-        userId: 102,
-        name: '李四',
-        avatar: headerImg,
-        content: '我是一只小肥羊，每天在草原上快乐的奔跑',
-        time: '刚刚',
-        imgs: [img1, img2, img3],
-    },
-    {
-        id: 3,
-        userId: 103,
-        name: '王五',
-        avatar: headerImg,
-        content: '我是一只小肥羊，每天在草原上快乐的奔跑,我是一只小肥羊，每天在草原上快乐的奔跑,我是一只小肥羊，每天在草原上快乐的奔跑。',
-        time: '23小时前',
-        imgs: [],
-    },
-    {
-        id: 4,
-        userId: 104,
-        name: '赵六',
-        avatar: headerImg,
-        content: '今天天气真好',
-        time: '五分钟前',
-        imgs: [img1, img2, img3],
-    },
-]);
-
+const posts = ref([]);
+const hots = ref([])
+const follows = ref([])
+const finish = ref(false)
+const noData = ref(false)
+const finishHot = ref(false)
+const noDataHot = ref(false)
+const finishFollow = ref(false)
+const noDataFollow = ref(false)
 // 方法定义
 const enterChatRoom = () => {
     createNewWindow({
@@ -153,6 +220,106 @@ const enterChatRoom = () => {
         url: '#/chatList',
     });
 };
+
+
+const getCommunityList = async (start_time = '') => {
+    const res = await dynamicList(10, start_time, {
+        communityId: communityId.value,
+        userId: userId.value,
+        type: 0
+    })
+
+    if (res.code === 0) {
+        let data = res.data || []
+        let newData = data.map(item => {
+            item.isReply = false
+            // 聊天记录列表
+            item.replyList = []
+            // 是否还有回复记录
+            item.replyStatus = true
+            return item
+        })
+        posts.value = [...posts.value, ...newData]
+        if (posts.value.length > 0 && data.length === 0) {
+            finish.value = true
+            noData.value = false
+        } else if (posts.value.length === 0 && data.length === 0) {
+            noData.value = true
+            finish.value = false
+        } else {
+            finish.value = false
+            noData.value = false
+        }
+    } else {
+        ElMessage.error(res.msg)
+    }
+}
+
+const getCommunityHotList = async (start_time = '') => {
+    const res = await dynamicList(10, start_time, {
+        communityId: communityId.value,
+        userId: userId.value,
+        type: 1
+    })
+
+    if (res.code === 0) {
+        let data = res.data || []
+        let newData = data.map(item => {
+            item.isReply = false
+            // 聊天记录列表
+            item.replyList = []
+            // 是否还有回复记录
+            item.replyStatus = true
+            return item
+        })
+        hots.value = [...hots.value, ...newData]
+        if (hots.value.length > 0 && data.length === 0) {
+            finishHot.value = true
+            noDataHot.value = false
+        } else if (hots.value.length === 0 && data.length === 0) {
+            noDataHot.value = true
+            finishHot.value = false
+        } else {
+            finishHot.value = false
+            noDataHot.value = false
+        }
+    } else {
+        ElMessage.error(res.msg)
+    }
+}
+
+const getCommunityFollowList = async (start_time = '') => {
+    const res = await dynamicList(10, start_time, {
+        communityId: communityId.value,
+        userId: userId.value,
+        type: 2
+    })
+
+    if (res.code === 0) {
+        let data = res.data || []
+        let newData = data.map(item => {
+            item.isReply = false
+            // 聊天记录列表
+            item.replyList = []
+            // 是否还有回复记录
+            item.replyStatus = true
+            return item
+        })
+        follows.value = [...follows.value, ...newData]
+        if (follows.value.length > 0 && data.length === 0) {
+            finishFollow.value = true
+            noDataFollow.value = false
+        } else if (follows.value.length === 0 && data.length === 0) {
+            noDataFollow.value = true
+            finishFollow.value = false
+        } else {
+            finishFollow.value = false
+            noDataFollow.value = false
+        }
+    } else {
+        ElMessage.error(res.msg)
+    }
+}
 
 const openFocusWindow = () => {
     createNewWindow({
@@ -222,6 +389,18 @@ const deletePost = () => {
         deletingPostId.value = null;
     }
 };
+emitter.on('changeCommunityId', (id) => {
+    communityId.value = id;
+    posts.value = [];
+    hots.value = [];
+    follows.value = [];
+    getCommunityList();
+    getCommunityHotList();
+    getCommunityFollowList();
+});
+onUnmounted(() => {
+    emitter.off('changeCommunityId')
+})
 </script>
 
 <style lang="scss" scoped>
