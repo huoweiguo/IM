@@ -24,11 +24,9 @@ const curChatRoomId = ref('');
 const chatroomInfo = ref({});
 
 const chatList = ref([
-    { name: 'A2桌游讨论', online: 35, chatRoomId: 'chatroom1' },
-    { name: 'A1干饭', online: 6, chatRoomId: 'chatroom2' },
-    { name: 'B1公司团建', online: 150, chatRoomId: 'chatroom3' },
-    { name: 'C2周末去哪儿', online: 16, chatRoomId: 'chatroom4' },
-    { name: 'C3黄山周末游', online: 8, chatRoomId: 'chatroom5' },
+    { name: '火信聊天室1', online: 35, chatRoomId: 'chatroom1' },
+    { name: '火信聊天室2', online: 6, chatRoomId: 'chatroom2' },
+    { name: '火信聊天室3', online: 150, chatRoomId: 'chatroom3' },
 ]);
 
 const showChatroom = (item) => {
@@ -86,7 +84,7 @@ const getCurrentChatroomInfo = (chatroomId) => {
 onMounted(() => {
     // 组件挂载时，如果有当前聊天室，则获取其信息
     const currentChatroom = store.state.contact.currentChatroom;
-    if (currentChatroom.chatRoomId) {
+    if (currentChatroom?.chatRoomId) {
         curChatRoomId.value = currentChatroom.chatRoomId;
         getCurrentChatroomInfo(currentChatroom.chatRoomId);
     }
