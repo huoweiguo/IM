@@ -3,8 +3,7 @@
         <img :src="store.state.contact?.selfUserInfo?.portrait" class="avatar" alt="用户头像" />
 
         <ul class="nav-list nav-list--main window-move">
-            <li v-for="item in navItems" :key="item.path"
-                :class="['nav-item', { 'is-active': route.path === item.path }]" @click="navigate(item.path)">
+            <li v-for="item in navItems" :key="item.path" :class="['nav-item', { 'is-active': route.path === item.path }]" @click="navigate(item.path)">
                 <el-icon :size="24">
                     <component :is="item.icon" />
                 </el-icon>
@@ -17,15 +16,22 @@
                     <Setting />
                 </el-icon>
             </li>
+            <li :class="['nav-item']" @click="logout">
+                <span style="color: #666; font-size: 14px; white-space: nowrap">退出</span>
+            </li>
         </ul>
     </nav>
 </template>
 
 <script setup>
 import { computed } from 'vue';
+import wfc from '../../wfc/client/wfc';
 import { useRoute, useRouter } from 'vue-router';
 import store from '../../store';
-import { createNewWindow } from '@/qzui/util/electronHelper';
+import { clear } from '../util/storageHelper';
+import { createNewWindow } from '../util/electronHelper';
+import { ipcRenderer, isElectron } from '../../platform';
+import IpcEventType from '../../ipcEventType';
 
 const route = useRoute();
 const router = useRouter();
@@ -47,6 +53,14 @@ const openMyWindow = () => {
         height: 720,
         url: '#/my',
     });
+};
+const logout = () => {
+    clear();
+    wfc.disconnect();
+    if (isElectron()) {
+        ipcRenderer.send(IpcEventType.LOGOUT);
+    }
+    router.push('/');
 };
 </script>
 

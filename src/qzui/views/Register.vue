@@ -226,7 +226,7 @@ const showPrivacyPolicy = () => {
 
 .welcome-text {
     font-size: 18px;
-    margin-bottom: 40px;
+    margin-bottom: 20px;
     color: #666;
     text-align: center;
 }
@@ -240,7 +240,6 @@ const showPrivacyPolicy = () => {
     border: 1px solid rgba(170, 170, 170, 0.4);
     border-radius: 8px;
     overflow: hidden;
-    margin-bottom: 20px;
 }
 
 .input-field input {

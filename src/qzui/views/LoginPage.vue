@@ -5,8 +5,7 @@
 
         <!-- 登录方式选项卡 -->
         <div class="tab-container window-move">
-            <div class="tab-item" :class="{ active: loginType === 'password' }" @click="switchToPasswordLogin">密码登录
-            </div>
+            <div class="tab-item" :class="{ active: loginType === 'password' }" @click="switchToPasswordLogin">密码登录</div>
             <div class="tab-item" :class="{ active: loginType === 'phone' }" @click="switchToPhoneLogin">手机号登录</div>
         </div>
 
@@ -31,8 +30,7 @@
             </div>
 
             <div class="input-field password-input">
-                <input id="password" :type="showPassword ? 'text' : 'password'" v-model="password"
-                    placeholder="请输入密码" />
+                <input id="password" :type="showPassword ? 'text' : 'password'" v-model="password" placeholder="请输入密码" />
                 <span class="forget-password" @click="handleForgetPassword">忘记密码</span>
                 <span class="toggle-password" @click="togglePasswordVisibility">
                     {{ showPassword ? '隐藏' : '显示' }}
@@ -48,8 +46,7 @@
 
         <div class="agreement">
             <input type="checkbox" id="agree" v-model="agreed" />
-            <label for="agree">我已阅读并同意<a href="#" @click.prevent="showUserAgreement">《用户协议》</a>和<a href="#"
-                    @click.prevent="showPrivacyPolicy">《隐私政策》</a></label>
+            <label for="agree">我已阅读并同意<a href="#" @click.prevent="showUserAgreement">《用户协议》</a>和<a href="#" @click.prevent="showPrivacyPolicy">《隐私政策》</a></label>
         </div>
     </div>
 </template>
@@ -275,7 +272,9 @@ onMounted(() => {
     let token = getItem('token');
 
     if (userId) {
-        let autoLogin = store.state.misc.enableAutoLogin;
+        // 自动登录
+        // let autoLogin = store.state.misc.enableAutoLogin;
+        let autoLogin = true;
 
         if (autoLogin && token) {
             const firstTimeConnect = wfc.connect(userId, token);
