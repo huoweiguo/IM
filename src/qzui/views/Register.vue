@@ -156,8 +156,8 @@ const handleRegister = () => {
         return;
     }
 
-    if (!verificationCode.value || verificationCode.value.length !== 6) {
-        ElMessage.error('请输入6位验证码');
+    if (!verificationCode.value || verificationCode.value.length !== 4) {
+        ElMessage.error('请输入4位验证码');
         return;
     }
 

@@ -6,13 +6,13 @@
 </template>
 
 <script>
-import ConversationView from "./conversation/ConversationView";
-import ConversationListPanel from "./ConversationListPanel.vue";
+import ConversationView from './conversation/ConversationView.vue';
+import ConversationListPanel from './ConversationListPanel.vue';
 
 export default {
-    name: "ConversationPage",
+    name: 'ConversationPage',
     unmounted() {
-        console.log('conversation page destroyed')
+        console.log('conversation page destroyed');
     },
 
     methods: {},
