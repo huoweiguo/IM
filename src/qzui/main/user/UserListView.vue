@@ -1,14 +1,12 @@
 <template>
     <ul v-if="users.length < 100">
-        <li v-for="(groupedUser) in groupedUsers" :key="groupedUser.category">
+        <li v-for="groupedUser in groupedUsers" :key="groupedUser.category">
             <div ref="contactItem" class="contact-item">
-                <div v-if="showCategoryLabel" class="label"
-                     :style="paddingStyle"
-                     v-bind:class="{sticky:enableCategoryLabelSticky}">
+                <div v-if="showCategoryLabel" class="label" :style="paddingStyle" v-bind:class="{ sticky: enableCategoryLabelSticky }">
                     <p>{{ groupedUser.category.toUpperCase() }}</p>
                 </div>
                 <ul>
-                    <li v-for="(user) in groupedUser.users" :key="user.uid">
+                    <li v-for="user in groupedUser.users" :key="user.uid">
                         <tippy
                             v-if="!clickUserItemFunc"
                             :to="'#user-' + user.uid.replace('@', '-').replace('.', '-')"
@@ -21,28 +19,31 @@
                             :style="tippyStyleFix"
                         >
                             <template #content>
-                                <UserCardView :user-info="user" v-on:close="closeUserCard(user)"/>
+                                <UserCardView :user-info="user" v-on:close="closeUserCard(user)" />
                             </template>
                         </tippy>
-                        <div class="content"
-                             :ref="'userCardTippy-' + user.uid.replace('@', '#')"
-                             :id="'user-' + user.uid.replace('@', '-').replace('.', '-')"
-                             :style="paddingStyle"
-                             v-bind:class="{active: (sharedContactState.currentFriend
-                        && user._category === sharedContactState.currentFriend._category
-                        && user.uid === sharedContactState.currentFriend.uid) || (currentUser && currentUser.uid === user.uid)}"
-                             @click.stop="clickUserItem(user)"
-                             @contextmenu.prevent="showContactContextMenu($event, user)">
-                            <img class="avatar" :src="user.portrait" alt="" @error="imgUrlAlt">
+                        <div
+                            class="content"
+                            :ref="'userCardTippy-' + user.uid.replace('@', '#')"
+                            :id="'user-' + user.uid.replace('@', '-').replace('.', '-')"
+                            :style="paddingStyle"
+                            v-bind:class="{
+                                active:
+                                    (sharedContactState.currentFriend && user._category === sharedContactState.currentFriend._category && user.uid === sharedContactState.currentFriend.uid) ||
+                                    (currentUser && currentUser.uid === user.uid),
+                            }"
+                            @click.stop="clickUserItem(user)"
+                            @contextmenu.prevent="showContactContextMenu($event, user)"
+                        >
+                            <img class="avatar" :src="user.portrait" alt="" @error="imgUrlAlt" />
                             <div style="padding-left: 10px">
-                                <div style="display: flex; align-items: center; ">
+                                <div style="display: flex; align-items: center">
                                     <p class="single-line">{{ user._displayName }}</p>
-                                    <p v-if="isExternalDomainUser(user)" class="single-line" style="color: #F0A040; border-radius: 2px;  padding: 1px 2px; font-size: 9px">{{ domainName(user) }}</p>
+                                    <p v-if="isExternalDomainUser(user)" class="single-line" style="color: #f0a040; border-radius: 2px; padding: 1px 2px; font-size: 9px">{{ domainName(user) }}</p>
                                 </div>
-                                <p v-if="user._userOnlineStatusDesc" class="single-line user-online-status"> {{ user._userOnlineStatusDesc }}</p>
+                                <p v-if="user._userOnlineStatusDesc" class="single-line user-online-status">{{ user._userOnlineStatusDesc }}</p>
                             </div>
                         </div>
-
                     </li>
                 </ul>
             </div>
@@ -50,29 +51,32 @@
     </ul>
     <virtual-list
         v-else
-        :data-component="UserItemView" :data-sources="virtualListGroupedUsers" :data-key="'uid'"
+        :data-component="UserItemView"
+        :data-sources="virtualListGroupedUsers"
+        :data-key="'uid'"
         :estimate-size="30"
         :extra-props="{
-                currentUser: currentUser,
-                showCategoryLabel: showCategoryLabel,
-                enableCategoryLabelSticky: enableCategoryLabelSticky,
-                clickUserItemFunc:clickUserItemFunc,
-                paddingLeft: paddingLeft,
-                enableContactContextMenu:enableContactContextMenu
-            }"
-        style="max-height: 100%; height: 100%; overflow-y: auto"/>
+            currentUser: currentUser,
+            showCategoryLabel: showCategoryLabel,
+            enableCategoryLabelSticky: enableCategoryLabelSticky,
+            clickUserItemFunc: clickUserItemFunc,
+            paddingLeft: paddingLeft,
+            enableContactContextMenu: enableContactContextMenu,
+        }"
+        style="max-height: 100%; height: 100%; overflow-y: auto"
+    />
 </template>
 
 <script>
-import store from "../../../store";
-import UserCardView from "./UserCardView.vue";
-import Config from "../../../config";
-import UserItemView from "./UserItemView.vue";
-import WfcUtil from "../../../wfc/util/wfcUtil";
-import wfc from "../../../wfc/client/wfc";
+import store from '../../../store';
+import UserCardView from './UserCardView.vue';
+import Config from '../../../config';
+import UserItemView from './UserItemView.vue';
+import WfcUtil from '../../../wfc/util/wfcUtil';
+import wfc from '../../../wfc/client/wfc';
 
 export default {
-    name: "UserListView",
+    name: 'UserListView',
     props: {
         users: {
             type: Array,
@@ -99,18 +103,18 @@ export default {
         paddingLeft: {
             type: String,
             required: false,
-            default: '5px'
+            default: '5px',
         },
         enableContactContextMenu: {
             type: Boolean,
             required: false,
             default: false,
-        }
+        },
     },
     data() {
         return {
             sharedContactState: store.state.contact,
-        }
+        };
     },
     methods: {
         clickUserItem(user) {
@@ -118,8 +122,8 @@ export default {
         },
 
         scrollActiveElementCenter() {
-            let el = this.$el.getElementsByClassName("active")[0];
-            el && el.scrollIntoView({behavior: "instant", block: "center"});
+            let el = this.$el.getElementsByClassName('active')[0];
+            el && el.scrollIntoView({ behavior: 'instant', block: 'center' });
         },
 
         tippyStyleFix() {
@@ -132,7 +136,7 @@ export default {
             root.style.setProperty('--tippy-right', '0');
         },
         closeUserCard(user) {
-            this.$refs["userCardTippy-" + user.uid.replace('@', '#')][0]._tippy.hide();
+            this.$refs['userCardTippy-' + user.uid.replace('@', '#')][0]._tippy.hide();
         },
         imgUrlAlt(e) {
             e.target.src = Config.DEFAULT_PORTRAIT_URL;
@@ -144,7 +148,6 @@ export default {
         },
         isExternalDomainUser(user) {
             return WfcUtil.isExternal(user.uid);
-
         },
         domainName(user) {
             if (WfcUtil.isExternal(user.uid)) {
@@ -158,7 +161,7 @@ export default {
 
     mounted() {
         if (!this.clickUserItemFunc) {
-            this.tippyStyleFix()
+            this.tippyStyleFix();
         }
     },
 
@@ -168,13 +171,13 @@ export default {
 
     unmounted() {
         if (!this.clickUserItemFunc) {
-            this.tippyStyleReset()
+            this.tippyStyleReset();
         }
     },
 
     computed: {
         UserItemView() {
-            return UserItemView
+            return UserItemView;
         },
 
         virtualListGroupedUsers() {
@@ -197,7 +200,7 @@ export default {
                     groupedUsers.push(user);
                 }
             });
-            console.log('xxx xxx', groupedUsers)
+            console.log('xxx xxx', groupedUsers);
             return groupedUsers;
         },
 
@@ -207,7 +210,7 @@ export default {
                 groupedUsers.push({
                     category: 'not-show-category',
                     users: this.users,
-                })
+                });
             } else {
                 let current = {};
                 let lastCategory = null;
@@ -228,18 +231,17 @@ export default {
         },
         paddingStyle() {
             return {
-                paddingLeft: this.paddingLeft
-            }
+                paddingLeft: this.paddingLeft,
+            };
         },
     },
     components: {
         UserCardView,
     },
-}
+};
 </script>
 
 <style lang="css" scoped>
-
 .contact-item {
     --user-item-padding-left: 30px;
 }
@@ -308,7 +310,6 @@ ul {
 /*.contact-item .content:hover {*/
 /*  background-color: red;*/
 /*}*/
-
 </style>
 
 <!--<style>-->

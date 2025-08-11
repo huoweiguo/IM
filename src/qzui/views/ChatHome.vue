@@ -5,7 +5,7 @@
                 <ChatHomeUserGroupList />
             </aside>
 
-            <ConversationView class="chat-main" />
+            <ChatroomConversationView :key="chatroomKey" class="chat-main" />
         </div>
     </Layout>
 </template>
@@ -14,7 +14,7 @@
 import { ref } from 'vue';
 import Layout from '../components/Layout.vue';
 import ChatHomeUserGroupList from '../components/ChatHomeUserGroupList.vue';
-import ConversationView from '../main/conversation/ConversationView.vue';
+import ChatroomConversationView from '../main/conversation/ChatroomConversationView.vue';
 </script>
 
 <style lang="scss" scoped>
