@@ -53,7 +53,7 @@
 import { ref, computed, onMounted } from 'vue';
 import Layout from '../components/Layout.vue';
 import CommunityComp from '../components/CommunityComp.vue';
-import { createNewWindow } from '@/qzui/utils/electronHelper';
+import { createNewWindow } from '@/qzui/util/electronHelper';
 import { getItem, setItem } from "@/ui/util/storageHelper";
 import { communityUserList } from '@/api/community';
 import emitter from '@/utils/eventBus.js'

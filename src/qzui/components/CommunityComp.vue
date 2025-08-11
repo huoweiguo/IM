@@ -173,11 +173,11 @@
 <script setup>
 import { ref, onUnmounted } from 'vue';
 import { EditPen, Help, Check } from '@element-plus/icons-vue';
-import { createNewWindow } from '@/qzui/utils/electronHelper';
+import { createNewWindow } from '@/qzui/util/electronHelper';
 import emitter from '@/utils/eventBus'
 import { dynamicList } from '@/api/community';
 import { getItem, setItem } from "@/ui/util/storageHelper";
-import { formatCommentTime } from '@/qzui/utils/timeformat';
+import { formatCommentTime } from '@/qzui/util/timeformat';
 const userId = ref(getItem('userPortrait') ? getItem('userPortrait') : '');
 
 // 图标导入

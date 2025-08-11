@@ -54,10 +54,10 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import { createNewWindow } from '@/qzui/utils/electronHelper';
+import { createNewWindow } from '@/qzui/util/electronHelper';
 import { dynamicListByUserId } from '@/api/community';
 import { throttle } from 'lodash-es';
-import { formatCommentTime } from '@/qzui/utils/timeformat';
+import { formatCommentTime } from '@/qzui/util/timeformat';
 import deleteIcon from '../assets/delete_icon.png';
 import headerImg from '../assets/header1.png';
 const scrollableDiv = ref(null);

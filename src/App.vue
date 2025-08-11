@@ -8,6 +8,7 @@
         @drop="$event.preventDefault()"
         v-visibility-change="visibilityChange"
     >
+        <div class="window-move" style="position: fixed; left: 0; top: 0; right: 0; z-index: 9000000; height: 15px"></div>
         <ElectronWindowsControlButtonView style="position: fixed; top: 0; right: 0; z-index: 9999999" :maximizable="false" v-if="sharedMiscState.isElectronWindowsOrLinux" />
         <div v-if="!sharedMiscState.isElectron" id="blur-container" class="blur-container">
             <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%" id="blurred_mkvvpnf50" class="blured-img" viewBox="0 0 1920 875" preserveAspectRatio="none">
