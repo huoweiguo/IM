@@ -1,7 +1,7 @@
 <template>
     <section class="channel-info-container">
         <div class="channel-info">
-            <img :src="sharedContactState.currentChannel.portrait">
+            <img :src="sharedContactState.currentChannel.portrait" />
             <p>{{ $t('channel.name', [sharedContactState.currentChannel.name]) }}</p>
         </div>
         <a @click="chat">{{ $t('channel.chat') }}</a>
@@ -9,17 +9,17 @@
 </template>
 
 <script>
-import store from "../../../store";
-import Conversation from "../../../wfc/model/conversation";
-import ConversationType from "../../../wfc/model/conversationType";
+import store from '../../../store';
+import Conversation from '../../../wfc/model/conversation';
+import ConversationType from '../../../wfc/model/conversationType';
 
 export default {
-    name: "ChannelDetailView",
+    name: 'ChannelDetailView',
     props: {},
     data() {
         return {
             sharedContactState: store.state.contact,
-        }
+        };
     },
     methods: {
         chat() {
@@ -27,15 +27,13 @@ export default {
             setTimeout(() => {
                 let conversation = new Conversation(ConversationType.Channel, this.sharedContactState.currentChannel.channelId, 0);
                 store.setCurrentConversation(conversation);
-            })
-        }
-    }
-
-}
+            });
+        },
+    },
+};
 </script>
 
 <style lang="css" scoped>
-
 .channel-info-container {
     display: flex;
     height: 100%;
@@ -78,5 +76,4 @@ export default {
     font-size: 20px;
     margin-bottom: 100px;
 }
-
 </style>

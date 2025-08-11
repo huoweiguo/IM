@@ -1,7 +1,7 @@
 <template>
     <section class="chatroom-info-container">
         <div class="chatroom-info" v-if="chatroomInfo">
-            <img :src="chatroomInfo.portrait">
+            <img :src="chatroomInfo.portrait" />
             <p>{{ chatroomInfo.title }}</p>
             <p>{{ chatroomInfo.desc }}</p>
         </div>
@@ -10,68 +10,81 @@
 </template>
 
 <script>
-import store from "../../../store";
-import Conversation from "../../../wfc/model/conversation";
-import ConversationType from "../../../wfc/model/conversationType";
-import wfc from "../../../wfc/client/wfc";
-import ConversationInfo from "../../../wfc/model/conversationInfo";
+import store from '../../../store';
+import Conversation from '../../../wfc/model/conversation';
+import ConversationType from '../../../wfc/model/conversationType';
+import wfc from '../../../wfc/client/wfc';
+import ConversationInfo from '../../../wfc/model/conversationInfo';
 
 export default {
-    name: "ChatroomDetailView",
+    name: 'ChatroomDetailView',
     props: {},
     data() {
         return {
             sharedContactState: store.state.contact,
             chatroomInfo: null,
-        }
+        };
     },
     mounted() {
         this.getCurrentChatroomInfo();
     },
     methods: {
         chat() {
-            wfc.joinChatroom(this.chatroomInfo.chatRoomId, () => {
-                let conversation = new Conversation(ConversationType.ChatRoom, this.chatroomInfo.chatRoomId, 0);
-                conversation._target = this.chatroomInfo;
-                conversation._target._displayName = this.chatroomInfo.title;
-                let conversationInfo = new ConversationInfo();
-                conversationInfo.conversation = conversation;
-                store.setCurrentConversationInfo(conversationInfo);
-                this.$router.replace('/home');
-            }, err => {
-                console.error('joinChatRoom error', err)
-            })
+            wfc.joinChatroom(
+                this.chatroomInfo.chatRoomId,
+                () => {
+                    let conversation = new Conversation(ConversationType.ChatRoom, this.chatroomInfo.chatRoomId, 0);
+                    conversation._target = this.chatroomInfo;
+                    conversation._target._displayName = this.chatroomInfo.title;
+                    let conversationInfo = new ConversationInfo();
+                    conversationInfo.conversation = conversation;
+                    store.setCurrentConversationInfo(conversationInfo);
+                    this.$router.replace('/chatHome');
+                },
+                (err) => {
+                    console.error('joinChatRoom error', err);
+                }
+            );
         },
         getCurrentChatroomInfo() {
             let chatroomId = this.sharedContactState.currentChatroom.chatRoomId;
-            wfc.getChatroomInfo(chatroomId, 0, info => {
-                this.chatroomInfo = info;
-                console.log('getChatroomInfo success', info);
-            }, err => {
-                console.error('getChatroomInfo error', chatroomId, err)
-            })
-        }
+            wfc.getChatroomInfo(
+                chatroomId,
+                0,
+                (info) => {
+                    this.chatroomInfo = info;
+                    console.log('getChatroomInfo success', info);
+                },
+                (err) => {
+                    console.error('getChatroomInfo error', chatroomId, err);
+                }
+            );
+        },
     },
 
     watch: {
         'sharedContactState.currentChatroom': {
             handler(newValue, oldValue) {
-                console.log('watch currentChatroom', oldValue, newValue)
+                console.log('watch currentChatroom', oldValue, newValue);
                 let chatroomId = this.sharedContactState.currentChatroom.chatRoomId;
-                wfc.getChatroomInfo(chatroomId, 0, info => {
-                    this.chatroomInfo = info;
-                    console.log('getChatroomInfo success', info);
-                }, err => {
-                    console.error('getChatroomInfo error', chatroomId, err)
-                })
-            }
-        }
-    }
-}
+                wfc.getChatroomInfo(
+                    chatroomId,
+                    0,
+                    (info) => {
+                        this.chatroomInfo = info;
+                        console.log('getChatroomInfo success', info);
+                    },
+                    (err) => {
+                        console.error('getChatroomInfo error', chatroomId, err);
+                    }
+                );
+            },
+        },
+    },
+};
 </script>
 
 <style lang="css" scoped>
-
 .chatroom-info-container {
     display: flex;
     height: 100%;
@@ -120,5 +133,4 @@ export default {
     font-size: 15px;
     margin-bottom: 100px;
 }
-
 </style>

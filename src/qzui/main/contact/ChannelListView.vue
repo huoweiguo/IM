@@ -2,34 +2,32 @@
     <section>
         <ul>
             <li v-for="(channel, index) in sharedContactState.channelList" :key="index" @click="showChannel(channel)">
-                <div class="channel-item"
-                     v-bind:class="{active: sharedContactState.currentChannel && sharedContactState.currentChannel.channelId === channel.channelId}">
-                    <img class="avatar" :src="channel.portrait">
+                <div class="channel-item" v-bind:class="{ active: sharedContactState.currentChannel && sharedContactState.currentChannel.channelId === channel.channelId }">
+                    <img class="avatar" :src="channel.portrait" />
                     <span class="single-line">{{ channel.remark ? channel.remark : channel.name }}</span>
                 </div>
             </li>
         </ul>
     </section>
-
 </template>
 
 <script>
-import store from "../../../store";
+import store from '../../../store';
 
 export default {
-    name: "ChannelListView",
+    name: 'ChannelListView',
     props: {},
     data() {
         return {
             sharedContactState: store.state.contact,
-        }
+        };
     },
     methods: {
         showChannel(channel) {
-            store.setCurrentChannel(channel)
-        }
+            store.setCurrentChannel(channel);
+        },
     },
-}
+};
 </script>
 
 <style scoped>
@@ -54,5 +52,4 @@ export default {
 .channel-item span {
     margin-left: 10px;
 }
-
 </style>
