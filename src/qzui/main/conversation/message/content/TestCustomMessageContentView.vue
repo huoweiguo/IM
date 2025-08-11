@@ -95,7 +95,7 @@ export default {
 }
 
 .text-message-container.out {
-    background-color: #a8bdff;
+    background-color: #95ec69;
 }
 
 .text-message-container .text {

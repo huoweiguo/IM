@@ -84,6 +84,7 @@ export default {
 .text-message-container :deep(p) {
     user-select: text;
     white-space: pre-line;
+    padding: 0;
 }
 
 .text-message-container :deep(code) {
@@ -95,7 +96,7 @@ export default {
 }
 
 .text-message-container.out {
-    background-color: #a8bdff;
+    background-color: #95ec69;
 }
 
 .text-message-container .text {
