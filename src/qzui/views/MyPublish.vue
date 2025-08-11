@@ -38,6 +38,11 @@
                     </div>
                 </li>
             </ul>
+
+            <div class="no-data" v-if="nodata">没有更多数据了...</div>
+            <div class="no-data" v-if="isEmpty">
+                <el-empty image-size="80" description="暂无数据" />
+            </div>
         </div>
 
         <el-dialog v-model="centerDialogVisible" title="提示" width="300" center>
@@ -54,14 +59,17 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import { createNewWindow } from '@/qzui/utils/electronHelper';
+import { createNewWindow } from '@/qzui/util/electronHelper';
 import { dynamicListByUserId } from '@/api/community';
 import { throttle } from 'lodash-es';
-import { formatCommentTime } from '@/qzui/utils/timeformat';
+import { formatCommentTime } from '@/qzui/util/timeformat';
 import deleteIcon from '../assets/delete_icon.png';
 import headerImg from '../assets/header1.png';
 const scrollableDiv = ref(null);
 const startTime = ref('');
+const nodata = ref(false);
+const isEmpty = ref(false);
+const pageSize = ref(10);
 
 const centerDialogVisible = ref(false);
 const curIndex = ref(0);
@@ -79,12 +87,19 @@ const deletePost = (id) => {
 };
 
 const getMyPublishList = async (start_time = '') => {
-    const res = await dynamicListByUserId(5, start_time);
+    if (nodata.value) return;
+    const res = await dynamicListByUserId(pageSize.value, start_time);
     if (res.code === 0) {
         console.log(res.data, 'res.data');
-        list.value = res.data || [];
+        list.value = [...list.value, ...res.data];
         if (res.data.length > 0) {
-            startTime.value = res.data[res.data.length - 1].create_time;
+            startTime.value = res.data[res.data.length - 1].createTime;
+        }
+
+        if (res.data.length < pageSize.value) {
+            nodata.value = true;
+        } else if (res.data.length === 0 && list.value.length === 0) {
+            isEmpty.value = true;
         }
     }
 }
@@ -95,6 +110,7 @@ const handleScroll = throttle((event) => {
     const isBottom = element.scrollHeight - element.scrollTop === element.clientHeight;
     if (isBottom) {
         console.log('已经滚动到底部scroll');
+        getMyPublishList(startTime.value)
     }
 }, 100);
 
@@ -208,10 +224,23 @@ onMounted(() => {
     }
 
     .friend-content {
-        width: calc(100% + 40px);
-        height: 100vh;
+        width: 100%;
+        height: calc(100vh - 20px);
         overflow-y: auto;
-        padding-right: 30px;
+        scrollbar-width: none;
+        padding-right: 0;
+
+        .no-data {
+            display: flex;
+            justify-content: center;
+            font-size: 14px;
+            color: #777;
+            padding: 10px 0;
+        }
+    }
+
+    .friend-content::-webkit-scrollbar {
+        display: none;
     }
 
     ul {

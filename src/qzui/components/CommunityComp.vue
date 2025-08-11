@@ -56,16 +56,20 @@
                     </div>
 
                     <footer class="post-footer">
-                        <time class="post-time">{{ formatCommentTime(post.createTime) }}</time>
-                        <div class="post-actions">
+                        <div class="post-times">
+                            <time class="post-time">{{ formatCommentTime(post.createTime) }}</time>
                             <img :src="deleteIcon" @click="confirmDelete(post.id)" class="delete-btn" />
-                            <el-dropdown placement="left">
-                                <span class="action-menu">···</span>
-                                <template #dropdown>
-                                    <el-dropdown-item> <img src="../assets/comment.png" />评论 </el-dropdown-item>
-                                    <el-dropdown-item> <img src="../assets/like.png" />点赞 </el-dropdown-item>
+                        </div>
+                        <div class="post-actions">
+                            <el-tooltip class="box-item" effect="dark" placement="left-start">
+                                <template #content>
+                                    <div class="actions-link">
+                                        <span @click="comment(post)"><img src="../assets/comment.png" /> 评论</span>
+                                        <span><img src="../assets/like.png" /> 点赞</span>
+                                    </div>
                                 </template>
-                            </el-dropdown>
+                                <span class="action-menu">···</span>
+                            </el-tooltip>
                         </div>
                     </footer>
                 </div>
@@ -106,7 +110,7 @@
                                 <span class="action-menu">···</span>
                                 <template #dropdown>
                                     <el-dropdown-item> <img src="../assets/comment.png" />评论 </el-dropdown-item>
-                                    <el-dropdown-item> <img src="../assets/like.png" />点赞 </el-dropdown-item>
+                                    <el-dropdown-item> <img src="../assets/like.png" />点赞</el-dropdown-item>
                                 </template>
                             </el-dropdown>
                         </div>
@@ -167,17 +171,25 @@
                 </div>
             </template>
         </el-dialog>
+
+        <el-dialog v-model="visibleComment" title="评论" width="400" center>
+            <div class="comment-box">
+                <el-input v-model="textarea" class="comment-input" :rows="4" type="textarea"
+                    :placeholder="commentHolder" />
+                <el-button type="primary">提交</el-button>
+            </div>
+        </el-dialog>
     </div>
 </template>
 
 <script setup>
 import { ref, onUnmounted } from 'vue';
 import { EditPen, Help, Check } from '@element-plus/icons-vue';
-import { createNewWindow } from '@/qzui/utils/electronHelper';
-import emitter from '@/utils/eventBus'
+import { createNewWindow } from '@/qzui/util/electronHelper';
+import emitter from '@/qzui/util/eventBus'
 import { dynamicList } from '@/api/community';
 import { getItem, setItem } from "@/ui/util/storageHelper";
-import { formatCommentTime } from '@/qzui/utils/timeformat';
+import { formatCommentTime } from '@/qzui/util/timeformat';
 const userId = ref(getItem('userPortrait') ? getItem('userPortrait') : '');
 
 // 图标导入
@@ -189,6 +201,8 @@ import img2 from '../assets/img2.png';
 import img3 from '../assets/img3.png';
 
 const communityId = ref();
+const visibleComment = ref(false);
+const commentHolder = ref('')
 
 // 头像图片
 const chatAvatars = ['../assets/el1.png', '../assets/el2.png', '../assets/el3.png'];
@@ -221,6 +235,10 @@ const enterChatRoom = () => {
     });
 };
 
+const comment = (obj) => {
+    visibleComment.value = true
+    console.log(obj, 'obj')
+}
 
 const getCommunityList = async (start_time = '') => {
     const res = await dynamicList(10, start_time, {
@@ -587,12 +605,33 @@ onUnmounted(() => {
     align-items: center;
     font-size: 12px;
     color: #aaa;
+
+    .post-times {
+        display: flex;
+        align-items: center;
+    }
 }
 
 .post-actions {
     display: flex;
     align-items: center;
     gap: 12px;
+}
+
+.actions-link {
+    display: flex;
+
+    span {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        margin: 0 5px;
+
+        img {
+            width: 16px;
+            margin-right: 3px;
+        }
+    }
 }
 
 .delete-btn {
@@ -646,6 +685,17 @@ onUnmounted(() => {
 
     button:not(:last-child) {
         border-right: 1px solid #eee;
+    }
+}
+
+.comment-box {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+
+    .comment-input {
+        width: 100%;
+        margin-bottom: 20px;
     }
 }
 </style>

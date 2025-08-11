@@ -114,7 +114,7 @@ import { ipcRenderer } from 'electron'
 import { closeNewWindow } from '@/platformHelper'
 import Config from "@/config";
 import { publishDynamic } from '@/api/community'
-import emitter from '@/utils/eventBus'
+import emitter from '@/qzui/util/eventBus'
 import { ArrowRight, User, Plus, Delete } from '@element-plus/icons-vue'
 const drawer = ref(false)
 const drawer2 = ref(false)
