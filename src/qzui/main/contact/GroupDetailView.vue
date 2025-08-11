@@ -1,8 +1,8 @@
 <template>
     <section class="group-info-container">
         <div class="group-info">
-            <img :src="sharedContactState.currentGroup.portrait">
-            <p>{{ sharedContactState.currentGroup.name }}</p>
+            <img :src="sharedContactState.currentGroup?.portrait" />
+            <p>{{ sharedContactState.currentGroup?.name }}</p>
         </div>
         <a @click="chat">{{ $t('group.chat') }}</a>
         <div class="action-container">
@@ -12,18 +12,18 @@
 </template>
 
 <script>
-import store from "../../../store";
-import Conversation from "../../../wfc/model/conversation";
-import ConversationType from "../../../wfc/model/conversationType";
-import wfc from "../../../wfc/client/wfc";
+import store from '../../../store';
+import Conversation from '../../../wfc/model/conversation';
+import ConversationType from '../../../wfc/model/conversationType';
+import wfc from '../../../wfc/client/wfc';
 
 export default {
-    name: "GroupDetailView",
+    name: 'GroupDetailView',
     props: {},
     data() {
         return {
             sharedContactState: store.state.contact,
-        }
+        };
     },
     methods: {
         chat() {
@@ -33,20 +33,23 @@ export default {
         },
 
         unfavGroup() {
-            wfc.setFavGroup(this.sharedContactState.currentGroup.target, false, () => {
-                this.sharedContactState.currentGroup = null;
-                store.reloadFavGroupList();
-            }, err => {
-                console.error('setFavGroup error', err);
-            });
-        }
-    }
-
-}
+            wfc.setFavGroup(
+                this.sharedContactState.currentGroup.target,
+                false,
+                () => {
+                    this.sharedContactState.currentGroup = null;
+                    store.reloadFavGroupList();
+                },
+                (err) => {
+                    console.error('setFavGroup error', err);
+                }
+            );
+        },
+    },
+};
 </script>
 
 <style lang="css" scoped>
-
 .group-info-container {
     display: flex;
     height: 100%;
@@ -102,5 +105,4 @@ export default {
     color: #3f64e4;
     font-size: 13px;
 }
-
 </style>

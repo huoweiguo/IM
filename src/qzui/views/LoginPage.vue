@@ -213,7 +213,7 @@ const handleLoginResponse = (res) => {
     }
 
     // 登录成功后跳转到聊天页面
-    router.push('/chat');
+    router.push('/home');
 };
 
 // 忘记密码
@@ -258,7 +258,7 @@ const onConnectionStatusChange = (status) => {
         }
 
         // 跳转到首页
-        router.push('/chat');
+        router.push('/home');
     }
 };
 
@@ -282,7 +282,7 @@ onMounted(() => {
             isElectron() && ipcRenderer.send(IpcEventType.LOGIN);
             if (firstTimeConnect) {
                 // 登录成功后跳转到聊天页面
-                router.push('/chat');
+                router.push('/home');
             }
         } else {
             isElectron() && ipcRenderer.send(IpcEventType.RESIZE_LOGIN_WINDOW);

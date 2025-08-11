@@ -60,15 +60,6 @@ const routes = [
         },
     },
     {
-        path: '/chat',
-        name: 'Chat',
-        component: Chat,
-        meta: {
-            requiresAuth: false,
-            title: '聊天',
-        },
-    },
-    {
         name: 'voip-single',
         path: '/voip/single',
         component: Single,

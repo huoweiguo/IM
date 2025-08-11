@@ -4,9 +4,11 @@
 
         <ul class="nav-list nav-list--main window-move">
             <li v-for="item in navItems" :key="item.path" :class="['nav-item', { 'is-active': route.path === item.path }]" @click="navigate(item.path)">
-                <el-icon :size="24">
-                    <component :is="item.icon" />
-                </el-icon>
+                <el-badge :is-dot="(item.icon === 'ChatDotRound' && unread > 0) || (item.icon === 'User' && store.state.contact.unreadFriendRequestCount > 0)">
+                    <el-icon :size="24">
+                        <component :is="item.icon" />
+                    </el-icon>
+                </el-badge>
             </li>
         </ul>
 
@@ -36,8 +38,21 @@ import IpcEventType from '../../ipcEventType';
 const route = useRoute();
 const router = useRouter();
 
+const unread = computed(() => {
+    let count = 0;
+    store.state.conversation.conversationInfoList.forEach((info) => {
+        if (info.isSilent) {
+            return;
+        }
+        let unreadCount = info.unreadCount;
+        count += unreadCount.unread;
+    });
+
+    return count;
+});
+
 const navItems = computed(() => [
-    { path: '/chat', icon: 'ChatDotRound' },
+    { path: '/home', icon: 'ChatDotRound' },
     { path: '/friendlist', icon: 'User' },
     { path: '/community', icon: 'Baseball' },
     { path: '/chatHome', icon: 'Service' },
