@@ -3,7 +3,7 @@
         <div class="user-header-content-container">
             <div class="header">
                 <div>
-                    <img class="avatar" :src="portrait">
+                    <img class="avatar" :src="portrait" />
                 </div>
                 <div class="name">
                     <h2>{{ domainInfo.name }}</h2>
@@ -41,37 +41,36 @@
 </template>
 
 <script>
-import store from "../../../store";
-import ConversationType from "../../../wfc/model/conversationType";
-import Conversation from "../../../wfc/model/conversation";
-import wfc from "../../../wfc/client/wfc";
-import Config from "../../../config";
+import store from '../../../store';
+import ConversationType from '../../../wfc/model/conversationType';
+import Conversation from '../../../wfc/model/conversation';
+import wfc from '../../../wfc/client/wfc';
+import Config from '../../../config';
 
 export default {
-    name: "DomainInfoView",
+    name: 'DomainInfoView',
     props: {},
     data() {
         return {
             sharedStateContact: store.state.contact,
             domainInfo: store.state.contact.currentExternalDomain,
-        }
+        };
     },
 
     methods: {
         searchDomainUser() {
             store.setSearchDomainInfo(this.domainInfo);
-        }
+        },
     },
     computed: {
         portrait() {
             return Config.DEFAULT_MESH_PORTRAIT_URL;
-        }
-    }
-}
+        },
+    },
+};
 </script>
 
 <style lang="css" scoped>
-
 .user-detail-container {
     border-top-right-radius: var(--main-border-radius);
     border-bottom-right-radius: var(--main-border-radius);
@@ -195,5 +194,4 @@ export default {
 .footer .action i {
     font-size: 20px;
 }
-
 </style>

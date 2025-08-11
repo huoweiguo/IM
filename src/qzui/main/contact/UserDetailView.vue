@@ -3,14 +3,12 @@
         <div class="user-header-content-container">
             <div class="header">
                 <div>
-                    <img class="avatar" :src="sharedStateContact.currentFriend.portrait">
+                    <img class="avatar" :src="sharedStateContact.currentFriend.portrait" />
                 </div>
                 <div class="name">
                     <div style="display: flex; align-items: center">
                         <h2>{{ name }}</h2>
-                        <p v-if="isExternalDomainUser" class="single-line"
-                            style="color: #F0A040; border-radius: 2px;  padding: 1px 2px; font-size: 9px">{{ domainName
-                            }}</p>
+                        <p v-if="isExternalDomainUser" class="single-line" style="color: #f0a040; border-radius: 2px; padding: 1px 2px; font-size: 9px">{{ domainName }}</p>
                     </div>
                     <p>你好，圈子</p>
                 </div>
@@ -20,8 +18,7 @@
                     <li>
                         <label>{{ $t('common.alias') }}</label>
                         <div class="alias">
-                            <input type="text" ref="input" :value="sharedStateContact.currentFriend.friendAlias"
-                                placeholder="备注名" @keyup.enter="updateFriendAlias" />
+                            <input type="text" ref="input" :value="sharedStateContact.currentFriend.friendAlias" placeholder="备注名" @keyup.enter="updateFriendAlias" />
                         </div>
                     </li>
                     <li>
@@ -57,21 +54,21 @@
 </template>
 
 <script>
-import store from "../../../store";
-import ConversationType from "../../../wfc/model/conversationType";
-import Conversation from "../../../wfc/model/conversation";
-import wfc from "../../../wfc/client/wfc";
-import WfcUtil from "../../../wfc/util/wfcUtil";
+import store from '../../../store';
+import ConversationType from '../../../wfc/model/conversationType';
+import Conversation from '../../../wfc/model/conversation';
+import wfc from '../../../wfc/client/wfc';
+import WfcUtil from '../../../wfc/util/wfcUtil';
 
 export default {
-    name: "UserDetailView",
+    name: 'UserDetailView',
     props: {
         user: null,
     },
     data() {
         return {
             sharedStateContact: store.state.contact,
-        }
+        };
     },
 
     methods: {
@@ -83,14 +80,17 @@ export default {
         updateFriendAlias() {
             let friendAlias = this.$refs.input.value;
             if (friendAlias.trim() && friendAlias !== this.sharedStateContact.currentFriend.friendAlias) {
-                wfc.setFriendAlias(this.user.uid, friendAlias,
+                wfc.setFriendAlias(
+                    this.user.uid,
+                    friendAlias,
                     () => {
                         // do nothing
                         console.log('setFriendAlias success', this.user, friendAlias);
                     },
                     (error) => {
                         // do nothing
-                    })
+                    }
+                );
             }
         },
         startAudioCall() {
@@ -114,14 +114,13 @@ export default {
             }
             // side
             (async () => {
-                wfc.getUserInfo(friend.uid, true)
+                wfc.getUserInfo(friend.uid, true);
             })();
             return name;
         },
         isExternalDomainUser() {
             let user = this.sharedStateContact.currentFriend;
             return WfcUtil.isExternal(user.uid);
-
         },
         domainName() {
             let user = this.sharedStateContact.currentFriend;
@@ -132,8 +131,8 @@ export default {
             }
             return '';
         },
-    }
-}
+    },
+};
 </script>
 
 <style lang="css" scoped>
@@ -213,7 +212,7 @@ export default {
     font-size: 12px;
 }
 
-.content ul li .alias>input {
+.content ul li .alias > input {
     width: 100%;
     border: none;
     border-radius: 3px;
@@ -223,7 +222,7 @@ export default {
     font-size: 13px;
 }
 
-.content ul li .alias>input:active {
+.content ul li .alias > input:active {
     border: 1px solid #4168e0;
 }
 
@@ -231,7 +230,7 @@ export default {
     border: 1px solid #4168e0;
 }
 
-.content ul li>div {
+.content ul li > div {
     display: inline-block;
     flex: 1;
 }
