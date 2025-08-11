@@ -1,9 +1,9 @@
 {
-  "name": "wf-pc-chat",
-  "company": "wildfire",
+  "name": "quanzi-pc-chat",
+  "company": "quanzi",
   "version": "1.1.0",
-  "description": "WF IM PC Client",
-  "appId": "cn.wildfire.chat",
+  "description": "Quanzi IM PC Client",
+  "appId": "cn.quanzi.pc.chat",
   "private": true,
   "homepage": "https://wildfirechat.cn",
   "maintainers": [
