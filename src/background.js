@@ -401,11 +401,12 @@ function regShortcut() {
     globalShortcut.register('Control+F5', () => {
         mainWindow.webContents.reload();
     });
-    globalShortcut.register('CommandOrControl+shift+a', () => {
-        isMainWindowFocusedWhenStartScreenshot = mainWindow.isFocused();
-        console.log('isMainWindowFocusedWhenStartScreenshot', mainWindow.isFocused());
-        screenshots.startCapture();
-    });
+    // 截图快捷键
+    // globalShortcut.register('CommandOrControl+shift+a', () => {
+    //     isMainWindowFocusedWhenStartScreenshot = mainWindow.isFocused();
+    //     console.log('isMainWindowFocusedWhenStartScreenshot', mainWindow.isFocused());
+    //     screenshots.startCapture();
+    // });
     // 调试用，主要用于处理 windows 不能打开子窗口的控制台
     // 打开所有窗口控制台
     globalShortcut.register('ctrl+shift+i', () => {
@@ -1269,7 +1270,7 @@ function startSecretDecodeServer(port) {
                 let decodedBuff = toBuffer(decodedAb);
 
                 let rawHeaders = res.rawHeaders;
-                for (let i = 0; i < rawHeaders.length; ) {
+                for (let i = 0; i < rawHeaders.length;) {
                     if (rawHeaders[i] !== 'Content-Length' && rawHeaders[i] !== 'content-Length') {
                         orgRes.setHeader(rawHeaders[i], rawHeaders[i + 1]);
                     }
