@@ -104,7 +104,7 @@ export default {
 }
 
 .streaming-text-message-container.out {
-    background-color: #a8bdff;
+    background-color: #95ec69;
 }
 
 .streaming-text-message-container .text {

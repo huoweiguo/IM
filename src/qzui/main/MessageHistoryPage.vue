@@ -2,36 +2,32 @@
     <section>
         <div class="message-history-page">
             <div class="search-input-container">
-                <input id="searchInput" ref="input" autocomplete="off" v-model="query" @keydown.esc="cancel" type="text"
-                    :placeholder="$t('common.search')" />
+                <input id="searchInput" ref="input" autocomplete="off" v-model="query" @keydown.esc="cancel" type="text" :placeholder="$t('common.search')" />
                 <i class="icon-ion-ios-search"></i>
             </div>
             <div v-if="!query" class="portal">
-                <h1 style="font-size: 30px; color: #f0f0f0;text-shadow: 1px 1px 0 #fff;">圈子</h1>
+                <h1 style="font-size: 30px; color: #f0f0f0; text-shadow: 1px 1px 0 #fff">圈子</h1>
             </div>
             <div v-else-if="conversationSearchResults.length > 0" class="search-result-container">
                 <div class="conversation-list">
                     <ul>
-                        <li v-for="(cresult) in conversationSearchResults"
+                        <li
+                            v-for="cresult in conversationSearchResults"
                             @click="setCurrentConversationSearchResult(cresult)"
-                            :key="cresult.conversation.type + cresult.conversation.target + cresult.conversation.line">
+                            :key="cresult.conversation.type + cresult.conversation.target + cresult.conversation.line"
+                        >
                             <div class="conversation-item" v-bind:class="{ active: isConversationItemActive(cresult) }">
                                 <div class="header">
-                                    <img class="avatar" draggable="false"
-                                        :src="cresult._conversationInfo.conversation._target.portrait" alt="" />
+                                    <img class="avatar" draggable="false" :src="cresult._conversationInfo.conversation._target.portrait" alt="" />
                                 </div>
                                 <div class="content-container">
                                     <p class="title single-line">
-                                        {{ cresult._conversationInfo.conversation._target._displayName }} </p>
+                                        {{ cresult._conversationInfo.conversation._target._displayName }}
+                                    </p>
                                     <p class="desc single-line">
-                                        {{
-                                            cresult.matchMessage ?
-                                                cresult.matchMessage.messageContent.digest(cresult.matchMessage) :
-                                                `${cresult.matchCount}条相关聊天记录`
-                                        }}
+                                        {{ cresult.matchMessage ? cresult.matchMessage.messageContent.digest(cresult.matchMessage) : `${cresult.matchCount}条相关聊天记录` }}
                                     </p>
                                 </div>
-
                             </div>
                         </li>
                     </ul>
@@ -39,7 +35,8 @@
                 <div class="conversation-message-list" v-if="currentConversationSearchResult">
                     <div class="desc-action-container" v-if="!currentMessage">
                         <p class="single-line desc">
-                            {{ `${currentConversationSearchResult.matchCount}条与${this.query}相关的搜索结果` }}</p>
+                            {{ `${currentConversationSearchResult.matchCount}条与${this.query}相关的搜索结果` }}
+                        </p>
                         <div class="action" @click="openConversation">
                             <i class="icon-ion-android-chat"></i>
                             <p>进入聊天</p>
@@ -49,8 +46,7 @@
                         <i class="icon-ion-ios-arrow-back" @click="currentMessage = null">&nbsp;返回</i>
                     </div>
                     <div class="message-list-container" infinite-wrapper>
-                        <infinite-loading v-if="currentMessage" identifier="oldMessageLoader" force-use-infinite-wrapper
-                            direction="top" @infinite="infiniteHandlerTop">
+                        <infinite-loading v-if="currentMessage" identifier="oldMessageLoader" force-use-infinite-wrapper direction="top" @infinite="infiniteHandlerTop">
                             <!--            <template slot="spinner">加载中...</template>-->
                             <template #no-more>{{ $t('conversation.no_more_message') }}</template>
                             <template #no-results>{{ $t('conversation.no_more_message') }}</template>
@@ -59,27 +55,23 @@
                             <li v-for="(message, index) in messages" :key="message.uid">
                                 <div class="message-container">
                                     <div class="portrait-container">
-                                        <img alt="" :src="message._from.portrait">
+                                        <img alt="" :src="message._from.portrait" />
                                     </div>
                                     <div class="name-time-content-container">
                                         <div class="name-time-container">
-                                            <p class="name"> {{ message._from._displayName }}</p>
-                                            <p class="time"> {{ message._timeStr }}</p>
+                                            <p class="name">{{ message._from._displayName }}</p>
+                                            <p class="time">{{ message._timeStr }}</p>
                                             <!--                            <p class="time"> 1223</p>-->
                                         </div>
                                         <div class="content">
-                                            <MessageContentContainerView :message="message"
-                                                @contextmenu.prevent.native="openMessageContextMenu($event, message)" />
-                                            <a v-if="!currentMessage" class="single-line action"
-                                                @click="showContextMessages(message)">查看上下文</a>
+                                            <MessageContentContainerView :message="message" @contextmenu.prevent.native="openMessageContextMenu($event, message)" />
+                                            <a v-if="!currentMessage" class="single-line action" @click="showContextMessages(message)">查看上下文</a>
                                         </div>
                                     </div>
-
                                 </div>
                             </li>
                         </ul>
-                        <infinite-loading v-if="currentMessage" identifier="newMessageLoader" force-use-infinite-wrapper
-                            direction="bottom" @infinite="infiniteHandlerBottom">
+                        <infinite-loading v-if="currentMessage" identifier="newMessageLoader" force-use-infinite-wrapper direction="bottom" @infinite="infiniteHandlerBottom">
                             <!--            <template slot="spinner">加载中...</template>-->
                             <template #no-more>{{ $t('fav.no_more') }}</template>
                             <template #no-results>{{ $t('fav.all_fav_load') }}</template>
@@ -92,17 +84,16 @@
             </div>
         </div>
     </section>
-
 </template>
 
 <script>
-import MessageContentContainerView from "./conversation/message/MessageContentContainerView";
-import store from "../../store";
-import InfiniteLoading from "@imndx/vue-infinite-loading";
-import IpcSub from "../../ipc/ipcSub";
+import MessageContentContainerView from './conversation/message/MessageContentContainerView';
+import store from '../../store';
+import InfiniteLoading from '@imndx/vue-infinite-loading';
+import IpcSub from '../../ipc/ipcSub';
 
 export default {
-    name: "MessageHistoryPage",
+    name: 'MessageHistoryPage',
     data() {
         return {
             query: '',
@@ -111,13 +102,12 @@ export default {
             currentConversationMessages: [],
             currentMessage: null,
             contextMessages: [],
-        }
+        };
     },
     mounted() {
-        document.title = '查找聊天记录'
+        document.title = '查找聊天记录';
     },
     methods: {
-
         openMessageContextMenu(event, msg) {
             // TODO
         },
@@ -127,7 +117,7 @@ export default {
         },
 
         isConversationItemActive(result) {
-            return this.currentConversationSearchResult && (this.currentConversationSearchResult.conversation.equal(result.conversation))
+            return this.currentConversationSearchResult && this.currentConversationSearchResult.conversation.equal(result.conversation);
         },
 
         openConversation() {
@@ -143,7 +133,7 @@ export default {
         infiniteHandlerTop($state) {
             let firstMsg = this.contextMessages[0];
             let conversation = this.currentConversationSearchResult.conversation;
-            store.getMessages(conversation, firstMsg.messageId, true, '', msgs => {
+            store.getMessages(conversation, firstMsg.messageId, true, '', (msgs) => {
                 if (msgs.length > 0) {
                     this.contextMessages = msgs.concat(this.contextMessages);
                     $state.loaded();
@@ -156,7 +146,7 @@ export default {
         infiniteHandlerBottom($state) {
             let lastMsg = this.contextMessages[this.contextMessages.length - 1];
             let conversation = this.currentConversationSearchResult.conversation;
-            store.getMessages(conversation, lastMsg.messageId, false, '', msgs => {
+            store.getMessages(conversation, lastMsg.messageId, false, '', (msgs) => {
                 if (msgs.length > 0) {
                     this.contextMessages = this.contextMessages.concat(msgs);
                     $state.loaded();
@@ -169,7 +159,7 @@ export default {
     watch: {
         query() {
             if (this.query) {
-                this.conversationSearchResults = store.searchConversation(this.query)
+                this.conversationSearchResults = store.searchConversation(this.query);
                 this.currentConversationMessages = null;
                 this.currentConversationSearchResult = null;
             } else {
@@ -187,13 +177,13 @@ export default {
     computed: {
         messages() {
             return this.currentMessage ? this.contextMessages : this.currentConversationMessages;
-        }
+        },
     },
     components: {
         MessageContentContainerView,
         InfiniteLoading,
-    }
-}
+    },
+};
 </script>
 
 <style scoped>
@@ -377,7 +367,7 @@ export default {
 }
 
 .message-list-container ul li:not(:last-child)::after {
-    content: "";
+    content: '';
     width: calc(100% - 55px);
     position: absolute;
     margin-left: 55px;
@@ -425,7 +415,6 @@ export default {
     display: inline-block;
 }
 
-
 .portrait-container {
     width: 40px;
     height: 40px;
@@ -441,23 +430,23 @@ export default {
     border-radius: 3px;
 }
 
->>>.text-message-container.out {
+:deep(.text-message-container.out) {
     background-color: #f3f3f3;
     padding-top: 0 !important;
     padding-left: 0 !important;
 }
 
->>>.text-message-container {
+:deep(.text-message-container) {
     background-color: #f3f3f3;
     padding-top: 0 !important;
     padding-left: 0 !important;
 }
 
->>>.rightarrow::before {
+:deep(.rightarrow::before) {
     display: none;
 }
 
->>>.leftarrow::before {
+:deep(.leftarrow::before) {
     display: none;
 }
 </style>

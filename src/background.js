@@ -401,11 +401,12 @@ function regShortcut() {
     globalShortcut.register('Control+F5', () => {
         mainWindow.webContents.reload();
     });
-    globalShortcut.register('CommandOrControl+shift+a', () => {
-        isMainWindowFocusedWhenStartScreenshot = mainWindow.isFocused();
-        console.log('isMainWindowFocusedWhenStartScreenshot', mainWindow.isFocused());
-        screenshots.startCapture();
-    });
+    // 截图快捷键
+    // globalShortcut.register('CommandOrControl+shift+a', () => {
+    //     isMainWindowFocusedWhenStartScreenshot = mainWindow.isFocused();
+    //     console.log('isMainWindowFocusedWhenStartScreenshot', mainWindow.isFocused());
+    //     screenshots.startCapture();
+    // });
     // 调试用，主要用于处理 windows 不能打开子窗口的控制台
     // 打开所有窗口控制台
     globalShortcut.register('ctrl+shift+i', () => {
@@ -523,7 +524,8 @@ const createMainWindow = async () => {
     if (process.env.WEBPACK_DEV_SERVER_URL) {
         // Load the url of the dev server if in development mode
         await mainWindow.loadURL(process.env.WEBPACK_DEV_SERVER_URL);
-        if (!process.env.IS_TEST) mainWindow.webContents.openDevTools();
+        // 打开开发者工具调试
+        // if (!process.env.IS_TEST) mainWindow.webContents.openDevTools();
     } else {
         createProtocol('app');
         // Load the index.html when not in development
@@ -1269,7 +1271,7 @@ function startSecretDecodeServer(port) {
                 let decodedBuff = toBuffer(decodedAb);
 
                 let rawHeaders = res.rawHeaders;
-                for (let i = 0; i < rawHeaders.length; ) {
+                for (let i = 0; i < rawHeaders.length;) {
                     if (rawHeaders[i] !== 'Content-Length' && rawHeaders[i] !== 'content-Length') {
                         orgRes.setHeader(rawHeaders[i], rawHeaders[i + 1]);
                     }

@@ -3,7 +3,7 @@
         <div class="user-header-content-container">
             <div class="header">
                 <div>
-                    <img class="avatar" :src="user.portrait">
+                    <img class="avatar" :src="user.portrait" />
                 </div>
                 <div class="name">
                     <h2>{{ name }}</h2>
@@ -15,8 +15,7 @@
                     <li v-if="isFriend">
                         <label>{{ $t('common.alias') }}</label>
                         <div class="alias">
-                            <input type="text" ref="input" :value="user.friendAlias" placeholder="备注名"
-                                @keyup.enter="updateFriendAlias" />
+                            <input type="text" ref="input" :value="user.friendAlias" placeholder="备注名" @keyup.enter="updateFriendAlias" />
                         </div>
                     </li>
                     <li v-if="!isFriend">
@@ -56,13 +55,13 @@
 </template>
 
 <script>
-import store from "../../../store";
-import ConversationType from "../../../wfc/model/conversationType";
-import Conversation from "../../../wfc/model/conversation";
-import wfc from "../../../wfc/client/wfc";
+import store from '../../../store';
+import ConversationType from '../../../wfc/model/conversationType';
+import Conversation from '../../../wfc/model/conversation';
+import wfc from '../../../wfc/client/wfc';
 
 export default {
-    name: "UserDetailView",
+    name: 'UserDetailView',
     props: {
         user: null,
         friendRequest: null,
@@ -70,7 +69,7 @@ export default {
     data() {
         return {
             sharedStateContact: store.state.contact,
-        }
+        };
     },
 
     methods: {
@@ -82,14 +81,17 @@ export default {
         updateFriendAlias() {
             let friendAlias = this.$refs.input.value;
             if (friendAlias.trim() && friendAlias !== this.user.friendAlias) {
-                wfc.setFriendAlias(this.user.uid, friendAlias,
+                wfc.setFriendAlias(
+                    this.user.uid,
+                    friendAlias,
                     () => {
                         // do nothing
                         console.log('setFriendAlias success', this.user, friendAlias);
                     },
                     (error) => {
                         // do nothing
-                    })
+                    }
+                );
             }
         },
         startAudioCall() {
@@ -113,15 +115,15 @@ export default {
             }
             // side
             (async () => {
-                wfc.getUserInfo(friend.uid, true)
+                wfc.getUserInfo(friend.uid, true);
             })();
             return name;
         },
         isFriend() {
-            return wfc.isMyFriend(this.user.uid)
-        }
-    }
-}
+            return wfc.isMyFriend(this.user.uid);
+        },
+    },
+};
 </script>
 
 <style lang="css" scoped>
@@ -202,7 +204,7 @@ export default {
     font-size: 12px;
 }
 
-.content ul li .alias>input {
+.content ul li .alias > input {
     width: 100%;
     border: none;
     border-radius: 3px;
@@ -212,7 +214,7 @@ export default {
     font-size: 13px;
 }
 
-.content ul li .alias>input:active {
+.content ul li .alias > input:active {
     border: 1px solid #4168e0;
 }
 
@@ -220,7 +222,7 @@ export default {
     border: 1px solid #4168e0;
 }
 
-.content ul li>div {
+.content ul li > div {
     display: inline-block;
     flex: 1;
 }

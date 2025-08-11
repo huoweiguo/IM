@@ -74,7 +74,7 @@ function createWindow() {
       nodeIntegration: false,
       // 禁用节点集成
       sandbox: false,
-      devTools: true,
+      devTools: false,
       // 确保开启开发者工具
     },
   });

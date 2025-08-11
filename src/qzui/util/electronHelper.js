@@ -23,11 +23,12 @@ export async function createNewWindow(options) {
                 contextIsolation: false,
             },
             url: url,
-            title: options.title || 'QZUI',
+            title: options.title || '圈子',
         };
         try {
             newWindow = await BrowserWindow.new(windowOptions);
-            newWindow.webContents.openDevTools({ mode: 'detach' });
+            // 打开开发者工具调试
+            // newWindow.webContents.openDevTools({ mode: 'detach' });
             return newWindow;
         } catch (error) {
             console.error('创建窗口失败:', error);

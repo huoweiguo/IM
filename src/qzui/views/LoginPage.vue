@@ -1,12 +1,12 @@
 <template>
     <div class="login-container window-move">
-        <div class="app-name">{{ appName }}</div>
-        <div class="welcome-text">{{ welcomeText }}</div>
+        <div class="app-name window-move">{{ appName }}</div>
+        <div class="welcome-text window-move">{{ welcomeText }}</div>
 
         <!-- 登录方式选项卡 -->
-        <div class="tab-container">
-            <div class="tab" :class="{ active: loginType === 'password' }" @click="switchToPasswordLogin">密码登录</div>
-            <div class="tab" :class="{ active: loginType === 'phone' }" @click="switchToPhoneLogin">手机号登录</div>
+        <div class="tab-container window-move">
+            <div class="tab-item" :class="{ active: loginType === 'password' }" @click="switchToPasswordLogin">密码登录</div>
+            <div class="tab-item" :class="{ active: loginType === 'phone' }" @click="switchToPhoneLogin">手机号登录</div>
         </div>
 
         <!-- 手机号登录表单 -->
@@ -213,7 +213,7 @@ const handleLoginResponse = (res) => {
     }
 
     // 登录成功后跳转到聊天页面
-    router.push('/chat');
+    router.push('/home');
 };
 
 // 忘记密码
@@ -258,7 +258,7 @@ const onConnectionStatusChange = (status) => {
         }
 
         // 跳转到首页
-        router.push('/chat');
+        router.push('/home');
     }
 };
 
@@ -272,7 +272,9 @@ onMounted(() => {
     let token = getItem('token');
 
     if (userId) {
-        let autoLogin = store.state.misc.enableAutoLogin;
+        // 自动登录
+        // let autoLogin = store.state.misc.enableAutoLogin;
+        let autoLogin = true;
 
         if (autoLogin && token) {
             const firstTimeConnect = wfc.connect(userId, token);
@@ -280,7 +282,7 @@ onMounted(() => {
             isElectron() && ipcRenderer.send(IpcEventType.LOGIN);
             if (firstTimeConnect) {
                 // 登录成功后跳转到聊天页面
-                router.push('/chat');
+                router.push('/home');
             }
         } else {
             isElectron() && ipcRenderer.send(IpcEventType.RESIZE_LOGIN_WINDOW);
@@ -319,7 +321,7 @@ onUnmounted(() => {
 
 .welcome-text {
     font-size: 18px;
-    margin-bottom: 40px;
+    margin-bottom: 20px;
     color: #666;
     text-align: center;
 }
@@ -331,7 +333,7 @@ onUnmounted(() => {
     border-bottom: 1px solid #eee;
 }
 
-.tab {
+.tab-item {
     padding: 10px 20px;
     cursor: pointer;
     color: #666;
@@ -339,12 +341,12 @@ onUnmounted(() => {
     position: relative;
 }
 
-.tab.active {
+.tab-item.active {
     color: #1890ff;
     font-weight: bold;
 }
 
-.tab.active::after {
+.tab-item.active::after {
     content: '';
     position: absolute;
     bottom: -1px;

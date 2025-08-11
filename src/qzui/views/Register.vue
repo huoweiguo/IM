@@ -156,8 +156,8 @@ const handleRegister = () => {
         return;
     }
 
-    if (!verificationCode.value || verificationCode.value.length !== 6) {
-        ElMessage.error('请输入6位验证码');
+    if (!verificationCode.value || verificationCode.value.length < 4) {
+        ElMessage.error('请输入验证码');
         return;
     }
 
@@ -226,7 +226,7 @@ const showPrivacyPolicy = () => {
 
 .welcome-text {
     font-size: 18px;
-    margin-bottom: 40px;
+    margin-bottom: 20px;
     color: #666;
     text-align: center;
 }
@@ -240,7 +240,6 @@ const showPrivacyPolicy = () => {
     border: 1px solid rgba(170, 170, 170, 0.4);
     border-radius: 8px;
     overflow: hidden;
-    margin-bottom: 20px;
 }
 
 .input-field input {

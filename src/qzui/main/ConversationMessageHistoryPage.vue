@@ -58,7 +58,7 @@
 </template>
 
 <script>
-import MessageContentContainerView from './conversation/message/MessageContentContainerView';
+import MessageContentContainerView from './conversation/message/MessageContentContainerView.vue';
 import Conversation from '../../wfc/model/conversation';
 import store from '../../store';
 import InfiniteLoading from '@imndx/vue-infinite-loading';
@@ -406,7 +406,7 @@ export default {
 
 .name-time-content-container .content {
     display: inline-block;
-    margin-left: -20px;
+    margin-left: -10px;
     margin-right: 60px;
 }
 

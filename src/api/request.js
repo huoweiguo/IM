@@ -7,7 +7,8 @@ function request(type, url, data) {
     return axios({
         url: BASE_URL + url,
         method: type,
-        data: data,
+        data: type === 'get' ? null : data,
+        params: type === 'get' ? data : null,
         headers: {
             'content-type': 'application/json',
             token: getItem('apptoken') || '',

@@ -1,6 +1,6 @@
 <template>
     <Layout>
-        <div class="group-chat">
+        <div class="group-chat window-move">
             <TopNav />
             <ConversationPage style="flex: 1" />
         </div>
