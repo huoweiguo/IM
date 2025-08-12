@@ -2,7 +2,7 @@
     <div class="pick-contact-container">
         <section class="contact-list-container">
             <div class="input-container">
-                <input type="text" :placeholder="$t('common.search')" v-model="filterQuery">
+                <input type="text" :placeholder="$t('common.search')" v-model="filterQuery" />
                 <i class="icon-ion-ios-search"></i>
             </div>
             <div v-if="showOrganization" class="pick-source-container">
@@ -21,7 +21,12 @@
                 </div>
                 <div class="pick-source-list">
                     <ul v-if="!pickSource">
-                        <li @click="pickSource = 'friend'; organizationPathList = []">
+                        <li
+                            @click="
+                                pickSource = 'friend';
+                                organizationPathList = [];
+                            "
+                        >
                             <a href="#" @click.prevent>
                                 <i class="icon-ion-android-contacts" />
                                 选择好友
@@ -37,13 +42,17 @@
                 </div>
             </div>
             <div v-if="!showOrganization || pickSource === 'friend'" class="friend-list-container">
-                <CheckableUserListView :enable-pick="true" :users="filterUsers"
-                    :initial-checked-users="initialCheckedUsers" :uncheckable-users="uncheckableUsers"
-                    :show-category-label="showCategoryLabel && !filterQuery" :padding-left="'20px'"
-                    enable-category-label-sticky />
+                <CheckableUserListView
+                    :enable-pick="true"
+                    :users="filterUsers"
+                    :initial-checked-users="initialCheckedUsers"
+                    :uncheckable-users="uncheckableUsers"
+                    :show-category-label="showCategoryLabel && !filterQuery"
+                    :padding-left="'20px'"
+                    enable-category-label-sticky
+                />
             </div>
-            <CheckableOrganizationTreeView ref="checkableOrganizationTreeView" v-if="pickSource === 'organization'"
-                @organization-path-update="onOrganizationPathUpdate" />
+            <CheckableOrganizationTreeView ref="checkableOrganizationTreeView" v-if="pickSource === 'organization'" @organization-path-update="onOrganizationPathUpdate" />
         </section>
         <section class="checked-contact-list-container">
             <header>
@@ -51,26 +60,23 @@
                 <div style="display: flex; justify-content: flex-end">
                     <span v-if="checkedUsers.length === 0">{{ $t('pick.picked_contact') }}</span>
                     <span v-else>{{ $t('pick.picked_contact') + ':' + this.checkedUsers.length }}</span>
-                    <span v-if="sharedPickState.organizations.length">{{ '组织: ' + sharedPickState.organizations.length
-                        }}</span>
+                    <span v-if="sharedPickState.organizations.length">{{ '组织: ' + sharedPickState.organizations.length }}</span>
                 </div>
             </header>
             <div class="content">
                 <div class="picked-user-container" v-for="(user, index) in checkedUsers" :key="user.uid">
                     <div class="picked-user">
-                        <img class="avatar" :src="user.portrait" alt="">
+                        <img class="avatar" :src="user.portrait" alt="" />
                         <button @click="onPickUser(user)" class="unpick-button">X</button>
                     </div>
-                    <div style="display: flex; align-items: center; ">
+                    <div style="display: flex; align-items: center">
                         <p class="name single-line">{{ user._displayName }}</p>
-                        <p v-if="isExternalDomainUser(user)" class="single-line"
-                            style="color: #F0A040; border-radius: 2px;  padding: 1px 2px; font-size: 9px">{{
-                            domainName(user) }}</p>
+                        <p v-if="isExternalDomainUser(user)" class="single-line" style="color: #f0a040; border-radius: 2px; padding: 1px 2px; font-size: 9px">{{ domainName(user) }}</p>
                     </div>
                 </div>
                 <div class="picked-user-container" v-for="(org, index) in sharedPickState.organizations" :key="org.id">
                     <div class="picked-user">
-                        <img class="avatar" :src="org.portrait ? org.portrait : defaultOrganizationPortraitUrl" alt="">
+                        <img class="avatar" :src="org.portrait ? org.portrait : defaultOrganizationPortraitUrl" alt="" />
                         <button @click="onPickOrganization(org)" class="unpick-button">X</button>
                     </div>
                     <span class="name single-line">{{ org.name }}</span>
@@ -78,27 +84,24 @@
             </div>
             <footer>
                 <button @click="cancel" class="cancel">{{ $t('common.cancel') }}</button>
-                <button @click="confirm" class="confirm"
-                    v-bind:class="{ disable: checkedUsers.length === 0 && sharedPickState.organizations.length === 0 }">
-                    {{ confirmTitle }}
-                </button>
+                <button @click="confirm" class="confirm" v-bind:class="{ disable: checkedUsers.length === 0 && sharedPickState.organizations.length === 0 }">{{ confirmTitle }}</button>
             </footer>
         </section>
     </div>
 </template>
 
 <script>
-import store from "../../../store";
-import CheckableUserListView from "../user/CheckableUserListView.vue";
-import CheckableOrganizationTreeView from "./CheckableOrganizationTreeView.vue";
-import Config from "../../../config";
-import organizationServerApi from "../../../api/organizationServerApi";
-import UserInfo from "../../../wfc/model/userInfo";
-import WfcUtil from "../../../wfc/util/wfcUtil";
-import wfc from "../../../wfc/client/wfc";
+import store from '../../../store';
+import CheckableUserListView from '../user/CheckableUserListView.vue';
+import CheckableOrganizationTreeView from './CheckableOrganizationTreeView.vue';
+import Config from '../../../config';
+import organizationServerApi from '../../../api/organizationServerApi';
+import UserInfo from '../../../wfc/model/userInfo';
+import WfcUtil from '../../../wfc/util/wfcUtil';
+import wfc from '../../../wfc/client/wfc';
 
 export default {
-    name: "PickUserView",
+    name: 'PickUserView',
     props: {
         users: {
             type: Array,
@@ -133,8 +136,7 @@ export default {
             type: Boolean,
             required: false,
             default: false,
-        }
-
+        },
     },
     data() {
         return {
@@ -143,7 +145,7 @@ export default {
             pickSource: null,
             organizationPathList: [],
             defaultOrganizationPortraitUrl: Config.DEFAULT_DEPARTMENT_PORTRAIT_URL,
-        }
+        };
     },
     methods: {
         onPickUser(user) {
@@ -158,7 +160,7 @@ export default {
         },
 
         isUserUncheckable(user) {
-            return this.uncheckableUsers && this.uncheckableUsers.findIndex(u => u.uid === user.uid) >= 0;
+            return this.uncheckableUsers && this.uncheckableUsers.findIndex((u) => u.uid === user.uid) >= 0;
         },
 
         onOrganizationPathUpdate(orgPathList) {
@@ -170,9 +172,9 @@ export default {
         },
 
         cancel() {
-            this.sharedPickState.users.length = 0
+            this.sharedPickState.users.length = 0;
             this.sharedPickState.organizations.length = 0;
-            this.$modal.hide('pick-user-modal', { confirm: false })
+            this.$modal.hide('pick-user-modal', { confirm: false });
         },
 
         /**
@@ -181,35 +183,36 @@ export default {
         confirm() {
             let pickedUsers = this.sharedPickState.users;
             if (this.initialCheckedUsers) {
-                pickedUsers = this.sharedPickState.users.filter(u => this.initialCheckedUsers.findIndex(iu => iu.uid === u.uid) === -1);
+                pickedUsers = this.sharedPickState.users.filter((u) => this.initialCheckedUsers.findIndex((iu) => iu.uid === u.uid) === -1);
             } else {
                 pickedUsers = this.sharedPickState.users;
             }
             let users = [...pickedUsers];
-            this.sharedPickState.users.length = 0
+            this.sharedPickState.users.length = 0;
 
             if (this.sharedPickState.organizations.length) {
-                let orgIds = this.sharedPickState.organizations.map(o => o.id);
-                organizationServerApi.getOrganizationEmployees(orgIds)
-                    .then(employeeList => {
-                        this.sharedPickState.organizations.length = 0;
-                        for (const employee of employeeList) {
-                            let userInfo = new UserInfo();
-                            userInfo.uid = employee.employeeId;
-                            userInfo.displayName = employee.name;
-                            userInfo.updateDt = employee.updateDt;
-                            users.push(userInfo);
-                        }
-                        this.$modal.hide('pick-user-modal', { confirm: true, users: users })
-                    })
+                let orgIds = this.sharedPickState.organizations.map((o) => o.id);
+                organizationServerApi.getOrganizationEmployees(orgIds).then((employeeList) => {
+                    this.sharedPickState.organizations.length = 0;
+                    for (const employee of employeeList) {
+                        let userInfo = new UserInfo();
+                        userInfo.uid = employee.employeeId;
+                        userInfo.displayName = employee.name;
+                        userInfo.updateDt = employee.updateDt;
+                        users.push(userInfo);
+                    }
+                    this.$modal.hide('pick-user-modal', { confirm: true, users: users });
+                });
             } else {
-                this.$modal.hide('pick-user-modal', { confirm: true, users: users })
+                this.$modal.hide('pick-user-modal', { confirm: true, users: users });
             }
+
+            // 跳转到聊天页面
+            this.$router.push('/home');
         },
 
         isExternalDomainUser(user) {
             return WfcUtil.isExternal(user.uid);
-
         },
         domainName(user) {
             if (WfcUtil.isExternal(user.uid)) {
@@ -227,9 +230,9 @@ export default {
             if (!this.initialCheckedUsers || this.initialCheckedUsers.length === 0) {
                 return users;
             }
-            return users.filter(u => {
-                return this.initialCheckedUsers.findIndex(iu => iu.uid === u.uid) === -1
-            })
+            return users.filter((u) => {
+                return this.initialCheckedUsers.findIndex((iu) => iu.uid === u.uid) === -1;
+            });
         },
         filterUsers() {
             if (this.filterQuery) {
@@ -237,11 +240,11 @@ export default {
             } else {
                 return this.users;
             }
-        }
+        },
     },
 
     components: { CheckableOrganizationTreeView, CheckableUserListView },
-}
+};
 </script>
 
 <style lang="css" scoped>
@@ -320,7 +323,7 @@ export default {
     display: inline-block;
     margin: 0 10px;
     color: #8f959f;
-    content: ">";
+    content: '>';
 }
 
 .pick-source-nav li:not(:last-child) a {
@@ -356,7 +359,7 @@ export default {
 .pick-source-list ul li::after {
     display: inline-block;
     color: #8f959f;
-    content: ">";
+    content: '>';
 }
 
 .pick-source-list a {
@@ -393,7 +396,6 @@ export default {
     font-size: 12px;
     margin-right: 20px;
 }
-
 
 .checked-contact-list-container .content {
     height: 100%;

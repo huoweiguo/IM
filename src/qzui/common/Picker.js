@@ -1,4 +1,4 @@
-import PickUserView from "../main/pick/PickUserView";
+import PickUserView from "../main/pick/PickUserView.vue";
 import store from "../../store";
 
 export default {
@@ -33,10 +33,10 @@ export default {
                     clickToClose: false,
                     escToClose: true,
                 }, {
-                    // 'before-open': this.beforeOpen,
-                    'before-close': beforeClose,
-                    // 'closed': this.closed,
-                })
+                // 'before-open': this.beforeOpen,
+                'before-close': beforeClose,
+                // 'closed': this.closed,
+            })
         };
     }
 }

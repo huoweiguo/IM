@@ -7,7 +7,6 @@
                     <div class="category-item">
                         <div>
                             <span class="title">{{ $t('contact.new_friend') }}</span>
-                            <span class="tip">(上方搜索框，添加好友)</span>
                         </div>
                         <span class="desc" v-if="sharedContactState.unreadFriendRequestCount === 0">{{ sharedContactState.unreadFriendRequestCount }}</span>
                     </div>
