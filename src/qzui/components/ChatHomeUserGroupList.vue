@@ -24,9 +24,9 @@ const curChatRoomId = ref('');
 const chatroomInfo = ref({});
 
 const chatList = ref([
-    { name: '火信聊天室1', online: 35, chatRoomId: 'chatroom1' },
-    { name: '火信聊天室2', online: 6, chatRoomId: 'chatroom2' },
-    { name: '火信聊天室3', online: 150, chatRoomId: 'chatroom3' },
+    { name: '聊天室1', online: 35, chatRoomId: 'chatroom1' },
+    { name: '聊天室2', online: 6, chatRoomId: 'chatroom2' },
+    { name: '聊天室3', online: 150, chatRoomId: 'chatroom3' },
 ]);
 
 const showChatroom = (item) => {
