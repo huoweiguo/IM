@@ -22,7 +22,7 @@ import { clear } from '../util/storageHelper';
 import wfc from '@/wfc/client/wfc';
 import IpcEventType from '@/ipcEventType';
 import { ipcRenderer, isElectron } from '@/platform';
-import { getItem } from '../../qzui/util/storageHelper';
+import { getItem, setItem } from '../../qzui/util/storageHelper';
 import TopNav from '../components/TopNav.vue';
 
 const router = useRouter();
@@ -43,6 +43,8 @@ onMounted(() => {
             router.push('/');
             return;
         }
+
+        setItem('userinfo', JSON.stringify(res.data));
 
         // 检查是否有保存的用户信息，实现自动登录
         let userId = getItem('userId');
