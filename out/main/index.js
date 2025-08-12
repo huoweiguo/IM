@@ -128,8 +128,7 @@ function createNewSecondWindow({ width, height, url, title }) {
     height: height || 720,
     title,
     autoHideMenuBar: true,
-    // 隐藏菜单栏
-    resizable: false,
+    resizable: true,
     webPreferences: {
       nodeIntegration: true,
       preload: path.join(__dirname, '../preload/index.js'),
@@ -149,9 +148,10 @@ function createNewWindow({ width, height, url, title }) {
     width: width || 550,
     height: height || 720,
     title,
+    // 显示菜单栏
     autoHideMenuBar: true,
-    // 隐藏菜单栏
-    resizable: false,
+    // 允许窗口缩放
+    resizable: true,
     webPreferences: {
       nodeIntegration: true,
       preload: path.join(__dirname, '../preload/index.js'),

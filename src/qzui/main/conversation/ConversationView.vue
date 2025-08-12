@@ -1,28 +1,22 @@
 <template>
     <section>
-        <div v-if="sharedConversationState.currentConversationInfo == null" class="conversation-empty-container window-move">
+        <div v-if="sharedConversationState.currentConversationInfo == null" class="conversation-empty-container">
             <h1 style="font-size: 30px; color: #f0f0f0; text-shadow: 1px 1px 0 #fff">圈子</h1>
         </div>
         <div v-else class="conversation-container">
             <header>
-                <div class="title-container window-move">
+                <div class="title-container">
                     <div>
                         <h1 class="single-line" @click.stop="toggleConversationInfo">{{ conversationTitle }}</h1>
                         <p class="single-line user-online-status" @click="clickConversationDesc">{{ targetUserOnlineStateDesc }}</p>
                         <p v-if="isExternalDomainSingleConversation" class="single-line domain-desc">{{ domainName }}</p>
                     </div>
-                    <div v-bind:style="{ marginTop: sharedMiscState.isElectronWindowsOrLinux ? '30px' : '0' }">
+                    <div>
                         <!-- <a v-if="sharedMiscState.isElectron" href="#" @click.prevent>
                             <i class="icon-ion-pin" style="display: inline-block" v-bind:class="{ active: isWindowAlwaysTop }" @click.prevent="setWindowAlwaysTop" />
                         </a> -->
-                        <a href="#" @click.prevent>
-                            <i
-                                class="icon-ion-ios-settings-strong"
-                                style="display: inline-block"
-                                ref="setting"
-                                v-bind:class="{ active: showConversationInfo }"
-                                @click.prevent="toggleConversationInfo"
-                            />
+                        <a href="javascript:;" @click.prevent="toggleConversationInfo">
+                            <i class="icon-ion-ios-settings-strong" style="display: inline-block" ref="setting" v-bind:class="{ active: showConversationInfo }" />
                         </a>
                     </div>
                 </div>

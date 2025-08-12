@@ -5,7 +5,7 @@
                 <ChatHomeUserGroupList />
             </aside>
 
-            <ChatroomConversationView :key="chatroomKey" class="chat-main" />
+            <ChatroomConversationView class="chat-main" />
         </div>
     </Layout>
 </template>

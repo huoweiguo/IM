@@ -1,5 +1,5 @@
 <template>
-    <section>
+    <section style="height: 100%">
         <div v-if="sharedConversationState.currentConversationInfo == null" class="conversation-empty-container window-move">
             <h1 style="font-size: 30px; color: #f0f0f0; text-shadow: 1px 1px 0 #fff">圈子</h1>
         </div>

@@ -3,8 +3,11 @@
         <view class="chat-silder">
             <ChatSilder />
         </view>
-        <div class="chat-content window-move">
-            <slot></slot>
+        <div class="chat-content">
+            <TopNav />
+            <div class="chat-content-main">
+                <slot></slot>
+            </div>
         </div>
     </div>
 </template>
@@ -20,6 +23,7 @@ import wfc from '@/wfc/client/wfc';
 import IpcEventType from '@/ipcEventType';
 import { ipcRenderer, isElectron } from '@/platform';
 import { getItem } from '../../qzui/util/storageHelper';
+import TopNav from '../components/TopNav.vue';
 
 const router = useRouter();
 
@@ -46,9 +50,10 @@ onMounted(() => {
 
         if (userId && token) {
             wfc.connect(userId, token);
-            // isElectron() && ipcRenderer.send(IpcEventType.LOGIN);
         } else {
-            isElectron() && ipcRenderer.send(IpcEventType.RESIZE_LOGIN_WINDOW);
+            ElMessage.error('登录过期，请重新登录');
+            logout();
+            router.push('/');
         }
     });
 });
@@ -67,7 +72,13 @@ onMounted(() => {
     .chat-content {
         flex: 1;
         display: flex;
+        flex-direction: column;
         width: 100%;
+        height: 100%;
+        .chat-content-main {
+            flex: 1;
+            height: calc(100vh - 40px);
+        }
     }
 }
 </style>

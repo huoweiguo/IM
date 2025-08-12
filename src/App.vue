@@ -8,7 +8,7 @@
         @drop="$event.preventDefault()"
         v-visibility-change="visibilityChange"
     >
-        <ElectronWindowsControlButtonView style="position: fixed; top: 0; right: 0; z-index: 9999999" :maximizable="false" v-if="sharedMiscState.isElectronWindowsOrLinux" />
+        <ElectronWindowsControlButtonView style="position: fixed; top: 0; right: 0; z-index: 9999999" v-if="1 || sharedMiscState.isElectronWindowsOrLinux" />
         <div v-if="!sharedMiscState.isElectron" id="blur-container" class="blur-container">
             <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%" id="blurred_mkvvpnf50" class="blured-img" viewBox="0 0 1920 875" preserveAspectRatio="none">
                 <filter id="blur_mkvvpnf">
@@ -21,7 +21,7 @@
                     height="100%"
                     externalResourcesRequired="true"
                     xmlns:xlink="http://www.w3.org/1999/xlink"
-                    xlink:href="https://static.wildfirechat.net/web_wfc_bg2.jpeg"
+                    xlink:href=""
                     style="filter: url(#blur_mkvvpnf)"
                     preserveAspectRatio="none"
                 ></image>
@@ -30,10 +30,7 @@
         </div>
         <!--用来实现视频缩略图-->
         <div id="styled_video_container" class="styled_video_container">
-            <video id="bgvid" playsinline autoplay muted loop crossorigin="anonymous">
-                <!-- <source src="http://thenewcode.com/assets/videos/polina.webm" type="video/webm">
-                <source src="http://thenewcode.com/assets/videos/polina.mp4" type="video/mp4"> -->
-            </video>
+            <video id="bgvid" playsinline autoplay muted loop crossorigin="anonymous"></video>
         </div>
 
         <CoolLightBox

@@ -16,6 +16,7 @@ function getOS() {
   }
 }
 if (process.contextIsolated) {
+  // 在主进程中执行
   try {
     electron.contextBridge.exposeInMainWorld("electron", preload.electronAPI);
     electron.contextBridge.exposeInMainWorld("api", api);
@@ -25,16 +26,19 @@ if (process.contextIsolated) {
       platform: getOS(),
       post: (url, data) => electron.ipcRenderer.invoke("http:post", url, data),
       get: (url, data) => electron.ipcRenderer.invoke("http:get", url, data),
+      onWindowDrag: (callback) => electron.ipcRenderer.on("window-drag", callback),
       // 通过 IPC 调用打开新窗口和关闭窗口的函数
       openNewWindow: ({ width, height, url, title }) => electron.ipcRenderer.send("open-new-window", { width, height, url, title }),
       openNewSecondWindow: ({ width, height, url, title }) => electron.ipcRenderer.send("open-new-second-window", { width, height, url, title }),
       closeNewWindow: () => electron.ipcRenderer.send("close-new-window"),
-      closeNewSecondWindow: () => electron.ipcRenderer.send("close-new-second-window")
+      closeNewSecondWindow: () => electron.ipcRenderer.send("close-new-second-window"),
+
     });
   } catch (error) {
     console.error(error);
   }
 } else {
+  // 在渲染进程中执行
   window.__dirname = __dirname;
   window.electron = preload.electronAPI;
   window.api = api;
@@ -43,6 +47,7 @@ if (process.contextIsolated) {
     platform: getOS(),
     post: (url, data) => electron.ipcRenderer.invoke("http:post", url, data),
     get: (url, data) => electron.ipcRenderer.invoke("http:get", url, data),
+    onWindowDrag: (callback) => electron.ipcRenderer.on("window-drag", callback),
     openNewWindow: ({ width, height, url, title }) => electron.ipcRenderer.send("open-new-window", { width, height, url, title }),
     openNewSecondWindow: ({ width, height, url, title }) => electron.ipcRenderer.send("open-new-second-window", { width, height, url, title }),
     closeNewWindow: () => electron.ipcRenderer.send("close-new-window"),

@@ -12,7 +12,7 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    -webkit-app-region: no-drag;
+    /* -webkit-app-region: no-drag; */
 }
 
 .tippy-tooltip.light-theme {
@@ -72,5 +72,5 @@ div {
 
 /* 拖拽 */
 .window-move {
-    -webkit-app-region: drag;
+    -webkit-app-region: drag !important;
 }
