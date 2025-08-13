@@ -40,206 +40,77 @@
                     </div>
                 </div>
             </li>
-            <ConversationItemView v-for="conversationInfo in conversationInfoList" :source="conversationInfo" :key="conversationInfoKey(conversationInfo)" />
         </ul>
+        <ConversationListView class="conversation-list-container" />
     </div>
-    <vue-context ref="menu" v-slot="{ data: conversationInfo }" v-on:close="onConversationItemContextMenuClose">
-        <li>
-            <a @click.prevent="setConversationTop(conversationInfo)">{{ conversationInfo && conversationInfo.top ? $t('conversation.cancel_sticky_top') : $t('conversation.sticky_top') }}</a>
-        </li>
-        <li v-if="sharedMiscState.isElectron">
-            <a @click.prevent="showConversationFloatPage(conversationInfo.conversation)">{{ $t('conversation.show_in_float_window') }}</a>
-        </li>
-        <li>
-            <a @click.prevent="setConversationSilent(conversationInfo)">{{
-                conversationInfo && conversationInfo.isSilent ? $t('conversation.enable_notification') : $t('conversation.disable_notification')
-            }}</a>
-        </li>
-        <li>
-            <a @click.prevent="removeConversation(conversationInfo)">{{ $t('common.delete') }}</a>
-        </li>
-        <li
-            v-show="
-                conversationInfo &&
-                (!sharedConversationState.currentConversationInfo || !sharedConversationState.currentConversationInfo.conversation.equal(conversationInfo.conversation)) &&
-                conversationInfo._unread === 0
-            "
-            @click.prevent="markConversationAsUnread(conversationInfo.conversation)"
-        >
-            <a>{{ $t('conversation.mark_as_unread') }}</a>
-        </li>
-        <li
-            v-show="
-                conversationInfo &&
-                (!sharedConversationState.currentConversationInfo || !sharedConversationState.currentConversationInfo.conversation.equal(conversationInfo.conversation)) &&
-                conversationInfo._unread > 0
-            "
-            @click.prevent="clearConversationUnreadStatus(conversationInfo.conversation)"
-        >
-            <a>{{ $t('conversation.mark_as_read') }}</a>
-        </li>
-    </vue-context>
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted, getCurrentInstance } from 'vue';
-import ConversationItemView from '../main/conversationList/ConversationItemView.vue';
-import store from '../../store';
-import wfc from '../../wfc/client/wfc';
-import IpcEventType from '../../ipcEventType';
-import { ipcRenderer } from '../../platform';
 import grpImg1 from '../assets/grp-1.png';
 import grpImg2 from '../assets/grp-2.png';
 import grpImg4 from '../assets/grp-4.png';
-
-// 获取当前组件实例，用于访问全局事件总线
-const instance = getCurrentInstance();
-const $eventBus = instance.appContext.config.globalProperties.$eventBus;
-
-const sharedMiscState = store.state.misc;
-const sharedConversationState = store.state.conversation;
-const currentConversationIndex = ref(0);
-
-const conversationInfoList = computed(() => {
-    return sharedConversationState.conversationInfoList.filter((ci) => {
-        const index = sharedConversationState.floatingConversations.findIndex((c) => c.equal(ci.conversation));
-        return index === -1;
-    });
-});
-
-const conversationInfoKey = (conversationInfo) => {
-    let conv = conversationInfo.conversation;
-    return conv.target + '-' + conv.type + '-' + conv.line;
-};
-
-const setConversationTop = (conversationInfo) => {
-    store.setConversationTop(conversationInfo.conversation, conversationInfo.top > 0 ? 0 : 1);
-};
-
-const setConversationSilent = (conversationInfo) => {
-    store.setConversationSilent(conversationInfo.conversation, !conversationInfo.isSilent);
-};
-
-const removeConversation = (conversationInfo) => {
-    store.removeConversation(conversationInfo.conversation);
-};
-
-const scrollActiveElementCenter = () => {
-    const el = document.querySelector('.chat-user-container .active');
-    el && el.scrollIntoView({ behavior: 'instant', block: 'center' });
-};
-
-const showConversationItemContextMenu = (event, conversationInfo) => {
-    if (!document.querySelector('[ref="menu"]')) {
-        return;
-    }
-    sharedConversationState.contextMenuConversationInfo = conversationInfo;
-    document.querySelector('[ref="menu"]').open(event, conversationInfo);
-};
-
-const onConversationItemContextMenuClose = () => {
-    sharedConversationState.contextMenuConversationInfo = null;
-};
-
-const clearConversationUnreadStatus = (conversation) => {
-    wfc.clearConversationUnreadStatus(conversation);
-};
-
-const markConversationAsUnread = (conversation) => {
-    wfc.markConversationAsUnread(conversation, true);
-};
-
-const showConversationFloatPage = (conversation) => {
-    let hash = window.location.hash;
-    let url = window.location.origin;
-    if (hash) {
-        url = window.location.href.replace(hash, '#/conversation-window');
-    } else {
-        url += '/conversation-window';
-    }
-    ipcRenderer.send(IpcEventType.showConversationFloatPage, {
-        url: url,
-        type: conversation.type,
-        target: conversation.target,
-        line: conversation.line,
-    });
-
-    store.addFloatingConversation(conversation);
-    if (sharedConversationState.currentConversationInfo && sharedConversationState.currentConversationInfo.conversation.equal(conversation)) {
-        store.setCurrentConversation(null);
-    }
-};
-
-const onScroll = (e, params) => {
-    if (params) {
-        currentConversationIndex.value = params.end;
-    }
-};
-
-const scrollToNextUnreadConversation = () => {
-    let currentIndex = currentConversationIndex.value;
-    let nextUnreadIndex = conversationInfoList.value.findIndex((ci, index) => {
-        if (index <= currentIndex) {
-            return false;
-        }
-        return !ci.isSilent && ci._unread > 0;
-    });
-
-    if (nextUnreadIndex === -1 && currentIndex > -1) {
-        nextUnreadIndex = conversationInfoList.value.findIndex((ci, index) => {
-            return !ci.isSilent && ci._unread > 0;
-        });
-    }
-
-    console.log('scrollToNextUnreadConversation', currentIndex, nextUnreadIndex, document.querySelector('[ref="virtualList"]')?.getOffset());
-    if (nextUnreadIndex > -1 && document.querySelector('[ref="virtualList"]')) {
-        document.querySelector('[ref="virtualList"]').scrollToIndex(nextUnreadIndex);
-    }
-};
-
-const activated = () => {
-    scrollActiveElementCenter();
-};
-
-onMounted(() => {
-    $eventBus.$on('showConversationContextMenu', ([event, conversationInfo]) => {
-        showConversationItemContextMenu(event, conversationInfo);
-    });
-    $eventBus.$on('scrollToNextUnreadConversation', scrollToNextUnreadConversation);
-});
-
-onUnmounted(() => {
-    $eventBus.$off('showConversationContextMenu');
-    $eventBus.$off('scrollToNextUnreadConversation');
-});
+import ConversationListView from '../main/conversationList/ConversationListView.vue';
 </script>
 
 <style lang="scss" scoped>
+.conversation-list-container {
+    height: auto !important;
+}
+.context-menu {
+    min-width: 150px;
+    background-color: #fff;
+    border-radius: 4px;
+    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+    z-index: 2000;
+    position: absolute;
+    list-style: none;
+
+    ul {
+        padding: 0;
+        margin: 0;
+    }
+
+    li {
+        padding: 0;
+        margin: 0;
+        list-style: none;
+    }
+
+    a {
+        display: block;
+        padding: 8px 16px;
+        color: #333;
+        text-decoration: none;
+        white-space: nowrap;
+        font-size: 14px;
+
+        &:hover {
+            background-color: #f5f5f5;
+        }
+    }
+}
+
 .chat-user-container {
     width: 250px;
     height: 100vh;
-    padding-bottom: 40px;
     background-color: #efefef;
-    overflow: hidden;
+    overflow: auto;
     border-right: 1px solid #ddd;
+    /* 设置滚动条背景透明 */
+    &::-webkit-scrollbar {
+        width: 5px;
+    }
+    &::-webkit-scrollbar-track {
+        background-color: transparent;
+    }
+    &::-webkit-scrollbar-thumb {
+        background-color: rgba(0, 0, 0, 0.2);
+        border-radius: 4px;
+    }
 
     ul {
-        width: 100%;
         margin: 0;
         padding: 0;
-        height: 100%;
-        overflow-y: scroll;
-        /* 设置滚动条背景透明 */
-        &::-webkit-scrollbar {
-            width: 5px;
-        }
-        &::-webkit-scrollbar-track {
-            background-color: transparent;
-        }
-        &::-webkit-scrollbar-thumb {
-            background-color: rgba(0, 0, 0, 0.2);
-            border-radius: 4px;
-        }
 
         li {
             list-style: none;
