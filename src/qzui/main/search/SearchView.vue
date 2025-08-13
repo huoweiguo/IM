@@ -1,23 +1,18 @@
 <template>
     <div class="search-input-container">
-        <input id="searchInput"
-               ref="input"
-               autocomplete="off"
-               v-model.trim="sharedSearchState.query"
-               @keydown.esc="cancel"
-               type="text" :placeholder="placeHolder"/>
+        <input id="searchInput" ref="input" autocomplete="off" v-model.trim="sharedSearchState.query" @keydown.esc="cancel" type="text" :placeholder="placeHolder" />
         <i class="icon-ion-ios-search"></i>
         <button v-if="showAddButton" @click="showCreateConversationModal">+</button>
     </div>
 </template>
 
 <script>
-import store from "../../../store";
-import Config from "../../../config";
-import wfc from "../../../wfc/client/wfc";
+import store from '../../../store';
+import Config from '../../../config';
+import wfc from '../../../wfc/client/wfc';
 
 export default {
-    name: "SearchView",
+    name: 'SearchView',
     props: {
         showAddButton: {
             type: Boolean,
@@ -26,7 +21,7 @@ export default {
         searchType: {
             type: String,
             default: '',
-        }
+        },
     },
     data() {
         return {
@@ -37,12 +32,12 @@ export default {
     },
     methods: {
         showCreateConversationModal() {
-            let successCB = users => {
+            let successCB = (users) => {
                 store.createConversation(users);
-            }
+            };
             let users = this.sharedContactState.favContactList.concat(this.sharedContactState.friendList);
-            users = users.filter(u => {
-                return u.uid !== Config.FILE_HELPER_ID
+            users = users.filter((u) => {
+                return u.uid !== Config.FILE_HELPER_ID;
             });
             this.$pickContact({
                 users,
@@ -53,17 +48,17 @@ export default {
         cancel() {
             store.hideSearchView();
             this.$refs['input'].blur();
-        }
+        },
     },
 
     computed: {
         placeHolder() {
             if (this.sharedSearchState.searchDomainInfo) {
-                return `在 ${this.sharedContactState.currentExternalDomain.name} 搜索用户`
+                return `在 ${this.sharedContactState.currentExternalDomain.name} 搜索用户`;
             } else {
-                return '搜索、添加好友'
+                return '搜索、添加好友';
             }
-        }
+        },
     },
 
     watch: {
@@ -73,10 +68,10 @@ export default {
                 if (newValue) {
                     this.$refs.input.focus();
                 }
-            }
-        }
-    }
-}
+            },
+        },
+    },
+};
 </script>
 
 <style lang="css" scoped>
@@ -133,5 +128,4 @@ export default {
 .search-input-container button:active {
     background-color: #e5e5e5;
 }
-
 </style>

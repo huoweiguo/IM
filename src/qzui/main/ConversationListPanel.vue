@@ -2,19 +2,17 @@
     <section class="conversation-list-panel-container">
         <SearchView />
         <div class="panel">
-            <SearchResultView v-bind:query="sharedSearchState.query" v-if="sharedSearchState.query"
-                class="search-result-container" />
+            <SearchResultView v-bind:query="sharedSearchState.query" v-if="sharedSearchState.query" class="search-result-container" />
             <ConversationListView class="conversation-list-container" />
         </div>
-
     </section>
 </template>
 
 <script>
-import ConversationListView from "./conversationList/ConversationListView.vue";
-import store from "../../store";
-import SearchResultView from "./search/SearchResultView.vue";
-import SearchView from "./search/SearchView.vue";
+import ConversationListView from './conversationList/ConversationListView.vue';
+import store from '../../store';
+import SearchResultView from './search/SearchResultView.vue';
+import SearchView from './search/SearchView.vue';
 
 export default {
     name: 'ConversationListPanel',
@@ -24,8 +22,7 @@ export default {
         };
     },
 
-    methods: {
-    },
+    methods: {},
     components: {
         SearchResultView,
         ConversationListView,

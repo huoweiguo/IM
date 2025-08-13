@@ -1,13 +1,24 @@
 <template>
     <div class="group-chat-nav window-move" :class="{ pr140: sharedMiscState.isElectronWindowsOrLinux }">
-        <template v-for="(item, index) in navlist" :key="item.id">
-            <span class="line" v-if="item.id === 'line'"></span>
-            <div class="nav-item" v-else>
-                <a :class="{ active: activeId === item.id && route.path === '/home' }" @click="switchTab(item.id)">{{ item.name }}</a>
-                <el-icon v-if="index > 3" class="icon" @click="deleteGroup(item.id)"><Close /></el-icon>
-            </div>
-        </template>
-        <a @click="addGroup"><img src="../assets/add.png" /></a>
+        <el-tabs class="tabs" v-model="activeId" @tab-click="switchTab" @edit="addGroup">
+            <template #add-icon>
+                <el-icon><Plus /></el-icon>
+            </template>
+            <el-tab-pane v-for="(item, index) in defaultNavlist" :key="index" :label="item.name" :name="item.id"></el-tab-pane>
+            <el-tab-pane v-for="(item, index) in navlist" :key="index" :label="item.name" :name="item.id">
+                <template #label>
+                    <el-dropdown trigger="contextmenu">
+                        <span> {{ item.name }} </span>
+                        <template #dropdown>
+                            <el-dropdown-menu>
+                                <el-dropdown-item @click="deleteGroup(item.id)">删除分组</el-dropdown-item>
+                            </el-dropdown-menu>
+                        </template>
+                    </el-dropdown>
+                </template>
+            </el-tab-pane>
+        </el-tabs>
+        <a class="addbtn" @click="addGroup"><img src="../assets/add.png" /></a>
     </div>
 </template>
 
@@ -17,12 +28,11 @@ import store from '../../store';
 import { getItem } from '../../qzui/util/storageHelper';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { getCustomPersonGroupList, createCustomPersonGroup, deleteCustomPersonGroup } from '../../api/customGroup.js';
-import { useRouter, useRoute } from 'vue-router';
+import { useRouter } from 'vue-router';
 
 const router = useRouter();
-const route = useRoute();
 
-const activeId = ref(Number(route.query.activeId) || 0);
+const activeId = ref('private');
 const navlist = ref([]);
 const userinfo = JSON.parse(getItem('userinfo')) || {};
 const sharedMiscState = store.state.misc;
@@ -30,12 +40,13 @@ const defaultNavlist = [
     { name: '私聊', id: 'private' },
     { name: '私域群', id: 'custom' },
     { name: '公域群', id: 'public' },
-    { name: '', id: 'line' },
 ];
 
-const switchTab = (index) => {
-    activeId.value = index;
-    router.push(`/home?activeId=${index}`);
+const switchTab = (id) => {
+    console.log(111, id);
+
+    activeId.value = id;
+    router.push(`/home?activeId=${id}`);
 };
 
 const getGroupList = () => {
@@ -51,7 +62,7 @@ const getGroupList = () => {
                     personList: item.personList || [],
                 });
             });
-            navlist.value = [...defaultNavlist, ...groupList];
+            navlist.value = groupList;
         }
     });
 };
@@ -117,47 +128,34 @@ onMounted(() => {
 .group-chat-nav {
     display: flex;
     align-items: center;
-    padding: 10px 20px;
     height: 40px;
     border-bottom: 1px solid #ccc;
-    overflow-x: auto;
+    overflow: hidden;
     gap: 20px;
+    padding: 0 20px;
 
     &.pr140 {
         padding-right: 140px;
     }
-
-    a {
-        font-size: 14px;
-        color: #333;
+}
+.tabs {
+    flex: 1;
+    :deep(.el-tabs__item) {
+        padding: 0 10px;
+    }
+    :deep(.el-tabs__nav-wrap:after) {
+        display: none;
+    }
+}
+.addbtn {
+    display: block;
+    width: 15px;
+    height: 15px;
+    img {
+        display: block;
+        width: 100%;
+        height: 100%;
         cursor: pointer;
-
-        &.active {
-            color: #07c160;
-            font-weight: bold;
-        }
-
-        img {
-            width: 15px;
-            height: 15px;
-            display: block;
-        }
-    }
-
-    .line {
-        width: 1px;
-        height: 10px;
-        background-color: #ccc;
-    }
-
-    .nav-item {
-        display: flex;
-        align-items: center;
-        .icon {
-            font-size: 12px;
-            color: #f00;
-            cursor: pointer;
-        }
     }
 }
 </style>

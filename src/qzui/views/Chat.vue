@@ -1,7 +1,7 @@
 <template>
     <Layout>
         <section id="conversation-content" class="conversation-page">
-            <ConversationListPanel class="conversation-list-panel" />
+            <ChatUser class="conversation-list-panel" />
             <ConversationView class="conversation-view" />
         </section>
     </Layout>
@@ -9,8 +9,8 @@
 
 <script setup>
 import Layout from '../components/Layout.vue';
+import ChatUser from '../components/ChatUser.vue';
 import ConversationView from '../main/conversation/ConversationView.vue';
-import ConversationListPanel from '../main/ConversationListPanel.vue';
 </script>
 
 <style lang="scss" scoped>
