@@ -165,7 +165,7 @@
                     </li>
                 </vue-context>
                 <vue-context ref="messageSenderContextMenu" v-slot="{ data: message }" :close-on-scroll="true" v-on:close="onMessageSenderContextMenuClose">
-                    <!--          更多menu item，比如添加到通讯录等-->
+                    <!--更多menu item，比如添加到通讯录等-->
                     <li>
                         <a @click.prevent="mentionMessageSender(message)">{{ mentionMessageSenderTitle(message) }}</a>
                     </li>
