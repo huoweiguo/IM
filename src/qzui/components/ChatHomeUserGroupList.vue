@@ -11,7 +11,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 import store from '../../store';
 import { useRouter } from 'vue-router';
 import wfc from '../../wfc/client/wfc';
@@ -24,10 +24,26 @@ const curChatRoomId = ref('');
 const chatroomInfo = ref({});
 
 const chatList = ref([
-    { name: '聊天室1', online: 35, chatRoomId: 'chatroom1' },
-    { name: '聊天室2', online: 6, chatRoomId: 'chatroom2' },
-    { name: '聊天室3', online: 150, chatRoomId: 'chatroom3' },
+    { name: '聊天室1', online: 1, chatRoomId: 'chatroom1' },
+    { name: '聊天室2', online: 1, chatRoomId: 'chatroom2' },
+    { name: '聊天室3', online: 1, chatRoomId: 'chatroom3' },
 ]);
+
+const getChatListInfo = () => {
+    chatList.value.forEach((item) => {
+        wfc.getChatroomInfo(
+            item.chatRoomId,
+            0,
+            (info) => {
+                item.online = info.memberCount;
+                item.name = info.title;
+            },
+            (code) => {
+                console.log(666, code);
+            }
+        );
+    });
+};
 
 const showChatroom = (item) => {
     curChatRoomId.value = item.chatRoomId;
@@ -59,6 +75,18 @@ const joinChatroom = (chatRoomId) => {
     );
 };
 
+const quitChatroom = (chatRoomId) => {
+    wfc.quitChatroom(
+        chatRoomId,
+        () => {
+            console.log('quitChatRoom success', chatRoomId);
+        },
+        (err) => {
+            console.error('quitChatRoom error', chatRoomId, err);
+        }
+    );
+};
+
 const getCurrentChatroomInfo = (chatroomId) => {
     if (!chatroomId) {
         console.warn('chatRoomId is missing');
@@ -82,11 +110,20 @@ const getCurrentChatroomInfo = (chatroomId) => {
 };
 
 onMounted(() => {
+    getChatListInfo();
     // 组件挂载时，如果有当前聊天室，则获取其信息
+    // sharedConversationState: store.state.conversation
     const currentChatroom = store.state.contact.currentChatroom;
     if (currentChatroom?.chatRoomId) {
         curChatRoomId.value = currentChatroom.chatRoomId;
         getCurrentChatroomInfo(currentChatroom.chatRoomId);
+    }
+});
+
+onUnmounted(() => {
+    // 组件卸载时，离开当前聊天室
+    if (curChatRoomId.value) {
+        quitChatroom(curChatRoomId.value);
     }
 });
 </script>
