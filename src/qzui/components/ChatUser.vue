@@ -1,7 +1,7 @@
 <template>
     <div class="chat-user-container">
         <ul>
-            <li>
+            <li @click="openFansWindow()">
                 <img :src="grpImg1" class="user-icon" />
                 <div class="user-info">
                     <div class="user-name">
@@ -14,7 +14,7 @@
                     </div>
                 </div>
             </li>
-            <li>
+            <li @click="openKnowWindow()">
                 <img :src="grpImg4" class="user-icon" />
                 <div class="user-info">
                     <div class="user-name">
@@ -50,6 +50,25 @@ import grpImg1 from '../assets/grp-1.png';
 import grpImg2 from '../assets/grp-2.png';
 import grpImg4 from '../assets/grp-4.png';
 import ConversationListView from '../main/conversationList/ConversationListView.vue';
+import { createNewWindow } from '@/qzui/util/electronHelper';
+
+const openFansWindow = () => {
+    createNewWindow({
+        width: 375,
+        height: 720,
+        title: '我的粉丝',
+        url: `#/fans?id=1`,
+    });
+};
+
+const openKnowWindow = () => {
+    createNewWindow({
+        width: 375,
+        height: 720,
+        title: '可能认识的人',
+        url: `#/know?id=1`,
+    });
+};
 </script>
 
 <style lang="scss" scoped>

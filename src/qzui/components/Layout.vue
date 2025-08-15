@@ -52,6 +52,12 @@ onMounted(() => {
 
         if (userId && token) {
             wfc.connect(userId, token);
+            const isLoggedIn = wfc.isLogin();
+            if (!isLoggedIn) {
+                ElMessage.error('登录过期，请重新登录');
+                logout();
+                router.push('/');
+            }
         } else {
             ElMessage.error('登录过期，请重新登录');
             logout();
