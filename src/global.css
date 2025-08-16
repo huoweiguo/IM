@@ -69,3 +69,8 @@ div {
     word-break: break-all;
     user-select: none;
 }
+
+/* 拖拽 */
+.window-move {
+    -webkit-app-region: drag;
+}

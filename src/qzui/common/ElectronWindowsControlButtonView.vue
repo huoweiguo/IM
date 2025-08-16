@@ -227,10 +227,6 @@ export default {
 
 .titlebar.webkit-draggable {
     -webkit-app-region: drag;
-    position: fixed;
-    top: 0;
-    right: 0;
-    z-index: 9999999;
 }
 
 .titlebar-stoplight {

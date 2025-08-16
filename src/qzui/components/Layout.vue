@@ -1,4 +1,7 @@
 <template>
+    <div style="position: fixed; top: 0; right: 0; z-index: 99999" v-if="sharedMiscState.isElectronWindowsOrLinux">
+        <ElectronWindowsControlButtonView style="position: absolute; top: 0; right: 0" :maximizable="false" />
+    </div>
     <div class="layout">
         <view class="chat-silder">
             <ChatSilder />
@@ -24,8 +27,11 @@ import IpcEventType from '@/ipcEventType';
 import { ipcRenderer, isElectron } from '@/platform';
 import { getItem, setItem } from '../../qzui/util/storageHelper';
 import TopNav from '../components/TopNav.vue';
+import store from '../../store';
+import ElectronWindowsControlButtonView from '../../qzui/common/ElectronWindowsControlButtonView.vue';
 
 const router = useRouter();
+const sharedMiscState = store.state.misc;
 
 const logout = () => {
     clear();
@@ -51,7 +57,12 @@ onMounted(() => {
         let token = getItem('token');
 
         if (userId && token) {
-            wfc.connect(userId, token);
+            let res = wfc.connect(userId, token);
+            if (!res) {
+                ElMessage.error('登录过期，请重新登录');
+                logout();
+                router.push('/');
+            }
         } else {
             ElMessage.error('登录过期，请重新登录');
             logout();

@@ -1,7 +1,10 @@
 <template>
     <div class="login-container">
-        <div class="app-name">{{ appName }}</div>
-        <div class="welcome-text">{{ welcomeText }}</div>
+        <ElectronWindowsControlButtonView style="position: absolute; top: 0; right: 0" :maximizable="false" v-if="sharedMiscState.isElectronWindowsOrLinux" />
+        <div class="window-move">
+            <div class="app-name window-move">{{ appName }}</div>
+            <div class="welcome-text window-move">{{ welcomeText }}</div>
+        </div>
 
         <!-- 登录方式选项卡 -->
         <div class="tab-container">
@@ -64,8 +67,10 @@ import ConnectionStatus from '../../wfc/client/connectionStatus';
 import EventType from '../../wfc/client/wfcEvent';
 import { ipcRenderer, isElectron } from '../../platform';
 import IpcEventType from '../../ipcEventType';
+import ElectronWindowsControlButtonView from '../../qzui/common/ElectronWindowsControlButtonView.vue';
 
 const router = useRouter();
+const sharedMiscState = store.state.misc;
 
 // 页面基本信息
 const appName = '圈子';

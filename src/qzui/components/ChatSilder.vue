@@ -7,7 +7,7 @@
         </tippy>
         <img :src="store.state.contact?.selfUserInfo?.portrait" class="avatar" id="infoTrigger" alt="用户头像" @click="onClickPortrait" />
 
-        <ul class="nav-list nav-list--main">
+        <ul class="nav-list nav-list--main window-move">
             <li v-for="item in navItems" :key="item.path" :class="['nav-item', { 'is-active': route.path === item.path }]" @click="navigate(item.path)">
                 <el-badge :is-dot="(item.icon === 'ChatDotRound' && unread > 0) || (item.icon === 'User' && store.state.contact.unreadFriendRequestCount > 0)">
                     <el-icon :size="24">
