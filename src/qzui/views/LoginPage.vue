@@ -1,10 +1,10 @@
 <template>
-    <div class="login-container window-move">
-        <div class="app-name window-move">{{ appName }}</div>
-        <div class="welcome-text window-move">{{ welcomeText }}</div>
+    <div class="login-container">
+        <div class="app-name">{{ appName }}</div>
+        <div class="welcome-text">{{ welcomeText }}</div>
 
         <!-- 登录方式选项卡 -->
-        <div class="tab-container window-move">
+        <div class="tab-container">
             <div class="tab-item" :class="{ active: loginType === 'password' }" @click="switchToPasswordLogin">密码登录</div>
             <div class="tab-item" :class="{ active: loginType === 'phone' }" @click="switchToPhoneLogin">手机号登录</div>
         </div>

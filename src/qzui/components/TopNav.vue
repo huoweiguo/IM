@@ -1,5 +1,5 @@
 <template>
-    <div class="group-chat-nav window-move" :class="{ pr140: sharedMiscState.isElectronWindowsOrLinux }">
+    <div class="group-chat-nav" :class="{ pr140: sharedMiscState.isElectronWindowsOrLinux }">
         <el-tabs class="tabs" v-model="activeId" @tab-click="switchTab" @edit="addGroup">
             <template #add-icon>
                 <el-icon><Plus /></el-icon>

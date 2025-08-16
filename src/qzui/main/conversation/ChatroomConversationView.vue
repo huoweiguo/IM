@@ -1,11 +1,11 @@
 <template>
     <section style="height: 100%">
-        <div v-if="sharedConversationState.currentConversationInfo == null" class="conversation-empty-container window-move">
+        <div v-if="sharedConversationState.currentConversationInfo == null" class="conversation-empty-container">
             <h1 style="font-size: 30px; color: #f0f0f0; text-shadow: 1px 1px 0 #fff">圈子</h1>
         </div>
         <div v-else class="conversation-container">
-            <header class="window-move">
-                <div class="title-container window-move">
+            <header class="">
+                <div class="title-container">
                     <div>
                         <h1 class="single-line">{{ conversationTitle }}</h1>
                         <p class="single-line-text" style="font-size: 12px; color: #999">{{ chatroomDesc }}</p>

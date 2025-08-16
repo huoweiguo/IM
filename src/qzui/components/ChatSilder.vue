@@ -1,5 +1,5 @@
 <template>
-    <nav class="chat-slider window-move">
+    <nav class="chat-slider">
         <tippy to="#infoTrigger" interactive :animate-fill="false" distant="7" theme="light" animation="fade" trigger="click" :arrow="true">
             <template #content>
                 <UserCardView v-if="sharedContactState.selfUserInfo" v-on:close="closeUserCard" :enable-update-portrait="true" :user-info="sharedContactState.selfUserInfo" />
@@ -7,7 +7,7 @@
         </tippy>
         <img :src="store.state.contact?.selfUserInfo?.portrait" class="avatar" id="infoTrigger" alt="用户头像" @click="onClickPortrait" />
 
-        <ul class="nav-list nav-list--main window-move">
+        <ul class="nav-list nav-list--main">
             <li v-for="item in navItems" :key="item.path" :class="['nav-item', { 'is-active': route.path === item.path }]" @click="navigate(item.path)">
                 <el-badge :is-dot="(item.icon === 'ChatDotRound' && unread > 0) || (item.icon === 'User' && store.state.contact.unreadFriendRequestCount > 0)">
                     <el-icon :size="24">

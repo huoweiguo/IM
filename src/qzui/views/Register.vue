@@ -1,5 +1,5 @@
 <template>
-    <div class="register-container window-move">
+    <div class="register-container">
         <div class="app-name">{{ appName }}</div>
         <div class="welcome-text">{{ welcomeText }}</div>
 

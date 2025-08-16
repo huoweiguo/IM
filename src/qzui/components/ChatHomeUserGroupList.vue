@@ -1,6 +1,6 @@
 <template>
     <div class="chat-home-user-group-list">
-        <h3 class="window-move">我的聊天室</h3>
+        <h3 class="">我的聊天室</h3>
         <ul>
             <li v-for="(item, index) in chatList" :class="{ active: curChatRoomId === item.chatRoomId }" @click="showChatroom(item)" :key="index">
                 <span>{{ item.name }}</span>

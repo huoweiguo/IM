@@ -1,5 +1,5 @@
 <template>
-    <div class="login-container window-move">
+    <div class="login-container">
         <div class="app-name">{{ appName }}</div>
         <div class="welcome-text">{{ welcomeText }}</div>
 

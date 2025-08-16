@@ -1,7 +1,7 @@
 <template>
     <Layout>
         <div class="chat-home">
-            <aside class="sidebar window-move">
+            <aside class="sidebar">
                 <ChatHomeUserGroupList />
             </aside>
 

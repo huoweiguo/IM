@@ -1,7 +1,7 @@
 <template>
-    <section class="user-detail-container window-move">
-        <div class="user-header-content-container window-move">
-            <div class="header window-move">
+    <section class="user-detail-container">
+        <div class="user-header-content-container">
+            <div class="header">
                 <div>
                     <img class="avatar" :src="sharedStateContact.currentFriend.portrait" />
                 </div>
