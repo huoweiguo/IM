@@ -18,3 +18,18 @@ export function publishDynamic(data) {
 export function dynamicListByUserId(page_size, start_time) {
     return GET(`/api/community/dynamic/list/userId?page_size=${page_size}&start_time=${start_time}`);
 }
+
+// 评论动态
+export function interactionComment(data) {
+    return POST(`/api/community/interaction/comment`, data);
+}
+
+// 获取动态互动记录
+export function interactionList(page_size, start_time, data) {
+    return POST(`/api/community/interaction/list?page_size=${page_size}&start_time=${start_time}`, data);
+}
+
+// 点赞
+export function interactionLike(data) {
+    return POST(`/api/community/interaction/like`, data);
+}

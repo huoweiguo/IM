@@ -58,20 +58,53 @@
                     <footer class="post-footer">
                         <div class="post-times">
                             <time class="post-time">{{ formatCommentTime(post.createTime) }}</time>
-                            <img :src="deleteIcon" @click="confirmDelete(post.id)" class="delete-btn" />
+                            <!-- <img :src="deleteIcon" @click="confirmDelete(post.id)" class="delete-btn" /> -->
                         </div>
                         <div class="post-actions">
                             <el-tooltip class="box-item" effect="dark" placement="left-start">
                                 <template #content>
                                     <div class="actions-link">
+                                        <span @click="comment(post)"><img src="../assets/gift@2x.png" /> 送礼</span>
                                         <span @click="comment(post)"><img src="../assets/comment.png" /> 评论</span>
-                                        <span><img src="../assets/like.png" /> 点赞</span>
+                                        <span @click="like(post)" v-if="post.isLike == 0"><img
+                                                src="../assets/like.png" /> 点赞</span>
+                                        <span @click="like(post)" v-if="post.isLike == 1"><img
+                                                src="../assets/like_fill.png" /> 取消点赞</span>
                                     </div>
                                 </template>
                                 <span class="action-menu">···</span>
                             </el-tooltip>
                         </div>
                     </footer>
+
+                    <div class="post-like" v-if="post.likeQuantity > 0"><img src="../assets/like@2x.png" />{{
+                        post.likeQuantity }}位圈友觉得很赞</div>
+                    <div class="post-gift" v-if="post.giftQuantity > 0"><img src="../assets/gift.png" />收到{{
+                        post.giftQuantity }}个礼物</div>
+                    <div class="comment-list" v-if="post.replyList.length > 0">
+                        <ul>
+                            <li v-for="item in post.replyList" :key="item.id">
+                                <div class="post-box">
+                                    <div class="post-user-info">
+                                        <img :src="item.avatar" class="avatar-reply" />
+                                        <div class="post-user-opts">
+                                            <div class="post-user-name"><a>{{ item.realName ? item.realName :
+                                                item.nickName }}</a>
+                                                <span>{{ formatCommentTime(item.createTime) }}</span>
+                                            </div>
+                                            <div class="post-user-content">回复<a>{{ item.targetRealName }}</a>：<span>{{
+                                                item.content }}</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="post-like link-div" v-if="post.commentQuantity - post.replyList.length > 0"
+                        @click="loadReply(post)">共{{
+                            post.commentQuantity - post.replyList.length }}条回复
+                        <img src="../assets/right-reply.png" />
+                    </div>
                 </div>
             </article>
         </main>
@@ -162,6 +195,7 @@
             </article>
         </main>
 
+
         <el-dialog v-model="showDeleteDialog" title="删除确认" width="300" center>
             <p style="text-align: center">确定要删除这条动态吗？</p>
             <template #footer>
@@ -174,22 +208,24 @@
 
         <el-dialog v-model="visibleComment" title="评论" width="400" center>
             <div class="comment-box">
-                <el-input v-model="textarea" class="comment-input" :rows="4" type="textarea"
+                <el-input v-model="commentParams.content" class="comment-input" :rows="4" type="textarea"
                     :placeholder="commentHolder" />
-                <el-button type="primary">提交</el-button>
+                <el-button type="primary" @click="submitComment">提交</el-button>
             </div>
         </el-dialog>
     </div>
 </template>
 
 <script setup>
-import { ref, onUnmounted } from 'vue';
+import { ref, reactive, onUnmounted } from 'vue';
 import { EditPen, Help, Check } from '@element-plus/icons-vue';
 import { createNewWindow } from '@/qzui/util/electronHelper';
+import { ElMessage } from 'element-plus';
 import emitter from '@/qzui/util/eventBus'
-import { dynamicList } from '@/api/community';
+import { dynamicList, interactionComment, interactionList, interactionLike } from '@/api/community';
 import { getItem, setItem } from "@/ui/util/storageHelper";
 import { formatCommentTime } from '@/qzui/util/timeformat';
+const start_time = ref('')
 const userId = ref(getItem('userPortrait') ? getItem('userPortrait') : '');
 
 // 图标导入
@@ -225,6 +261,13 @@ const finishHot = ref(false)
 const noDataHot = ref(false)
 const finishFollow = ref(false)
 const noDataFollow = ref(false)
+const commentInfo = ref({})
+const commentParams = reactive({
+    content: '',
+    dynamicId: '',
+    targetUserId: '',
+    userId: ''
+})
 // 方法定义
 const enterChatRoom = () => {
     createNewWindow({
@@ -236,8 +279,66 @@ const enterChatRoom = () => {
 };
 
 const comment = (obj) => {
+    commentInfo.value = obj
     visibleComment.value = true
-    console.log(obj, 'obj')
+    commentHolder.value = `回复${obj.realName ? obj.realName : obj.nickName}`
+    console.log(commentInfo.value)
+}
+
+const loadReply = async (obj) => {
+    let startTime = obj.startTime ? obj.startTime : ''
+    const params = {
+        dynamicId: obj.id,
+        type: 2 // 评论
+    }
+    const res = await interactionList(3, startTime, params)
+    if (res.code === 0) {
+        const arrList = res.data.length > 0 ? res.data : []
+        obj.replyList = [...obj.replyList, ...arrList]
+        if (res.data.length > 0) {
+            obj.startTime = res.data[res.data.length - 1].createTime
+        }
+    } else {
+        ElMessage.error(res.msg)
+    }
+}
+
+const like = async (obj) => {
+    const params = {
+        dynamicId: obj.id,
+        isLike: obj.isLike ? 0 : 1,
+        userId: userId.value, // 点赞
+        targetUserId: obj.userId
+    }
+    const res = await interactionLike(params)
+    if (res.code === 0) {
+        if (params.isLike === 1) {
+            obj.likeQuantity++
+        } else {
+            obj.likeQuantity--
+        }
+        obj.isLike = !obj.isLike
+    } else {
+        ElMessage.error(res.msg)
+    }
+}
+
+const submitComment = async () => {
+    if (commentParams.content.replace(/\s+/, '') === '') {
+        ElMessage.error('评论内容不能为空!')
+        return false;
+    }
+    commentParams.userId = userId.value
+    commentParams.targetUserId = commentInfo.value.userId
+    commentParams.dynamicId = commentInfo.value.id
+    const res = await interactionComment(commentParams)
+    if (res.code === 0) {
+        commentParams.content = ''
+        visibleComment.value = false
+        ElMessage.success('评论成功!')
+    } else {
+        ElMessage.error(res.msg)
+    }
 }
 
 const getCommunityList = async (start_time = '') => {
@@ -540,6 +641,107 @@ onUnmounted(() => {
 .post-content {
     flex: 1;
     min-width: 0;
+
+    .post-like,
+    .post-gift {
+        display: flex;
+        align-items: center;
+        height: 37px;
+        font-size: 14px;
+        color: #6A7CA1;
+        font-family: Source Han Sans CN-Medium;
+        border-bottom: 1px solid rgba(170, 170, 170, 0.4);
+
+        img {
+            width: 16px;
+            height: 16px;
+            margin-right: 5px;
+        }
+    }
+
+    .link-div {
+        cursor: pointer;
+    }
+
+    .post-gift {
+        color: #387BF6;
+    }
+
+    .comment-list {
+        font-size: 12px;
+        padding: 6px 0;
+
+        ul {
+            margin-top: 6px;
+
+            li {
+                margin-bottom: 15px;
+            }
+        }
+
+        span {
+            font-size: 14px;
+            color: #6A7CA1;
+        }
+
+        .avatar-reply {
+            width: 38px;
+            height: 38px;
+            border-radius: 5px;
+        }
+
+        .post-box {
+            .post-user-info {
+                display: flex;
+                align-items: flex-start;
+
+                img {
+                    margin-right: 10px;
+                }
+
+                .post-user-opts {
+                    flex: 1;
+                }
+
+                .post-user-name {
+                    display: flex;
+                    flex: 1;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-bottom: 5px;
+
+                    a {
+                        color: #6A7CA1;
+                        font-size: 12px;
+                        margin-left: 3px;
+                    }
+
+                    span {
+                        color: #aaa;
+                        font-size: 12px;
+                    }
+                }
+
+                .post-user-content {
+                    display: flex;
+                    justify-content: flex-start;
+                    font-size: 12px;
+                    color: #333;
+
+                    a {
+                        color: #6A7CA1;
+                        font-size: 12px;
+                    }
+
+                    span {
+                        flex: 1;
+                        font-size: 12px;
+                        color: #333;
+                    }
+                }
+            }
+        }
+    }
 }
 
 .post-header {
