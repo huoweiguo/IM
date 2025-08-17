@@ -1,8 +1,6 @@
 <template>
-    <div class="profile-setup-container">
-        <!-- 顶部导航 -->
-        <!-- <TopNav title="真实姓名和头像" /> -->
-
+    <ElectronWindowsControlButtonView style="-webkit-app-region: no-drag" :maximizable="false" />
+    <div class="profile-setup-container window-move">
         <!-- 昵称设置区域 -->
         <div class="section">
             <h1>设置真实姓名和头像</h1>
@@ -24,34 +22,28 @@
         <div class="actual-name">真实姓名不支持修改，请认真填写</div>
 
         <!-- 确认按钮 -->
-        <div class="submit-button">
-            <img src="../assets/submit.png" :disabled="!nickname || (!avatarPreview && !selectedAvatar)" @click="saveProfile" />
-        </div>
+        <el-button class="submit-button" @click="submit" :disabled="!actualName">
+            <img src="../assets/submit.png" />
+        </el-button>
     </div>
 </template>
 
 <script setup>
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+import { setUserInfo } from '../../api/index.js';
+import ElectronWindowsControlButtonView from '@/qzui/common/ElectronWindowsControlButtonView.vue';
+import { ElMessage } from 'element-plus';
+
+const router = useRouter();
 
 // 昵称相关
 const actualName = ref('');
-const exampleNicknames = ['我是喜羊羊', '快乐的小蜜蜂', '阳光少年', '星空漫游者', '梦想家', '开心果', '智慧树', '勇敢的心', '幸运星', '小小探险家', '快乐源泉', '阳光彩虹'];
 
 // 头像相关
 const fileInput = ref(null);
 const avatarPreview = ref('');
 const selectedAvatar = ref(null);
-
-// 使用示例昵称
-const useExampleNickname = () => {
-    nickname.value = '我是喜羊羊';
-};
-
-// 生成随机昵称
-const generateRandomNickname = () => {
-    const randomIndex = Math.floor(Math.random() * exampleNicknames.length);
-    nickname.value = exampleNicknames[randomIndex];
-};
 
 // 触发文件选择
 const triggerFileInput = () => {
@@ -71,21 +63,26 @@ const handleFileUpload = (event) => {
     }
 };
 
-// 选择默认头像
-const selectDefaultAvatar = (id) => {
-    selectedAvatar.value = id;
-    avatarPreview.value = ''; // 清除上传的头像
-};
-
 // 保存资料
-const saveProfile = () => {
-    const profileData = {
-        nickname: nickname.value,
-        avatar: avatarPreview.value || defaultAvatars.find((a) => a.id === selectedAvatar.value)?.url,
-    };
-    router.push('/question');
-    console.log('保存资料:', profileData);
-    // 这里可以添加保存到服务器的逻辑
+const submit = () => {
+    if (!actualName.value) {
+        ElMessage.error('请输入真实姓名');
+        return;
+    }
+    setUserInfo({
+        field: 'realName',
+        value: actualName.value,
+    })
+        .then((res) => {
+            if (res.code == 0) {
+                router.push('/home');
+            } else {
+                ElMessage.error('设置失败');
+            }
+        })
+        .catch((err) => {
+            console.log(err);
+        });
 };
 </script>
 
@@ -94,7 +91,7 @@ const saveProfile = () => {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    width: 500px;
+    align-items: center;
     padding-top: 60px;
     background-color: #fff;
     min-height: 100vh;
@@ -109,7 +106,10 @@ const saveProfile = () => {
     font-size: 22px;
     color: #333;
 }
-
+.section {
+    max-width: 500px;
+    text-align: center;
+}
 .section h1 {
     font-family: Source Han Sans CN-Bold;
     font-size: 24px;
@@ -139,6 +139,7 @@ const saveProfile = () => {
     box-sizing: border-box;
     border: none;
     border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    -webkit-app-region: no-drag;
 }
 
 .character-count {
@@ -202,6 +203,7 @@ const saveProfile = () => {
     cursor: pointer;
     overflow: hidden;
     border: 1px dashed #ddd;
+    -webkit-app-region: no-drag;
 }
 
 .avatar-preview {
@@ -296,11 +298,16 @@ const saveProfile = () => {
 .submit-button {
     display: flex;
     justify-content: center;
+    width: 140px;
+    height: 52px;
+    background: none;
+    border: 0;
+    -webkit-app-region: no-drag;
 }
 
 .submit-button img {
     width: 140px;
     height: 52px;
-    cursor: pointer;
+    -webkit-app-region: no-drag;
 }
 </style>

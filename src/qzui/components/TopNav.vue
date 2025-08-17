@@ -5,7 +5,7 @@
                 <el-icon><Plus /></el-icon>
             </template>
             <el-tab-pane v-for="(item, index) in defaultNavlist" :key="index" :label="item.name" :name="item.id"></el-tab-pane>
-            <el-tab-pane v-for="(item, index) in navlist" :key="index" :label="item.name" :name="item.id">
+            <el-tab-pane v-for="(item, index) in navlist" :key="index" :label="item.name" :name="`${item.id}`">
                 <template #label>
                     <el-dropdown trigger="contextmenu">
                         <span> {{ item.name }} </span>
@@ -27,12 +27,12 @@ import { ref, onMounted } from 'vue';
 import store from '../../store';
 import { getItem } from '../../qzui/util/storageHelper';
 import { ElMessage, ElMessageBox } from 'element-plus';
-import { getCustomPersonGroupList, createCustomPersonGroup, deleteCustomPersonGroup } from '../../api/customGroup.js';
-import { useRouter } from 'vue-router';
+import { getCustomChatGroupList, createCustomChatGroup, deleteCustomChatGroup } from '../../api/customGroup.js';
+import { useRouter, useRoute } from 'vue-router';
 
 const router = useRouter();
-
-const activeId = ref('private');
+const route = useRoute();
+const activeId = ref(route.query.activeId || 'private');
 const navlist = ref([]);
 const userinfo = JSON.parse(getItem('userinfo')) || {};
 const sharedMiscState = store.state.misc;
@@ -42,15 +42,13 @@ const defaultNavlist = [
     { name: '公域群', id: 'public' },
 ];
 
-const switchTab = (id) => {
-    console.log(111, id);
-
-    activeId.value = id;
-    router.push(`/home?activeId=${id}`);
+const switchTab = (data) => {
+    activeId.value = data.paneName;
+    router.push(`/home?activeId=${data.paneName}`);
 };
 
-const getGroupList = () => {
-    getCustomPersonGroupList({
+const getCustomGroupList = () => {
+    getCustomChatGroupList({
         userId: userinfo.id,
     }).then((res) => {
         if (res.code == 0) {
@@ -79,14 +77,14 @@ const addGroup = () => {
                 ElMessage.error('请输入分组名称');
                 return;
             }
-            createCustomPersonGroup({
+            createCustomChatGroup({
                 userId: userinfo.id,
                 groupName,
             })
                 .then((res) => {
                     if (res.code == 0) {
                         ElMessage.success('新建成功');
-                        getGroupList();
+                        getCustomGroupList();
                     }
                 })
                 .catch(() => {
@@ -103,13 +101,13 @@ const deleteGroup = (id) => {
         type: 'warning',
     })
         .then(() => {
-            deleteCustomPersonGroup({
+            deleteCustomChatGroup({
                 groupId: id,
             })
                 .then((res) => {
                     if (res.code == 0) {
                         ElMessage.success('删除成功');
-                        getGroupList();
+                        getCustomGroupList();
                     }
                 })
                 .catch(() => {
@@ -120,7 +118,7 @@ const deleteGroup = (id) => {
 };
 
 onMounted(() => {
-    getGroupList();
+    getCustomGroupList();
 });
 </script>
 

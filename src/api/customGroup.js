@@ -50,3 +50,56 @@ export function getChatInCustomGroup(data) {
 export function getCustomChatGroupList(data) {
     return GET('/customChatGroup/getCustomChatGroupList', data);
 }
+
+// 群聊信息管理
+// Group Chat Controller
+
+// 添加群聊信息(已同步野火)
+export function addGroupInfo(data) {
+    return POST('/api/community/group/add', data);
+}
+
+// 添加群聊成员(前端先调用野火SDK后,调用)
+export function addGroupMember(data) {
+    return POST('/api/community/group/addMember', data);
+}
+
+// 删除群聊信息(已同步野火)
+export function deleteGroupInfo(data) {
+    return POST('/api/community/group/del', data);
+}
+
+// 查询群聊信息详情
+export function getGroupDetail(data) {
+    return GET('/api/community/group/detail', data);
+}
+
+// 修改群聊信息(已同步野火)
+export function editGroupInfo(data) {
+    return POST('/api/community/group/edit', data);
+}
+
+// 修改群聊成员角色(前端先调用野火SDK后,调用)
+export function editGroupMemberRole(data) {
+    return POST('/api/community/group/editMember', data);
+}
+
+// 查询所有群聊信息列表
+export function getGroupList(data) {
+    return POST('/api/community/group/list?page_size=100', data);
+}
+
+// 查询群聊的所有成员列表
+export function getGroupMembers(data) {
+    return GET('/api/community/group/members', data);
+}
+
+// 移除群聊成员(前端先调用野火SDK后,调用)
+export function removeGroupMember(data) {
+    return POST('/api/community/group/removeMember', data);
+}
+
+// 用户修改所关联群的设置
+export function updateGroupMemberSetting(data) {
+    return POST('/api/community/group/updateMemberSetting', data);
+}

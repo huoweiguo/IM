@@ -1,6 +1,6 @@
 <template>
     <div class="chat-user-container">
-        <ul>
+        <ul v-if="activeId == 'private'">
             <li @click="openFansWindow()">
                 <img :src="grpImg1" class="user-icon" />
                 <div class="user-info">
@@ -41,16 +41,29 @@
                 </div>
             </li>
         </ul>
-        <ConversationListView class="conversation-list-container" />
+        <ConversationListView class="conversation-list-container" :activeId="activeId" :groupListItems="groupList" />
     </div>
 </template>
 
 <script setup>
+import { ref, onMounted, watch } from 'vue';
+import { getGroupList, getChatInCustomGroup } from '../../api/customGroup.js';
+import { getUserById } from '../../api/index.js';
 import grpImg1 from '../assets/grp-1.png';
 import grpImg2 from '../assets/grp-2.png';
 import grpImg4 from '../assets/grp-4.png';
+import wfc from '../../wfc/client/wfc';
 import ConversationListView from '../main/conversationList/ConversationListView.vue';
 import { createNewWindow } from '@/qzui/util/electronHelper';
+import { getItem } from '../../qzui/util/storageHelper';
+import { useRouter, useRoute } from 'vue-router';
+const router = useRouter();
+const route = useRoute();
+
+const activeId = ref(route.query.activeId || 'private');
+
+const groupList = ref([]);
+const userinfo = JSON.parse(getItem('userinfo')) || {};
 
 const openFansWindow = () => {
     createNewWindow({
@@ -69,6 +82,64 @@ const openKnowWindow = () => {
         url: `#/know?id=1`,
     });
 };
+
+const getCustomGroupList = () => {
+    if (activeId.value == 'custom' || activeId.value == 'public') {
+        let type = 0;
+        if (activeId.value == 'custom') {
+            type = 1;
+        } else if (activeId.value == 'public') {
+            type = 2;
+        }
+        getGroupList({
+            ownerId: userinfo.id,
+            type: type, //类型(0-所有,1-公域群/2-私域群)
+        }).then((res) => {
+            if (res.code == 0) {
+                groupList.value = res.data;
+            }
+        });
+    } else if (activeId.value == 'private') {
+        groupList.value = [];
+    } else {
+        getChatInCustomGroup({
+            groupId: activeId.value,
+        }).then(async (res) => {
+            if (res.code == 0) {
+                await Promise.all(
+                    res.data.map(async (item) => {
+                        if (item.chatType == 3) {
+                            //
+                            await getUserById({
+                                userId: item.chatId,
+                            }).then((res) => {
+                                if (res.code == 0) {
+                                    item.userInfo = res.data;
+                                }
+                            });
+                        }
+                    })
+                );
+
+                let info = wfc.getUserInfos(res.data.map((item) => item.userInfo.serviceId));
+
+                groupList.value = info;
+            }
+        });
+    }
+};
+
+watch(
+    () => route.query.activeId,
+    (newVal) => {
+        activeId.value = newVal;
+        getCustomGroupList();
+    }
+);
+
+onMounted(() => {
+    getCustomGroupList();
+});
 </script>
 
 <style lang="scss" scoped>
@@ -111,7 +182,7 @@ const openKnowWindow = () => {
 
 .chat-user-container {
     width: 250px;
-    height: 100vh;
+    height: calc(100vh - 40px);
     background-color: #efefef;
     overflow: auto;
     border-right: 1px solid #ddd;

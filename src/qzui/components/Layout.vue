@@ -52,17 +52,24 @@ onMounted(() => {
 
         setItem('userinfo', JSON.stringify(res.data));
 
+        // 检查是否是新用户
+        if (res.data.isNewUser === 1) {
+            router.push('/selectSex');
+            return;
+        }
+
         // 检查是否有保存的用户信息，实现自动登录
         let userId = getItem('userId');
         let token = getItem('token');
 
         if (userId && token) {
-            let res = wfc.connect(userId, token);
-            if (!res) {
-                ElMessage.error('登录过期，请重新登录');
-                logout();
-                router.push('/');
-            }
+            wfc.connect(userId, token);
+            // 是否登录成功
+            // let res = wfc.isLogin();
+            // if (!res) {
+            //     logout();
+            //     router.push('/');
+            // }
         } else {
             ElMessage.error('登录过期，请重新登录');
             logout();

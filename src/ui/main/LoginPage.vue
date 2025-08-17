@@ -281,8 +281,6 @@ export default {
                 terminal: Config.getWFCPlatform(),
             };
 
-            console.log(123, formData);
-
             loginAccount(formData).then((res) => {
                 if (res.code === 0) {
                     this.$notify({

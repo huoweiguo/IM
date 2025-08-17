@@ -1,36 +1,37 @@
 <template>
-    <div class="gender-select-container">
-        <!-- 顶部导航栏 -->
-        <!-- <TopNav title="性别选择" /> -->
-
+    <ElectronWindowsControlButtonView style="-webkit-app-region: no-drag" :maximizable="false" />
+    <div class="gender-select-container window-move">
         <div class="prompt-text">你是男生还是女生？</div>
         <div class="sub-prompt">介绍一下自己的性别吧</div>
 
         <div class="gender-options">
-            <div class="gender-option male" :class="{ selected: selectedGender === 'male' }" @click="selectGender('male')">
+            <div class="gender-option male" :class="{ selected: selectedGender === 1 }" @click="selectGender(1)">
                 <img src="../assets/female.png" alt="male" class="gender-icon" />
                 <span><img src="../assets/male_icon.png" />男生</span>
             </div>
 
-            <div class="gender-option female" :class="{ selected: selectedGender === 'female' }" @click="selectGender('female')">
+            <div class="gender-option female" :class="{ selected: selectedGender === 2 }" @click="selectGender(2)">
                 <img src="../assets/male.png" alt="male" class="gender-icon" />
                 <span><img src="../assets/female_icon.png" />女生</span>
             </div>
         </div>
 
         <div class="notice-text">性别后续不支持修改，请认真填写</div>
-        <div class="submit-button">
-            <img src="../assets/submit.png" @click="confirmSelection" :disabled="!selectedGender" />
-        </div>
+        <el-button class="submit-button" @click="confirmSelection" :disabled="!selectedGender">
+            <img src="../assets/submit.png" />
+        </el-button>
     </div>
 </template>
 
 <script setup>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { setUserInfo } from '../../api/index.js';
+import { ElMessage } from 'element-plus';
+import ElectronWindowsControlButtonView from '@/qzui/common/ElectronWindowsControlButtonView.vue';
 
 const router = useRouter();
-const selectedGender = ref(null);
+const selectedGender = ref(0);
 
 // 选择性别
 const selectGender = (gender) => {
@@ -40,8 +41,22 @@ const selectGender = (gender) => {
 // 确认选择
 const confirmSelection = () => {
     if (!selectedGender.value) return;
-    router.push('/nickname');
-    console.log('选择的性别:', selectedGender.value);
+
+    setUserInfo({
+        field: 'sex',
+        value: selectedGender.value,
+    })
+        .then((res) => {
+            if (res.code == 0) {
+                router.push('/nickname');
+            } else {
+                ElMessage.error('设置失败');
+                selectedGender.value = 0;
+            }
+        })
+        .catch((err) => {
+            console.log(err);
+        });
 };
 </script>
 
@@ -50,7 +65,7 @@ const confirmSelection = () => {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    width: 500px;
+    align-items: center;
     height: 100vh;
     background-color: #f5f5f5;
     box-sizing: border-box;
@@ -82,7 +97,7 @@ const confirmSelection = () => {
     justify-content: center;
     gap: 52px;
     margin-bottom: 24px;
-    width: 100%;
+    -webkit-app-region: no-drag;
 }
 
 .gender-option {
@@ -94,6 +109,8 @@ const confirmSelection = () => {
     border-radius: 16px;
     background-color: white;
     cursor: pointer;
+
+    -webkit-app-region: no-drag;
 }
 
 .gender-icon {
@@ -154,12 +171,17 @@ const confirmSelection = () => {
 .submit-button {
     display: flex;
     justify-content: center;
+    width: 140px;
+    height: 52px;
+    background: none;
+    border: 0;
+    -webkit-app-region: no-drag;
 }
 
 .submit-button img {
     width: 140px;
     height: 52px;
-    cursor: pointer;
+    -webkit-app-region: no-drag;
 }
 
 .confirm-btn {
