@@ -3,38 +3,13 @@
         <div class="community-container">
             <aside class="sidebar">
                 <div class="header">
-                    <input v-model="searchText" type="text" class="search-input" placeholder="搜索社区..."
-                        @input="filterCommunities" />
-                    <el-dropdown placement="bottom">
-                        <img src="../assets/user.png" class="action-btn" />
-                        <template #dropdown>
-                            <el-dropdown-menu>
-                                <el-dropdown-item @click="openChatWindow">
-                                    <el-icon>
-                                        <UserFilled />
-                                    </el-icon>发起群聊
-                                </el-dropdown-item>
-                                <el-dropdown-item @click="openScanWindow">
-                                    <el-icon>
-                                        <StarFilled />
-                                    </el-icon>关注我
-                                </el-dropdown-item>
-                                <el-dropdown-item @click="openHelpWindow">
-                                    <el-icon>
-                                        <QuestionFilled />
-                                    </el-icon>帮助
-                                </el-dropdown-item>
-                            </el-dropdown-menu>
-                        </template>
-                    </el-dropdown>
+                    <input v-model="searchText" type="text" class="search-input" placeholder="搜索社区..." @input="filterCommunities" />
                     <img src="../assets/plus.png" class="action-btn" @click="createCommunity" />
                 </div>
 
                 <nav class="community-nav">
                     <ul>
-                        <li v-for="community in filteredList" :key="community.communityId"
-                            :class="{ active: activeId === community.communityId }"
-                            @click="selectCommunity(community.communityId)">
+                        <li v-for="community in filteredList" :key="community.communityId" :class="{ active: activeId === community.communityId }" @click="selectCommunity(community.communityId)">
                             <span class="community-icon" :class="`icon-${(community.communityId % 7) + 1}`"></span>
                             {{ community.name }}
                         </li>
@@ -51,13 +26,14 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 import Layout from '../components/Layout.vue';
 import CommunityComp from '../components/CommunityComp.vue';
-import { createNewWindow } from '@/qzui/util/electronHelper';
-import { getItem, setItem } from "@/ui/util/storageHelper";
+import { getItem, setItem } from '@/ui/util/storageHelper';
 import { communityUserList } from '@/api/community';
-import emitter from '@/qzui/util/eventBus.js'
+import emitter from '@/qzui/util/eventBus.js';
 
+const router = useRouter();
 const searchText = ref('');
 const activeId = ref();
 
@@ -70,40 +46,14 @@ const filteredList = computed(() => {
 
 const selectCommunity = (id) => {
     activeId.value = id;
-    setItem('communityId', id)
-    emitter.emit('changeCommunityId', id)
+    setItem('communityId', id);
+    emitter.emit('changeCommunityId', id);
 };
 
 const createCommunity = () => {
     // TODO: 创建社区功能
     console.log('创建社区');
 };
-
-const openChatWindow = () => {
-    createNewWindow({
-        width: 604,
-        height: 440,
-        url: '#/groupChat',
-    });
-};
-
-const openScanWindow = () => {
-    createNewWindow({
-        width: 375,
-        height: 600,
-        title: '扫码关注',
-        url: '#/publicSphere/scanFocus',
-    });
-};
-
-const openHelpWindow = () => {
-    createNewWindow({
-        width: 375,
-        height: 720,
-        url: '#/help',
-    });
-};
-
 const getCommunityUserList = async () => {
     const userId = getItem('userPortrait') ? getItem('userPortrait') : '';
     const res = await communityUserList(userId);
@@ -112,16 +62,16 @@ const getCommunityUserList = async () => {
         if (communities.value.length > 0) {
             activeId.value = communities.value[0].communityId;
             console.log('activeId', activeId.value);
-            emitter.emit('changeCommunityId', communities.value[0].communityId.toString())
+            emitter.emit('changeCommunityId', communities.value[0].communityId.toString());
             // 设置当前社区id
-            setItem('communityId', activeId.value.toString())
+            setItem('communityId', activeId.value.toString());
         }
     }
-}
+};
 
 onMounted(() => {
-    getCommunityUserList()
-})
+    getCommunityUserList();
+});
 </script>
 
 <style lang="scss" scoped>

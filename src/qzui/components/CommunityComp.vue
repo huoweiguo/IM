@@ -15,8 +15,7 @@
 
         <nav class="feed-nav">
             <div class="nav-tabs">
-                <span v-for="(tab, index) in navTabs" :key="index" :class="{ active: activeTab === index }"
-                    @click="activeTab = index">
+                <span v-for="(tab, index) in navTabs" :key="index" :class="{ active: activeTab === index }" @click="activeTab = index">
                     {{ tab }}
                 </span>
             </div>
@@ -34,8 +33,7 @@
 
                 <div class="post-content">
                     <header class="post-header">
-                        <h3 class="username" @click="openUserProfile(post.userId)">{{ post.realName ? post.realName :
-                            post.nickName }}</h3>
+                        <h3 class="username" @click="openUserProfile(post.userId)">{{ post.realName ? post.realName : post.nickName }}</h3>
                         <el-dropdown placement="bottom">
                             <img :src="moreIcon" class="more-btn" />
                             <template #dropdown>
@@ -51,8 +49,7 @@
                     <p class="post-text">{{ post.content }}</p>
 
                     <div v-if="post.mediaResourcesList?.length" class="post-images">
-                        <img v-for="(img, index) in post.mediaResourcesList" :key="index" :src="img.fileUrl"
-                            @click="previewImage(img.fileUrl)" />
+                        <img v-for="(img, index) in post.mediaResourcesList" :key="index" :src="img.fileUrl" @click="previewImage(img.fileUrl)" />
                     </div>
 
                     <footer class="post-footer">
@@ -66,10 +63,8 @@
                                     <div class="actions-link">
                                         <span @click="comment(post)"><img src="../assets/gift@2x.png" /> 送礼</span>
                                         <span @click="comment(post)"><img src="../assets/comment.png" /> 评论</span>
-                                        <span @click="like(post)" v-if="post.isLike == 0"><img
-                                                src="../assets/like.png" /> 点赞</span>
-                                        <span @click="like(post)" v-if="post.isLike == 1"><img
-                                                src="../assets/like_fill.png" /> 取消点赞</span>
+                                        <span @click="like(post)" v-if="post.isLike == 0"><img src="../assets/like.png" /> 点赞</span>
+                                        <span @click="like(post)" v-if="post.isLike == 1"><img src="../assets/like_fill.png" /> 取消点赞</span>
                                     </div>
                                 </template>
                                 <span class="action-menu">···</span>
@@ -77,10 +72,8 @@
                         </div>
                     </footer>
 
-                    <div class="post-like" v-if="post.likeQuantity > 0"><img src="../assets/like@2x.png" />{{
-                        post.likeQuantity }}位圈友觉得很赞</div>
-                    <div class="post-gift" v-if="post.giftQuantity > 0"><img src="../assets/gift.png" />收到{{
-                        post.giftQuantity }}个礼物</div>
+                    <div class="post-like" v-if="post.likeQuantity > 0"><img src="../assets/like@2x.png" />{{ post.likeQuantity }}位圈友觉得很赞</div>
+                    <div class="post-gift" v-if="post.giftQuantity > 0"><img src="../assets/gift.png" />收到{{ post.giftQuantity }}个礼物</div>
                     <div class="comment-list" v-if="post.replyList.length > 0">
                         <ul>
                             <li v-for="item in post.replyList" :key="item.id">
@@ -88,21 +81,22 @@
                                     <div class="post-user-info">
                                         <img :src="item.avatar" class="avatar-reply" />
                                         <div class="post-user-opts">
-                                            <div class="post-user-name"><a>{{ item.realName ? item.realName :
-                                                item.nickName }}</a>
+                                            <div class="post-user-name">
+                                                <a>{{ item.realName ? item.realName : item.nickName }}</a>
                                                 <span>{{ formatCommentTime(item.createTime) }}</span>
                                             </div>
-                                            <div class="post-user-content">回复<a>{{ item.targetRealName }}</a>：<span>{{
-                                                item.content }}</span></div>
+                                            <div class="post-user-content">
+                                                回复<a>{{ item.targetRealName }}</a
+                                                >：<span>{{ item.content }}</span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </li>
                         </ul>
                     </div>
-                    <div class="post-like link-div" v-if="post.commentQuantity - post.replyList.length > 0"
-                        @click="loadReply(post)">共{{
-                            post.commentQuantity - post.replyList.length }}条回复
+                    <div class="post-like link-div" v-if="post.commentQuantity - post.replyList.length > 0" @click="loadReply(post)">
+                        共{{ post.commentQuantity - post.replyList.length }}条回复
                         <img src="../assets/right-reply.png" />
                     </div>
                 </div>
@@ -195,7 +189,6 @@
             </article>
         </main>
 
-
         <el-dialog v-model="showDeleteDialog" title="删除确认" width="300" center>
             <p style="text-align: center">确定要删除这条动态吗？</p>
             <template #footer>
@@ -208,8 +201,7 @@
 
         <el-dialog v-model="visibleComment" title="评论" width="400" center>
             <div class="comment-box">
-                <el-input v-model="commentParams.content" class="comment-input" :rows="4" type="textarea"
-                    :placeholder="commentHolder" />
+                <el-input v-model="commentParams.content" class="comment-input" :rows="4" type="textarea" :placeholder="commentHolder" />
                 <el-button type="primary" @click="submitComment">提交</el-button>
             </div>
         </el-dialog>
@@ -218,14 +210,15 @@
 
 <script setup>
 import { ref, reactive, onUnmounted } from 'vue';
+import { useRouter } from 'vue-router';
 import { EditPen, Help, Check } from '@element-plus/icons-vue';
 import { createNewWindow } from '@/qzui/util/electronHelper';
 import { ElMessage } from 'element-plus';
-import emitter from '@/qzui/util/eventBus'
+import emitter from '@/qzui/util/eventBus';
 import { dynamicList, interactionComment, interactionList, interactionLike } from '@/api/community';
-import { getItem, setItem } from "@/ui/util/storageHelper";
+import { getItem, setItem } from '@/ui/util/storageHelper';
 import { formatCommentTime } from '@/qzui/util/timeformat';
-const start_time = ref('')
+const start_time = ref('');
 const userId = ref(getItem('userPortrait') ? getItem('userPortrait') : '');
 
 // 图标导入
@@ -236,9 +229,10 @@ import img1 from '../assets/img1.png';
 import img2 from '../assets/img2.png';
 import img3 from '../assets/img3.png';
 
+const router = useRouter();
 const communityId = ref();
 const visibleComment = ref(false);
-const commentHolder = ref('')
+const commentHolder = ref('');
 
 // 头像图片
 const chatAvatars = ['../assets/el1.png', '../assets/el2.png', '../assets/el3.png'];
@@ -253,192 +247,187 @@ const navTabs = ['最新', '热门', '关注'];
 
 // 帖子数据
 const posts = ref([]);
-const hots = ref([])
-const follows = ref([])
-const finish = ref(false)
-const noData = ref(false)
-const finishHot = ref(false)
-const noDataHot = ref(false)
-const finishFollow = ref(false)
-const noDataFollow = ref(false)
-const commentInfo = ref({})
+const hots = ref([]);
+const follows = ref([]);
+const finish = ref(false);
+const noData = ref(false);
+const finishHot = ref(false);
+const noDataHot = ref(false);
+const finishFollow = ref(false);
+const noDataFollow = ref(false);
+const commentInfo = ref({});
 const commentParams = reactive({
     content: '',
     dynamicId: '',
     targetUserId: '',
-    userId: ''
-})
+    userId: '',
+});
 // 方法定义
 const enterChatRoom = () => {
-    createNewWindow({
-        width: 375,
-        height: 720,
-        title: '聊天室列表',
-        url: '#/chatList',
-    });
+    router.push('/chatHome');
 };
 
 const comment = (obj) => {
-    commentInfo.value = obj
-    visibleComment.value = true
-    commentHolder.value = `回复${obj.realName ? obj.realName : obj.nickName}`
-    console.log(commentInfo.value)
-}
+    commentInfo.value = obj;
+    visibleComment.value = true;
+    commentHolder.value = `回复${obj.realName ? obj.realName : obj.nickName}`;
+    console.log(commentInfo.value);
+};
 
 const loadReply = async (obj) => {
-    let startTime = obj.startTime ? obj.startTime : ''
+    let startTime = obj.startTime ? obj.startTime : '';
     const params = {
         dynamicId: obj.id,
-        type: 2 // 评论
-    }
-    const res = await interactionList(3, startTime, params)
+        type: 2, // 评论
+    };
+    const res = await interactionList(3, startTime, params);
     if (res.code === 0) {
-        const arrList = res.data.length > 0 ? res.data : []
-        obj.replyList = [...obj.replyList, ...arrList]
+        const arrList = res.data.length > 0 ? res.data : [];
+        obj.replyList = [...obj.replyList, ...arrList];
         if (res.data.length > 0) {
-            obj.startTime = res.data[res.data.length - 1].createTime
+            obj.startTime = res.data[res.data.length - 1].createTime;
         }
     } else {
-        ElMessage.error(res.msg)
+        ElMessage.error(res.msg);
     }
-}
+};
 
 const like = async (obj) => {
     const params = {
         dynamicId: obj.id,
         isLike: obj.isLike ? 0 : 1,
         userId: userId.value, // 点赞
-        targetUserId: obj.userId
-    }
-    const res = await interactionLike(params)
+        targetUserId: obj.userId,
+    };
+    const res = await interactionLike(params);
     if (res.code === 0) {
         if (params.isLike === 1) {
-            obj.likeQuantity++
+            obj.likeQuantity++;
         } else {
-            obj.likeQuantity--
+            obj.likeQuantity--;
         }
-        obj.isLike = !obj.isLike
+        obj.isLike = !obj.isLike;
     } else {
-        ElMessage.error(res.msg)
+        ElMessage.error(res.msg);
     }
-}
+};
 
 const submitComment = async () => {
     if (commentParams.content.replace(/\s+/, '') === '') {
-        ElMessage.error('评论内容不能为空!')
+        ElMessage.error('评论内容不能为空!');
         return false;
     }
-    commentParams.userId = userId.value
-    commentParams.targetUserId = commentInfo.value.userId
-    commentParams.dynamicId = commentInfo.value.id
-    const res = await interactionComment(commentParams)
+    commentParams.userId = userId.value;
+    commentParams.targetUserId = commentInfo.value.userId;
+    commentParams.dynamicId = commentInfo.value.id;
+    const res = await interactionComment(commentParams);
     if (res.code === 0) {
-        commentParams.content = ''
-        visibleComment.value = false
-        ElMessage.success('评论成功!')
+        commentParams.content = '';
+        visibleComment.value = false;
+        ElMessage.success('评论成功!');
     } else {
-        ElMessage.error(res.msg)
+        ElMessage.error(res.msg);
     }
-}
+};
 
 const getCommunityList = async (start_time = '') => {
     const res = await dynamicList(10, start_time, {
         communityId: communityId.value,
         userId: userId.value,
-        type: 0
-    })
+        type: 0,
+    });
 
     if (res.code === 0) {
-        let data = res.data || []
-        let newData = data.map(item => {
-            item.isReply = false
+        let data = res.data || [];
+        let newData = data.map((item) => {
+            item.isReply = false;
             // 聊天记录列表
-            item.replyList = []
+            item.replyList = [];
             // 是否还有回复记录
-            item.replyStatus = true
-            return item
-        })
-        posts.value = [...posts.value, ...newData]
+            item.replyStatus = true;
+            return item;
+        });
+        posts.value = [...posts.value, ...newData];
         if (posts.value.length > 0 && data.length === 0) {
-            finish.value = true
-            noData.value = false
+            finish.value = true;
+            noData.value = false;
         } else if (posts.value.length === 0 && data.length === 0) {
-            noData.value = true
-            finish.value = false
+            noData.value = true;
+            finish.value = false;
         } else {
-            finish.value = false
-            noData.value = false
+            finish.value = false;
+            noData.value = false;
         }
     } else {
-        ElMessage.error(res.msg)
+        ElMessage.error(res.msg);
     }
-}
+};
 
 const getCommunityHotList = async (start_time = '') => {
     const res = await dynamicList(10, start_time, {
         communityId: communityId.value,
         userId: userId.value,
-        type: 1
-    })
+        type: 1,
+    });
 
     if (res.code === 0) {
-        let data = res.data || []
-        let newData = data.map(item => {
-            item.isReply = false
+        let data = res.data || [];
+        let newData = data.map((item) => {
+            item.isReply = false;
             // 聊天记录列表
-            item.replyList = []
+            item.replyList = [];
             // 是否还有回复记录
-            item.replyStatus = true
-            return item
-        })
-        hots.value = [...hots.value, ...newData]
+            item.replyStatus = true;
+            return item;
+        });
+        hots.value = [...hots.value, ...newData];
         if (hots.value.length > 0 && data.length === 0) {
-            finishHot.value = true
-            noDataHot.value = false
+            finishHot.value = true;
+            noDataHot.value = false;
         } else if (hots.value.length === 0 && data.length === 0) {
-            noDataHot.value = true
-            finishHot.value = false
+            noDataHot.value = true;
+            finishHot.value = false;
         } else {
-            finishHot.value = false
-            noDataHot.value = false
+            finishHot.value = false;
+            noDataHot.value = false;
         }
     } else {
-        ElMessage.error(res.msg)
+        ElMessage.error(res.msg);
     }
-}
+};
 
 const getCommunityFollowList = async (start_time = '') => {
     const res = await dynamicList(10, start_time, {
         communityId: communityId.value,
         userId: userId.value,
-        type: 2
-    })
+        type: 2,
+    });
 
     if (res.code === 0) {
-        let data = res.data || []
-        let newData = data.map(item => {
-            item.isReply = false
+        let data = res.data || [];
+        let newData = data.map((item) => {
+            item.isReply = false;
             // 聊天记录列表
-            item.replyList = []
+            item.replyList = [];
             // 是否还有回复记录
-            item.replyStatus = true
-            return item
-        })
-        follows.value = [...follows.value, ...newData]
+            item.replyStatus = true;
+            return item;
+        });
+        follows.value = [...follows.value, ...newData];
         if (follows.value.length > 0 && data.length === 0) {
-            finishFollow.value = true
-            noDataFollow.value = false
+            finishFollow.value = true;
+            noDataFollow.value = false;
         } else if (follows.value.length === 0 && data.length === 0) {
-            noDataFollow.value = true
-            finishFollow.value = false
+            noDataFollow.value = true;
+            finishFollow.value = false;
         } else {
-            finishFollow.value = false
-            noDataFollow.value = false
+            finishFollow.value = false;
+            noDataFollow.value = false;
         }
     } else {
-        ElMessage.error(res.msg)
+        ElMessage.error(res.msg);
     }
-}
+};
 
 const openFocusWindow = () => {
     createNewWindow({
@@ -518,8 +507,8 @@ emitter.on('changeCommunityId', (id) => {
     getCommunityFollowList();
 });
 onUnmounted(() => {
-    emitter.off('changeCommunityId')
-})
+    emitter.off('changeCommunityId');
+});
 </script>
 
 <style lang="scss" scoped>
@@ -648,7 +637,7 @@ onUnmounted(() => {
         align-items: center;
         height: 37px;
         font-size: 14px;
-        color: #6A7CA1;
+        color: #6a7ca1;
         font-family: Source Han Sans CN-Medium;
         border-bottom: 1px solid rgba(170, 170, 170, 0.4);
 
@@ -664,7 +653,7 @@ onUnmounted(() => {
     }
 
     .post-gift {
-        color: #387BF6;
+        color: #387bf6;
     }
 
     .comment-list {
@@ -681,7 +670,7 @@ onUnmounted(() => {
 
         span {
             font-size: 14px;
-            color: #6A7CA1;
+            color: #6a7ca1;
         }
 
         .avatar-reply {
@@ -711,7 +700,7 @@ onUnmounted(() => {
                     margin-bottom: 5px;
 
                     a {
-                        color: #6A7CA1;
+                        color: #6a7ca1;
                         font-size: 12px;
                         margin-left: 3px;
                     }
@@ -729,7 +718,7 @@ onUnmounted(() => {
                     color: #333;
 
                     a {
-                        color: #6A7CA1;
+                        color: #6a7ca1;
                         font-size: 12px;
                     }
 
