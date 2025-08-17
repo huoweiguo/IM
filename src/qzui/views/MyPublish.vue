@@ -38,7 +38,6 @@
                     </div>
                 </li>
             </ul>
-
             <div class="no-data" v-if="nodata">没有更多数据了...</div>
             <div class="no-data" v-if="isEmpty">
                 <el-empty image-size="80" description="暂无数据" />
