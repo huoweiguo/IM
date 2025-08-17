@@ -1,51 +1,39 @@
 <template>
     <section>
         <ul>
-            <li v-for="(friendRequest,index) in sharedContactState.friendRequestList" :key="index"
-                @click="showFriendRequest(friendRequest)">
-                <div class="new-friend-item-container"
-                     v-bind:class="{active :sharedContactState.currentFriendRequest && sharedContactState.currentFriendRequest.target === friendRequest.target}">
+            <li v-for="(friendRequest, index) in sharedContactState.friendRequestList" :key="index" @click="showFriendRequest(friendRequest)">
+                <div class="new-friend-item-container" v-bind:class="{ active: sharedContactState.currentFriendRequest && sharedContactState.currentFriendRequest.target === friendRequest.target }">
                     <div class="new-friend-item">
-                        <img class="avatar" :src="friendRequest._target.portrait">
+                        <img class="avatar" :src="friendRequest._target.portrait" />
                         <div class="info">
                             <div class="name-action">
-                                <div style="display: flex; align-items: center; ">
+                                <div style="display: flex; align-items: center">
                                     <span class="name single-line">{{ friendRequest._target.displayName }}</span>
-                                    <p v-if="isExternalDomainUser(friendRequest._target)" class="single-line" style="color: #F0A040; border-radius: 2px;  padding: 1px 2px; font-size: 9px">{{ domainName(friendRequest._target) }}</p>
+                                    <p v-if="isExternalDomainUser(friendRequest._target)" class="single-line" style="color: #f0a040; border-radius: 2px; padding: 1px 2px; font-size: 9px">
+                                        {{ domainName(friendRequest._target) }}
+                                    </p>
                                 </div>
-                                <span v-if="friendRequest.status === 1" class="status">{{
-                                        $t('friend_request.accepted')
-                                    }}</span>
-                                <button v-else-if="friendRequest.status === 0" class="accept"
-                                        @click="accept(friendRequest)">{{
-                                        $t('common.add')
-                                    }}
-                                </button>
-                                <span
-                                    v-else-if="friendRequest.status === 3" class="status">{{
-                                        $t('friend_request.denied')
-                                    }}</span>
+                                <span v-if="friendRequest.status === 1" class="status">{{ $t('friend_request.accepted') }}</span>
+                                <button v-else-if="friendRequest.status === 0" class="accept" @click="accept(friendRequest)">{{ $t('common.add') }}</button>
+                                <span v-else-if="friendRequest.status === 3" class="status">{{ $t('friend_request.denied') }}</span>
                             </div>
-                            <p class="reason single-line">{{
-                                    friendRequest.reason ? friendRequest.reason : $t('friend_request.im') + friendRequest._target.displayName
-                                }}</p>
+                            <p class="reason single-line">{{ friendRequest.reason ? friendRequest.reason : $t('friend_request.im') + friendRequest._target.displayName }}</p>
                         </div>
                     </div>
                 </div>
             </li>
         </ul>
     </section>
-
 </template>
 
 <script>
-import store from "../../../store";
-import wfc from "../../../wfc/client/wfc";
-import EventType from "../../../wfc/client/wfcEvent";
-import WfcUtil from "../../../wfc/util/wfcUtil";
+import store from '../../../store';
+import wfc from '../../../wfc/client/wfc';
+import EventType from '../../../wfc/client/wfcEvent';
+import WfcUtil from '../../../wfc/util/wfcUtil';
 
 export default {
-    name: "NewFriendListView",
+    name: 'NewFriendListView',
     props: {
         newFriends: null,
     },
@@ -60,11 +48,17 @@ export default {
             store.setCurrentFriendRequest(friendRequest);
         },
         accept(friendRequest) {
-            wfc.handleFriendRequest(friendRequest.target, true, "", () => {
-                friendRequest.status = 1;
-            }, (err) => {
-                console.log('accept friend request error', err)
-            })
+            wfc.handleFriendRequest(
+                friendRequest.target,
+                true,
+                '',
+                () => {
+                    friendRequest.status = 1;
+                },
+                (err) => {
+                    console.log('accept friend request error', err);
+                }
+            );
         },
         onFriendRequestUpdate() {
             if (this.isActive) {
@@ -73,7 +67,6 @@ export default {
         },
         isExternalDomainUser(user) {
             return WfcUtil.isExternal(user.uid);
-
         },
         domainName(user) {
             if (WfcUtil.isExternal(user.uid)) {
@@ -103,8 +96,8 @@ export default {
     beforeUnmount() {
         this.isActive = false;
         wfc.eventEmitter.removeListener(EventType.FriendRequestUpdate, this.onFriendRequestUpdate);
-    }
-}
+    },
+};
 </script>
 
 <style lang="css" scoped>
@@ -126,7 +119,6 @@ export default {
     font-size: 13px;
     border-bottom: 1px solid #e0e0e0;
 }
-
 
 .new-friend-item-container.active {
     background-color: #d6d6d6;
@@ -168,6 +160,4 @@ export default {
     font-size: 12px;
     color: #b2b2b2;
 }
-
-
 </style>

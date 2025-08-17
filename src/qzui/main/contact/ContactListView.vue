@@ -1,6 +1,7 @@
 <template>
     <section class="contact-list">
         <ul>
+            <ContactList />
             <li>
                 <div @click="showNewFriends" class="category-item-container">
                     <i class="arrow right" v-bind:class="{ down: sharedContactState.expandFriendRequestList }"></i>
@@ -13,7 +14,7 @@
                 </div>
                 <NewFriendListView v-if="sharedContactState.expandFriendRequestList" />
             </li>
-            <li>
+            <!-- <li>
                 <div @click="showGroups" class="category-item-container">
                     <i class="arrow right" v-bind:class="{ down: sharedContactState.expandGroup }"></i>
                     <div class="category-item">
@@ -25,8 +26,8 @@
                     </div>
                 </div>
                 <GroupListVue v-if="sharedContactState.expandGroup" />
-            </li>
-            <li>
+            </li> -->
+            <!-- <li>
                 <div @click="showChannels" class="category-item-container">
                     <i class="arrow right" v-bind:class="{ down: sharedContactState.expandChanel }"></i>
                     <div class="category-item">
@@ -35,8 +36,8 @@
                     </div>
                 </div>
                 <ChannelListView v-if="sharedContactState.expandChanel" />
-            </li>
-            <li v-if="sharedContactState?.expandOrganization">
+            </li> -->
+            <!-- <li v-if="sharedContactState?.expandOrganization">
                 <div @click="showOrganization" class="category-item-container">
                     <i class="arrow right" v-bind:class="{ down: sharedContactState.expandOrganization }"></i>
                     <div class="category-item">
@@ -45,8 +46,8 @@
                     </div>
                 </div>
                 <OrganizationListView v-if="sharedContactState.expandOrganization" />
-            </li>
-            <li v-if="sharedContactState.isEnableMesh">
+            </li> -->
+            <!-- <li v-if="sharedContactState.isEnableMesh">
                 <div @click="showExternalDomains" class="category-item-container">
                     <i class="arrow right" v-bind:class="{ down: sharedContactState.expandExternalDomain }"></i>
                     <div class="category-item">
@@ -55,7 +56,7 @@
                     </div>
                 </div>
                 <ExternalDomainListView v-if="sharedContactState.expandExternalDomain" />
-            </li>
+            </li> -->
             <!-- <li>
                 <div @click="showChatroom" class="category-item-container">
                     <i class="arrow right" v-bind:class="{down: sharedContactState.expandChatroom}"></i>
@@ -122,6 +123,7 @@ import Message from '../../../wfc/messages/message';
 import ChatroomListView from './ChatroomListView.vue';
 import { markRaw } from 'vue';
 import ExternalDomainListView from './ExternalDomainListView.vue';
+import ContactList from '../../components/ContactList.vue';
 
 export default {
     name: 'ContactListView',
@@ -133,6 +135,7 @@ export default {
         UserListView,
         GroupListVue,
         NewFriendListView: FriendRequestListView,
+        ContactList,
     },
     data() {
         return {
@@ -142,8 +145,6 @@ export default {
         };
     },
     created() {
-        console.log(111, store.state);
-
         this.$eventBus.$on('showContactContextMenu', ([event, userInfo]) => {
             this.showContactContextMenu(event, userInfo);
         });
