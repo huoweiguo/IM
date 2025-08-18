@@ -64,12 +64,13 @@ onMounted(() => {
 
         if (userId && token) {
             wfc.connect(userId, token);
-            // 是否登录成功
-            // let res = wfc.isLogin();
-            // if (!res) {
-            //     logout();
-            //     router.push('/');
-            // }
+
+            let connectionStatus = wfc.getConnectionStatus();
+            if (connectionStatus == -7) {
+                ElMessage.error('登录过期，请重新登录');
+                logout();
+                router.push('/');
+            }
         } else {
             ElMessage.error('登录过期，请重新登录');
             logout();
