@@ -16,9 +16,11 @@
 <script setup>
 import { ref } from 'vue';
 import store from '../../store';
+import wfc from '../../wfc/client/wfc';
 import { getItem } from '../../qzui/util/storageHelper';
 import UserListView from '../main/user/UserListView.vue';
-import { getCustomChatGroupList } from '../../api/customGroup.js';
+import { getCustomChatGroupList, getChatInCustomGroup } from '../../api/customGroup.js';
+import { getUserById } from '../../api/index.js';
 
 const isDown = ref('');
 const defaultGroupList = ref([
@@ -50,22 +52,42 @@ const setCurrentUser = (userInfo) => {
     store.setCurrentFriend(userInfo);
 };
 
-const getCustomGroupList = () => {
-    getCustomChatGroupList({
+const getCustomGroupList = async () => {
+    // 获取自定义群
+    const res = await getCustomChatGroupList({
         userId: userinfo.id,
-    }).then((res) => {
-        if (res.code == 0) {
-            let list = [];
-            res.data.forEach((item) => {
-                list.push({
-                    name: item.groupName,
-                    id: item.groupId,
-                    personList: item.personList || [],
-                });
-            });
-            groupList.value = [...list, ...defaultGroupList.value];
-        }
     });
+
+    if (res.code == 0) {
+        const list = res.data || [];
+        const newList = [];
+        for (const item of list) {
+            // 获取群成员
+            const item2 = await getChatInCustomGroup({
+                groupId: item.groupId,
+            });
+
+            let userServiceId = [];
+            for (const item3 of item2.data) {
+                if (item3.chatType == 3) {
+                    const user = await getUserById({
+                        userId: item3.chatId,
+                    });
+                    userServiceId.push(user.data.serviceId);
+                } else {
+                    // personList.push(await wfc.getGroupInfo(item3.serviceGroupId));
+                }
+            }
+
+            newList.push({
+                name: item.groupName,
+                id: item.groupId,
+                personList: store.getUserInfos(userServiceId),
+            });
+        }
+
+        groupList.value = [...newList, ...defaultGroupList.value];
+    }
 };
 
 getCustomGroupList();
