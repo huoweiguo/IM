@@ -1,7 +1,6 @@
 <template>
     <section class="container">
-        <div class="message-time-container"
-             v-bind:class="{checked:sharedPickState.messages.indexOf(message) >= 0}">
+        <div class="message-time-container" v-bind:class="{ checked: sharedPickState.messages.indexOf(message) >= 0 }">
             <p v-if="this.message._showTime" class="time">{{ message._timeStr }}</p>
             <div class="message-avatar-content-container">
                 <tippy
@@ -16,59 +15,62 @@
                     trigger="click"
                 >
                     <template #content>
-                        <ChannelCardView v-if="message.conversation.type === 3" v-on:close="closeUserCard" :channel-id="message.conversation.target"/>
-                        <UserCardView v-else v-on:close="closeUserCard" :user-info="message._from"/>
+                        <ChannelCardView v-if="message.conversation.type === 3" v-on:close="closeUserCard" :channel-id="message.conversation.target" />
+                        <UserCardView v-else v-on:close="closeUserCard" :user-info="message._from" />
                     </template>
                 </tippy>
                 <div class="avatar-container">
-                    <input id="checkbox" v-if="sharedConversationState.enableMessageMultiSelection" type="checkbox"
-                           :value="message"
-                           v-model="sharedPickState.messages"/>
-                    <img ref="userCardTippy"
-                         :id="'infoTrigger' + this.message.messageId"
-                         @click="onClickUserPortrait(message.from)"
-                         @contextmenu.prevent="openMessageSenderContextMenu($event, message)"
-                         class="avatar"
-                         draggable="false"
-                         :src="messageSenderPortrait">
+                    <input id="checkbox" v-if="sharedConversationState.enableMessageMultiSelection" type="checkbox" :value="message" v-model="sharedPickState.messages" />
+                    <img
+                        ref="userCardTippy"
+                        :id="'infoTrigger' + this.message.messageId"
+                        @click="onClickUserPortrait(message.from)"
+                        @contextmenu.prevent="openMessageSenderContextMenu($event, message)"
+                        class="avatar"
+                        draggable="false"
+                        :src="messageSenderPortrait"
+                    />
                 </div>
                 <!--消息内容 根据情况，if-else-->
                 <div class="message-name-content-container">
                     <p v-if="[1, 2].indexOf(message.conversation.type) >= 0" class="name">{{ message._from._displayName }}</p>
                     <div class="flex-column flex-align-start">
                         <div class="flex-row">
-                            <MessageContentContainerView class="message-content-container"
-                                                         v-bind:class="{highlight:highLight}"
-                                                         :message="message"
-                                                         @contextmenu.prevent.native="openMessageContextMenu($event, message)"/>
+                            <MessageContentContainerView
+                                class="message-content-container"
+                                v-bind:class="{ highlight: highLight }"
+                                :message="message"
+                                @contextmenu.prevent.native="openMessageContextMenu($event, message)"
+                            />
                         </div>
-                        <QuoteMessageView style="padding: 5px 0; max-width: 80%"
-                                          v-if="quotedMessage"
-                                          :message="message"
-                                          :quoted-message="quotedMessage"
-                                          :enable-message-preview="true"
-                                          :message-digest="this.message.messageContent.quoteInfo.messageDigest"
-                                          :show-close-button="false"/>
+                        <QuoteMessageView
+                            style="padding: 5px 0; max-width: 80%"
+                            v-if="quotedMessage"
+                            :message="message"
+                            :quoted-message="quotedMessage"
+                            :enable-message-preview="true"
+                            :message-digest="this.message.messageContent.quoteInfo.messageDigest"
+                            :show-close-button="false"
+                        />
                     </div>
                 </div>
             </div>
         </div>
     </section>
-
 </template>
 
 <script>
-import UserCardView from "../../user/UserCardView";
-import MessageContentContainerView from "./MessageContentContainerView.vue";
-import QuoteMessageView from "./QuoteMessageView.vue";
-import store from "../../../../store";
-import wfc from "../../../../wfc/client/wfc";
-import ConversationType from "../../../../wfc/model/conversationType";
-import ChannelCardView from "../../contact/ChannelCardView";
-import GroupMemberType from "../../../../wfc/model/groupMemberType";
+import UserCardView from '../../user/UserCardView';
+import MessageContentContainerView from './MessageContentContainerView.vue';
+import QuoteMessageView from './QuoteMessageView.vue';
+import store from '../../../../store';
+import wfc from '../../../../wfc/client/wfc';
+import ConversationType from '../../../../wfc/model/conversationType';
+import ChannelCardView from '../../contact/ChannelCardView';
+import GroupMemberType from '../../../../wfc/model/groupMemberType';
 
 export default {
-    name: "NormalInMessageContentView",
+    name: 'NormalInMessageContentView',
     props: {
         message: null,
     },
@@ -78,7 +80,7 @@ export default {
             sharedPickState: store.state.pick,
             highLight: false,
             quotedMessage: null,
-        }
+        };
     },
     methods: {
         onClickUserPortrait(userId) {
@@ -89,20 +91,20 @@ export default {
             }
         },
         closeUserCard() {
-            console.log('closeUserCard')
-            this.$refs["userCardTippy"]._tippy.hide();
+            console.log('closeUserCard');
+            this.$refs['userCardTippy']._tippy.hide();
         },
         openMessageContextMenu(event, message) {
-            this.$emit('openMessageContextMenu', event, message)
+            this.$emit('openMessageContextMenu', event, message);
             this.highLight = true;
         },
         openMessageSenderContextMenu(event, message) {
-            this.$emit('openMessageSenderContextMenu', event, message)
+            this.$emit('openMessageSenderContextMenu', event, message);
         },
 
         onContextMenuClosed() {
             this.highLight = false;
-        }
+        },
     },
     mounted() {
         this.$eventBus.$on('contextMenuClosed', this.onContextMenuClosed);
@@ -111,12 +113,16 @@ export default {
             let messageUid = this.message.messageContent.quoteInfo.messageUid;
             let msg = store.getMessageByUid(messageUid);
             if (!msg) {
-                wfc.loadRemoteMessage(messageUid, (ms) => {
-                    msg = store._patchMessage(ms);
-                    this.quotedMessage = msg;
-                }, err => {
-                    console.log('load remote message error', messageUid, err)
-                })
+                wfc.loadRemoteMessage(
+                    messageUid,
+                    (ms) => {
+                        msg = store._patchMessage(ms);
+                        this.quotedMessage = msg;
+                    },
+                    (err) => {
+                        console.log('load remote message error', messageUid, err);
+                    }
+                );
             } else {
                 this.quotedMessage = msg;
             }
@@ -157,11 +163,10 @@ export default {
         UserCardView,
         QuoteMessageView,
     },
-}
+};
 </script>
 
 <style lang="css" scoped>
-
 .container {
     display: flex;
     align-items: flex-start;
@@ -231,5 +236,4 @@ export default {
     opacity: 0.5;
     --in-arrow-color: #dadada !important;
 }
-
 </style>

@@ -181,7 +181,7 @@ import SecretConversationInfoView from '../../main/conversation/SecretConversati
 import GroupConversationInfoView from '../../main/conversation/GroupConversationInfoView';
 import MessageInputView from '../../main/conversation/MessageInputView';
 import NormalOutMessageContentView from '../../main/conversation/message/NormalOutMessageContentContainerView';
-import NormalInMessageContentView from '../../main/conversation/message/NormalInMessageContentContainerView';
+import NormalInMessageContentView from '../../main/conversation/message/NormalInMessageContentContainerView.vue';
 import NotificationMessageContentView from '../../main/conversation/message/NotificationMessageContentView';
 import RecallNotificationMessageContentView from '../../main/conversation/message/RecallNotificationMessageContentView';
 import NotificationMessageContent from '../../../wfc/messages/notification/notificationMessageContent';

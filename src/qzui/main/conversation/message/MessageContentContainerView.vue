@@ -51,6 +51,12 @@
             :style="{ '--out-arrow-color': '#95ec69', '--in-arrow-color': 'white' }"
             v-bind:class="{ leftarrow: message.direction === 1, rightarrow: message.direction === 0 }"
         />
+        <GiftMessageContentView
+            :message="message"
+            v-else-if="message.messageContent.type === CustomMessageContentType.MESSAGE_CONTENT_TYPE_GIFT_MESSAGE"
+            :style="{ '--out-arrow-color': '#95ec69', '--in-arrow-color': 'white' }"
+            v-bind:class="{ leftarrow: message.direction === 1, rightarrow: message.direction === 0 }"
+        />
         <!--更多自定义消息，注意 v-else-if -->
         <UnknownMessageContentView :message="message" v-else v-bind:class="{ leftarrow: message.direction === 1, rightarrow: message.direction === 0 }" />
     </div>
@@ -79,6 +85,7 @@ import LinkMessageContentView from './content/LinkMessageContentView';
 import StreamingTextMessageContentView from './content/StreamingTextMessageContentView.vue';
 import CustomMessageContentType from '../../../../wfc_custom_message/customMessageContentType';
 import TestCustomMessageContentView from './content/TestCustomMessageContentView.vue';
+import GiftMessageContentView from './content/GiftMessageContentView.vue';
 import MixMultiMediaTextMessageContentView from './content/MixMultiMediaTextMessageContentView.vue';
 import MessageContentType from '../../../../wfc/messages/messageContentType';
 import MixFileTextMessageContentView from './content/MixFileTextMessageContentView.vue';
@@ -117,6 +124,7 @@ export default {
         StickerMessageContentView,
         UserCardMessageContentView,
         StreamingTextMessageContentView,
+        GiftMessageContentView,
     },
 };
 </script>

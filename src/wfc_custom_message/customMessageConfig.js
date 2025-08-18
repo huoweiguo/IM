@@ -2,6 +2,9 @@ import PersistFlag from "../wfc/messages/persistFlag";
 import CustomMessageContentType from "./customMessageContentType";
 import TestCustomMessageContent from "./testCustomMessageContent";
 import TestCustomNotificationMessageContent from "./testCustomNotificationMessageContent";
+import GiftMessageContent from "./giftMessageContent";
+import GiftNotificationMessageContent from "./giftNotificationMessageContent";
+import GiftMessageContentType from "./giftMessageContentType";
 import wfc from "../wfc/client/wfc";
 import UnsupportMessageContent from "../wfc/messages/unsupportMessageConten";
 
@@ -18,6 +21,18 @@ export default class CustomMessageConfig {
             flag: PersistFlag.Persist,
             type: CustomMessageContentType.MESSAGE_CONTENT_TYPE_CUSTOM_MESSAGE_TEST_NOTIFICATION,
             contentClazz: TestCustomNotificationMessageContent,
+        },
+        {
+            name: 'giftMessage',
+            flag: PersistFlag.Persist_And_Count,
+            type: GiftMessageContentType.MESSAGE_CONTENT_TYPE_GIFT_MESSAGE,
+            contentClazz: GiftMessageContent,
+        },
+        {
+            name: 'giftNotification',
+            flag: PersistFlag.Persist,
+            type: GiftMessageContentType.MESSAGE_CONTENT_TYPE_GIFT_NOTIFICATION,
+            contentClazz: GiftNotificationMessageContent,
         },
         // 添加更多自定义消息定义
     ];

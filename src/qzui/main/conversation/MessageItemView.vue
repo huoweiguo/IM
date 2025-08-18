@@ -1,44 +1,42 @@
 <template>
-    <NotificationMessageContentView :message="source" v-if="isNotificationMessage(source)"/>
-    <RecallNotificationMessageContentView :message="source" v-else-if="isRecallNotificationMessage(source)"/>
+    <NotificationMessageContentView :message="source" v-if="isNotificationMessage(source)" />
+    <RecallNotificationMessageContentView :message="source" v-else-if="isRecallNotificationMessage(source)" />
     <ContextableNotificationMessageContentContainerView
         v-else-if="isContextableNotificationMessage(source)"
-        @click.native.capture="sharedConversationState.enableMessageMultiSelection? clickMessageItem($event, source) : null"
+        @click.native.capture="sharedConversationState.enableMessageMultiSelection ? clickMessageItem($event, source) : null"
         :message="source"
     />
     <NormalOutMessageContentView
-        @click.native.capture="sharedConversationState.enableMessageMultiSelection? clickMessageItem($event, source) : null"
-        :message="source"
-        v-else-if="source.direction === 0"/>
-    <NormalInMessageContentView
         @click.native.capture="sharedConversationState.enableMessageMultiSelection ? clickMessageItem($event, source) : null"
         :message="source"
-        v-else/>
+        v-else-if="source.direction === 0"
+    />
+    <NormalInMessageContentView @click.native.capture="sharedConversationState.enableMessageMultiSelection ? clickMessageItem($event, source) : null" :message="source" v-else />
 </template>
 
 <script>
-import NotificationMessageContentView from "./message/NotificationMessageContentView.vue";
-import RecallNotificationMessageContentView from "./message/RecallNotificationMessageContentView.vue";
-import ContextableNotificationMessageContentContainerView from "./message/ContextableNotificationMessageContentContainerView.vue";
-import NormalOutMessageContentView from "./message/NormalOutMessageContentContainerView.vue";
-import NormalInMessageContentView from "./message/NormalInMessageContentContainerView.vue";
-import store from "../../../store";
-import {currentWindow} from "../../../platform";
-import NotificationMessageContent from "../../../wfc/messages/notification/notificationMessageContent";
-import MessageContentType from "../../../wfc/messages/messageContentType";
-import RichNotificationMessageContent from "../../../wfc/messages/notification/richNotificationMessageContent";
-import ArticlesMessageContent from "../../../wfc/messages/articlesMessageContent";
-import MediaMessageContent from "../../../wfc/messages/mediaMessageContent";
-import MessageStatus from "../../../wfc/messages/messageStatus";
+import NotificationMessageContentView from './message/NotificationMessageContentView.vue';
+import RecallNotificationMessageContentView from './message/RecallNotificationMessageContentView.vue';
+import ContextableNotificationMessageContentContainerView from './message/ContextableNotificationMessageContentContainerView.vue';
+import NormalOutMessageContentView from './message/NormalOutMessageContentContainerView.vue';
+import NormalInMessageContentView from './message/NormalInMessageContentContainerView.vue';
+import store from '../../../store';
+import { currentWindow } from '../../../platform';
+import NotificationMessageContent from '../../../wfc/messages/notification/notificationMessageContent';
+import MessageContentType from '../../../wfc/messages/messageContentType';
+import RichNotificationMessageContent from '../../../wfc/messages/notification/richNotificationMessageContent';
+import ArticlesMessageContent from '../../../wfc/messages/articlesMessageContent';
+import MediaMessageContent from '../../../wfc/messages/mediaMessageContent';
+import MessageStatus from '../../../wfc/messages/messageStatus';
 
 export default {
-    name: "MessageItemView",
+    name: 'MessageItemView',
     components: {
         NormalInMessageContentView,
         NormalOutMessageContentView,
         ContextableNotificationMessageContentContainerView,
         RecallNotificationMessageContentView,
-        NotificationMessageContentView
+        NotificationMessageContentView,
     },
     props: {
         source: {
@@ -71,9 +69,12 @@ export default {
     },
     methods: {
         isNotificationMessage(message) {
-            return message && message.messageContent instanceof NotificationMessageContent
-                && message.messageContent.type !== MessageContentType.RecallMessage_Notification
-                && message.messageContent.type !== MessageContentType.Rich_Notification;
+            return (
+                message &&
+                message.messageContent instanceof NotificationMessageContent &&
+                message.messageContent.type !== MessageContentType.RecallMessage_Notification &&
+                message.messageContent.type !== MessageContentType.Rich_Notification
+            );
         },
 
         isContextableNotificationMessage(message) {
@@ -97,9 +98,7 @@ export default {
                 event.stopPropagation();
             }
         },
-    }
-}
+    },
+};
 </script>
-<style scoped lang="css">
-
-</style>
+<style scoped lang="css"></style>

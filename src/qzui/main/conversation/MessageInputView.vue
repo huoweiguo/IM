@@ -1,28 +1,33 @@
 <template>
     <div ref="message-input-container" class="message-input-container">
-        <div v-if="convMuted"
-            style="width: 100%; height: 50px; margin-top: -2px; background: lightgrey; display: flex; flex-direction: row; justify-content: center; align-items: center">
+        <div v-if="convMuted" style="width: 100%; height: 50px; margin-top: -2px; background: lightgrey; display: flex; flex-direction: row; justify-content: center; align-items: center">
             <p style="color: white">群禁言或者群已被解散</p>
         </div>
-        <section v-else-if="!sharedConversationState.showChannelMenu" style="display: flex; flex-direction: column;">
+        <section v-else-if="!sharedConversationState.showChannelMenu" style="display: flex; flex-direction: column">
             <section class="input-action-container">
-                <VEmojiPicker id="emoji" ref="emojiPicker" v-if="showEmojiDialog" labelSearch="Search" lang="pt-BR"
-                    v-v-on-click-outside="hideEmojiView" :customEmojis="emojis" :customCategories="emojiCategories"
-                    @select="onSelectEmoji" />
+                <VEmojiPicker
+                    id="emoji"
+                    ref="emojiPicker"
+                    v-if="showEmojiDialog"
+                    labelSearch="Search"
+                    lang="pt-BR"
+                    v-v-on-click-outside="hideEmojiView"
+                    :customEmojis="emojis"
+                    :customCategories="emojiCategories"
+                    @select="onSelectEmoji"
+                />
                 <ul>
                     <li v-if="!inputOptions['disableEmoji']">
                         <i id="showEmoji" @click="toggleEmojiView" class="icon-ion-android-happy" />
                     </li>
                     <li v-if="!inputOptions['disableFile']">
                         <i @click="pickFile" class="icon-ion-android-attach" />
-                        <input ref="fileInput" multiple @change="onPickFile($event)" class="icon-ion-android-attach"
-                            type="file" style="display: none">
+                        <input ref="fileInput" multiple @change="onPickFile($event)" class="icon-ion-android-attach" type="file" style="display: none" />
                     </li>
                     <li v-if="!inputOptions['disableScreenShot'] && sharedMiscState.isElectron">
                         <div style="display: inline-block; text-align: center">
                             <i id="screenShot" @click="screenShot(false)" class="icon-ion-scissors" />
-                            <i class="icon-ion-chevron-down"
-                                style="font-size: 10px; color: #494849; padding-left: 5px;" />
+                            <i class="icon-ion-chevron-down" style="font-size: 10px; color: #494849; padding-left: 5px" />
                             <span @click="screenShot(true)" class="screen-shot-button">隐藏当前窗口截图</span>
                         </div>
                     </li>
@@ -30,40 +35,58 @@
                         <i id="messageHistory" @click="showMessageHistory" class="icon-ion-android-chat" />
                     </li>
                     <li v-if="enablePtt">
-                        <i id="ptt" v-bind:class="{ active: isPttTalking }" @mousedown="requestPttTalk(true)"
-                            class="icon-ion-android-radio-button-on ptt-icon" />
+                        <i id="ptt" v-bind:class="{ active: isPttTalking }" @mousedown="requestPttTalk(true)" class="icon-ion-android-radio-button-on ptt-icon" />
                     </li>
                     <li>
-                        <i id="voice" v-bind:class="{ active: isRecording }" @mousedown="recordAudio(true)"
-                            class="icon-ion-android-microphone record-icon" />
+                        <i id="voice" v-bind:class="{ active: isRecording }" @mousedown="recordAudio(true)" class="icon-ion-android-microphone record-icon" />
+                    </li>
+                    <li>
+                        <i id="gift" @click="showGift = true" class="icon-ion-ios-heart" style="color: #f00" />
                     </li>
                 </ul>
                 <ul>
                     <template
-                        v-if="!inputOptions['disableVoip'] && [0, 1, 5].indexOf(conversationInfo.conversation.type) >= 0 && sharedContactState.selfUserInfo.uid !== conversationInfo.conversation.target">
+                        v-if="
+                            !inputOptions['disableVoip'] && [0, 1, 5].indexOf(conversationInfo.conversation.type) >= 0 && sharedContactState.selfUserInfo.uid !== conversationInfo.conversation.target
+                        "
+                    >
                         <li v-if="!inputOptions['disableAudioCall']">
                             <i @click="startAudioCall" class="icon-ion-ios-telephone" />
                         </li>
                         <li v-if="!inputOptions['disableVideoCall']">
                             <i @click="startVideoCall" class="icon-ion-ios-videocam" />
                         </li>
-                        <li
-                            v-if="false && sharedMiscState.isElectron && !inputOptions['disableVideoCall'] && conversationInfo.conversation.type === 0">
+                        <li v-if="false && sharedMiscState.isElectron && !inputOptions['disableVideoCall'] && conversationInfo.conversation.type === 0">
                             <i @click="requestRemoteControl" class="icon-ion-android-desktop" />
                         </li>
                     </template>
                     <li
-                        v-if="!inputOptions['disableChannelMenu'] && conversationInfo.conversation.type === 3 && conversationInfo.conversation._target.menus && conversationInfo.conversation._target.menus.length">
+                        v-if="
+                            !inputOptions['disableChannelMenu'] &&
+                            conversationInfo.conversation.type === 3 &&
+                            conversationInfo.conversation._target.menus &&
+                            conversationInfo.conversation._target.menus.length
+                        "
+                    >
                         <i @click="toggleChannelMenu" class="icon-ion-android-menu" />
                     </li>
                 </ul>
             </section>
-            <div @keydown.enter="send($event)" ref="input" class="input" @paste="handlePaste" draggable="false"
-                title="Enter发送，Ctrl+Enter换行" autofocus @input="onInput" @contextmenu.prevent="$refs.menu.open($event)"
+            <div
+                @keydown.enter="send($event)"
+                ref="input"
+                class="input"
+                @paste="handlePaste"
+                draggable="false"
+                title="Enter发送，Ctrl+Enter换行"
+                autofocus
+                @input="onInput"
+                @contextmenu.prevent="$refs.menu.open($event)"
                 onmouseover="this.setAttribute('org_title', this.title); this.title='';"
-                onmouseout="this.title = this.getAttribute('org_title');" v-on:tribute-replaced="onTributeReplaced"
-                contenteditable="true">
-            </div>
+                onmouseout="this.title = this.getAttribute('org_title');"
+                v-on:tribute-replaced="onTributeReplaced"
+                contenteditable="true"
+            ></div>
             <vue-context ref="menu" :lazy="true">
                 <li>
                     <a @click.prevent="handlePaste($event, 'menu')">
@@ -79,54 +102,62 @@
                     <a @click.prevent="cut">{{ $t('common.cut') }}</a>
                 </li>
             </vue-context>
-            <QuoteMessageView v-if="quotedMessage" style="padding: 10px 20px"
-                v-on:cancelQuoteMessage="cancelQuoteMessage" :enable-message-preview="false"
-                :quoted-message="quotedMessage" :show-close-button="true" />
+            <QuoteMessageView
+                v-if="quotedMessage"
+                style="padding: 10px 20px"
+                v-on:cancelQuoteMessage="cancelQuoteMessage"
+                :enable-message-preview="false"
+                :quoted-message="quotedMessage"
+                :show-close-button="true"
+            />
         </section>
-        <ChannelMenuView v-else :menus="conversationInfo.conversation._target.menus"
-            :conversation="conversationInfo.conversation"></ChannelMenuView>
+        <ChannelMenuView v-else :menus="conversationInfo.conversation._target.menus" :conversation="conversationInfo.conversation"></ChannelMenuView>
+
+        <!-- 礼物弹窗 -->
+        <GiftView v-model:open="showGift" :conversation="conversationInfo.conversation" />
     </div>
 </template>
 
 <script>
-import wfc from "../../../wfc/client/wfc";
-import TextMessageContent from "../../../wfc/messages/textMessageContent";
-import store from "../../../store";
-import { categoriesDefault, emojisDefault, VEmojiPicker } from "@imndx/v-emoji-picker-vue3"
-import '@imndx/v-emoji-picker-vue3/lib/v-emoji-picker.esm.css'
-import Tribute from "tributejs";
-import '../../../tribute.css'
-import ConversationType from "../../../wfc/model/conversationType";
-import ConversationInfo from "../../../wfc/model/conversationInfo";
-import GroupInfo from "../../../wfc/model/groupInfo";
-import GroupMemberType from "../../../wfc/model/groupMemberType";
-import QuoteInfo from "../../../wfc/model/quoteInfo";
-import Draft from "../../util/draft";
-import Mention from "../../../wfc/model/mention";
+import GiftView from '../../components/GiftView.vue';
+import wfc from '../../../wfc/client/wfc';
+import TextMessageContent from '../../../wfc/messages/textMessageContent';
+import store from '../../../store';
+import { categoriesDefault, emojisDefault, VEmojiPicker } from '@imndx/v-emoji-picker-vue3';
+import '@imndx/v-emoji-picker-vue3/lib/v-emoji-picker.esm.css';
+import Tribute from 'tributejs';
+import '../../../tribute.css';
+import ConversationType from '../../../wfc/model/conversationType';
+import ConversationInfo from '../../../wfc/model/conversationInfo';
+import GroupInfo from '../../../wfc/model/groupInfo';
+import GroupMemberType from '../../../wfc/model/groupMemberType';
+import QuoteInfo from '../../../wfc/model/quoteInfo';
+import Draft from '../../util/draft';
+import Mention from '../../../wfc/model/mention';
 import { parser as emojiParse } from '../../util/emoji';
-import QuoteMessageView from "../../main/conversation/message/QuoteMessageView";
-import { fileFromDataUri } from "../../util/imageUtil";
-import StickerMessageContent from "../../../wfc/messages/stickerMessageContent";
-import { config as emojiConfig } from "../../main/conversation/EmojiAndStickerConfig";
-import { ipcRenderer, isElectron } from "../../../platform";
-import { copyText } from "../../util/clipboard";
-import EventType from "../../../wfc/client/wfcEvent";
-import IpcEventType from "../../../ipcEventType";
-import ChannelMenuView from "./ChannelMenuView";
-import pttClient from "../../../wfc/ptt/client/pttClient";
-import TalkingCallback from "../../../wfc/ptt/client/talkingCallback";
-import Config from "../../../config";
-import SoundMessageContent from "../../../wfc/messages/soundMessageContent";
-import BenzAMRRecorder from "benz-amr-recorder";
-import TypingMessageContent from "../../../wfc/messages/typingMessageContent";
-import { currentWindow, fs } from "../../../platform";
-import { vOnClickOutside } from '@vueuse/components'
-import SendMixMediaMessageView from "../view/SendMixMediaMessageView.vue";
-import avenginekitproxy from "../../../wfc/av/engine/avenginekitproxy";
-import avenginekit from "../../../wfc/av/internal/engine.min";
+import QuoteMessageView from '../../main/conversation/message/QuoteMessageView';
+import { fileFromDataUri } from '../../util/imageUtil';
+import StickerMessageContent from '../../../wfc/messages/stickerMessageContent';
+import { config as emojiConfig } from '../../main/conversation/EmojiAndStickerConfig';
+import { ipcRenderer, isElectron } from '../../../platform';
+import { copyText } from '../../util/clipboard';
+import EventType from '../../../wfc/client/wfcEvent';
+import IpcEventType from '../../../ipcEventType';
+import ChannelMenuView from './ChannelMenuView';
+import pttClient from '../../../wfc/ptt/client/pttClient';
+import TalkingCallback from '../../../wfc/ptt/client/talkingCallback';
+import Config from '../../../config';
+import SoundMessageContent from '../../../wfc/messages/soundMessageContent';
+import BenzAMRRecorder from 'benz-amr-recorder';
+import TypingMessageContent from '../../../wfc/messages/typingMessageContent';
+import { currentWindow, fs } from '../../../platform';
+import { vOnClickOutside } from '@vueuse/components';
+import SendMixMediaMessageView from '../view/SendMixMediaMessageView.vue';
+import avenginekitproxy from '../../../wfc/av/engine/avenginekitproxy';
+import avenginekit from '../../../wfc/av/internal/engine.min';
 
 export default {
-    name: "MessageInputView",
+    name: 'MessageInputView',
     props: {
         conversationInfo: {
             type: ConversationInfo,
@@ -142,10 +173,11 @@ export default {
             type: Boolean,
             required: true,
             default: false,
-        }
+        },
     },
     data() {
         return {
+            showGift: false,
             sharedConversationState: store.state.conversation,
             sharedContactState: store.state.contact,
             sharedMiscState: store.state.misc,
@@ -164,7 +196,7 @@ export default {
 
             isPttTalking: false,
             isRecording: false,
-        }
+        };
     },
     methods: {
         onTributeReplaced(e) {
@@ -180,8 +212,7 @@ export default {
                 let groupInfo = target;
                 let groupMember = wfc.getGroupMember(groupInfo.target, wfc.getUserId());
                 if (groupInfo.mute === 1) {
-                    return [GroupMemberType.Owner, GroupMemberType.Manager, GroupMemberType.Allowed].indexOf(groupMember.type) >= 0
-                        || groupMember.type === GroupMemberType.Allowed;
+                    return [GroupMemberType.Owner, GroupMemberType.Manager, GroupMemberType.Allowed].indexOf(groupMember.type) >= 0 || groupMember.type === GroupMemberType.Allowed;
                 }
             }
 
@@ -190,7 +221,7 @@ export default {
 
         cancelQuoteMessage() {
             this.conversationInfo._quotedMessage = null;
-            store.quoteMessage(null)
+            store.quoteMessage(null);
         },
 
         onInput(e) {
@@ -202,7 +233,7 @@ export default {
                 let now = new Date().getTime();
                 if (now - this.lastTypingMessageTimestamp > 10 * 1000) {
                     let typing = new TypingMessageContent(type);
-                    wfc.sendConversationMessage(this.conversationInfo.conversation, typing)
+                    wfc.sendConversationMessage(this.conversationInfo.conversation, typing);
                     this.lastTypingMessageTimestamp = now;
                 }
             }
@@ -224,9 +255,9 @@ export default {
                     document.execCommand('insertImage', false, 'local-resource://' + args.filename);
                     return;
                 } else if (args.hasFile) {
-                    args.files.forEach(file => {
-                        store.sendFile(this.conversationInfo.conversation, file)
-                    })
+                    args.files.forEach((file) => {
+                        store.sendFile(this.conversationInfo.conversation, file);
+                    });
                     return;
                 }
             } else {
@@ -235,8 +266,8 @@ export default {
                     let fileList = dT.files;
                     if (fileList.length > 0) {
                         if (Config.ENABLE_MIX_MEDIA_MESSAGE) {
-                            this.showSendMixMediaMessageModal(fileList)
-                            return
+                            this.showSendMixMediaMessageModal(fileList);
+                            return;
                         }
                         for (let i = 0; i < fileList.length; i++) {
                             let file = fileList.item(i);
@@ -252,7 +283,7 @@ export default {
                                         this.$notify({
                                             // title: '不支持',
                                             text: this.$t('conversation.not_support_send_folder'),
-                                            type: 'warn'
+                                            type: 'warn',
                                         });
                                         break;
                                     }
@@ -262,12 +293,12 @@ export default {
                                         this.$notify({
                                             // title: '不支持',
                                             text: this.$t('conversation.not_support_send_such_file'),
-                                            type: 'warn'
+                                            type: 'warn',
                                         });
                                         break;
                                     }
                                 }
-                                store.sendFile(this.conversationInfo.conversation, file)
+                                store.sendFile(this.conversationInfo.conversation, file);
                             }
                         }
                         return;
@@ -275,15 +306,15 @@ export default {
                 } else {
                     const clipboardContents = await navigator.clipboard.read();
                     for (const item of clipboardContents) {
-                        console.log('clipboard item', item.types, item)
-                        if (item.types.includes("image/png")) {
-                            const blob = await item.getType("image/png");
+                        console.log('clipboard item', item.types, item);
+                        if (item.types.includes('image/png')) {
+                            const blob = await item.getType('image/png');
                             if (Config.ENABLE_MIX_MEDIA_MESSAGE) {
                                 let file = new File([blob], new Date().getTime() + '.png', {
-                                    type: 'image/png'
+                                    type: 'image/png',
                                 });
-                                this.showSendMixMediaMessageModal([file])
-                                return
+                                this.showSendMixMediaMessageModal([file]);
+                                return;
                             }
                             document.execCommand('insertImage', false, URL.createObjectURL(blob));
                             this.styleImageInEditor();
@@ -301,7 +332,7 @@ export default {
         },
 
         styleImageInEditor() {
-            let imgs = this.$refs.input.getElementsByTagName('img')
+            let imgs = this.$refs.input.getElementsByTagName('img');
             for (let img of imgs) {
                 img.style.maxWidth = '100px';
                 img.style.maxHeight = '100px';
@@ -313,7 +344,7 @@ export default {
             this.mentions.push({
                 key: displayName,
                 value: '@' + memberId,
-            })
+            });
             let text = this.$refs.input.innerText;
             let mentionValue;
             if (text.endsWith(' ')) {
@@ -333,7 +364,7 @@ export default {
         copy() {
             let text = this.$refs['input'].innerText;
             if (text) {
-                copyText(text)
+                copyText(text);
             }
         },
 
@@ -344,7 +375,7 @@ export default {
 
         async send(e) {
             if (e.keyCode === 229) {
-                return
+                return;
             }
             if (this.tribute && this.tribute.isActive) {
                 this.tributeReplaced = false;
@@ -368,24 +399,20 @@ export default {
             let message = input.innerHTML.trim();
             let conversation = this.conversationInfo.conversation;
 
-            if (
-                !conversation
-                || !this.canisend()
-                || !message
-            ) return;
+            if (!conversation || !this.canisend() || !message) return;
 
             if (e.ctrlKey) {
                 // e.preventDefault();
                 // this.refs.input.innerHTML = this.refs.input.innerHTML+ "<div><br></div>";
                 if (window.getSelection) {
-                    let nextChar = window.getSelection().focusNode.textContent.charAt(window.getSelection().focusOffset)
+                    let nextChar = window.getSelection().focusNode.textContent.charAt(window.getSelection().focusOffset);
                     if (!nextChar) {
                         document.execCommand('InsertHTML', true, '<br>');
                     }
 
                     let selection = window.getSelection(),
                         range = selection.getRangeAt(0),
-                        br = document.createElement("br");
+                        br = document.createElement('br');
                     range.deleteContents();
                     range.insertNode(br);
                     range.setStartAfter(br);
@@ -407,7 +434,7 @@ export default {
                 for (const img of imgs) {
                     // emoji
                     if (img.className.indexOf('emoji') >= 0) {
-                        img.replaceWith(img.alt)
+                        img.replaceWith(img.alt);
                         continue;
                     }
                     let src = img.src;
@@ -418,18 +445,18 @@ export default {
                         file = decodeURI(src.substring(17, src.length));
                     } else {
                         if (src.startsWith('blob:')) {
-                            let blob = await fetch(src).then(r => r.blob());
+                            let blob = await fetch(src).then((r) => r.blob());
                             file = new File([blob], new Date().getTime() + '.png');
                         } else {
                             file = fileFromDataUri(src, new Date().getTime() + '.png');
                         }
                     }
-                    this.$eventBus.$emit('uploadFile', file)
+                    this.$eventBus.$emit('uploadFile', file);
                     store.setShouldAutoScrollToBottom(true);
-                    store.sendFile(this.conversationInfo.conversation, file)
+                    store.sendFile(this.conversationInfo.conversation, file);
                     // 会影响 input.getElementsByTagName 返回的数组，所以上面拷贝了一下
                     img.parentNode.removeChild(img);
-                    URL.revokeObjectURL(img.src)
+                    URL.revokeObjectURL(img.src);
                 }
             }
             message = input.innerText.trim();
@@ -471,7 +498,7 @@ export default {
             if (hash) {
                 url = window.location.href.replace(hash, '#/conversation-message-history');
             } else {
-                url += "/conversation-message-history"
+                url += '/conversation-message-history';
             }
             let conversation = this.conversationInfo.conversation;
             ipcRenderer.send(IpcEventType.showConversationMessageHistoryPage, {
@@ -480,7 +507,7 @@ export default {
                 target: conversation.target,
                 line: conversation.line,
             });
-            console.log(IpcEventType.showConversationMessageHistoryPage, url)
+            console.log(IpcEventType.showConversationMessageHistoryPage, url);
         },
 
         hideEmojiView(e) {
@@ -492,7 +519,7 @@ export default {
         onSelectEmoji(emoji) {
             this.showEmojiDialog = false;
             if (emoji.data.indexOf('http') >= 0) {
-                let sticker = new StickerMessageContent('', emoji.data, 200, 200)
+                let sticker = new StickerMessageContent('', emoji.data, 200, 200);
                 wfc.sendConversationMessage(this.conversationInfo.conversation, sticker);
 
                 return;
@@ -510,7 +537,6 @@ export default {
             // Change this to div.childNodes to support multiple top-level nodes
             return div.firstChild;
         },
-
 
         insertHTML(html) {
             let sel, range;
@@ -554,15 +580,15 @@ export default {
                     this.$notify({
                         text: '远程协助，目前只支持 Windows 和 macOS',
                         type: 'error',
-                    })
-                    return
+                    });
+                    return;
                 }
                 avenginekitproxy.requestRemoteControl(this.conversationInfo.conversation);
             } else {
                 this.$notify({
                     text: '需要高级版音视频才支持远程协助',
                     type: 'error',
-                })
+                });
             }
         },
 
@@ -587,7 +613,7 @@ export default {
             } else if (files.length > 10) {
                 this.$notify({
                     text: '一次最多支持发送 10 个文件',
-                    type: 'warn'
+                    type: 'warn',
                 });
                 return;
             }
@@ -607,25 +633,25 @@ export default {
             //   return false;
             // }
             for (let i = 0; i < files.length; i++) {
-                let file = files[i]
+                let file = files[i];
                 if (isElectron()) {
                     if (new Date().getTime() - file.lastModified < 30 * 1000 && file.path.indexOf('/var/folders') === 0) {
-                        console.log('not support file', file)
+                        console.log('not support file', file);
                         this.$notify({
                             text: ' 不支持的文件类型',
-                            type: 'warn'
+                            type: 'warn',
                         });
                         return;
                     }
                 }
             }
             if (Config.ENABLE_MIX_MEDIA_MESSAGE) {
-                this.showSendMixMediaMessageModal(files)
+                this.showSendMixMediaMessageModal(files);
                 return;
             }
             for (let i = 0; i < files.length; i++) {
-                let file = files[i]
-                this.$eventBus.$emit('uploadFile', file)
+                let file = files[i];
+                this.$eventBus.$emit('uploadFile', file);
                 store.sendFile(this.conversationInfo.conversation, file);
             }
         },
@@ -634,8 +660,8 @@ export default {
             window.__twemoji_base_url__ = Config.emojiBaseUrl();
             let config = emojiConfig();
             if (this.conversationInfo.conversation.type === ConversationType.SecretChat) {
-                this.emojiCategories = config.emojiCategories.filter(c => !c.name.startsWith('Sticker'));
-                this.emojis = config.emojis.filter(c => !c.category.startsWith('Sticker'));
+                this.emojiCategories = config.emojiCategories.filter((c) => !c.name.startsWith('Sticker'));
+                this.emojis = config.emojis.filter((c) => !c.category.startsWith('Sticker'));
             } else {
                 this.emojiCategories = config.emojiCategories;
                 this.emojis = config.emojis;
@@ -651,9 +677,8 @@ export default {
                 this.tribute = null;
             }
             let type = conversation.conversationType;
-            if (type === ConversationType.Single
-                || type === ConversationType.ChatRoom || type === ConversationType.Channel) {
-                return
+            if (type === ConversationType.Single || type === ConversationType.ChatRoom || type === ConversationType.Channel) {
+                return;
             }
 
             let mentionMenuItems = [];
@@ -664,7 +689,7 @@ export default {
                 value: '@' + conversation.target,
                 avatar: groupInfo.portrait ? groupInfo.portrait : Config.DEFAULT_GROUP_PORTRAIT_URL,
                 //searchKey: '所有人' + pinyin.letter('所有人', '', null)
-                searchKey: this.$t('conversation.all_people') + 'suoyouren' + 'syr'
+                searchKey: this.$t('conversation.all_people') + 'suoyouren' + 'syr',
             });
 
             let groupMemberUserInfos = store.getGroupMemberUserInfos(conversation.target, false);
@@ -700,7 +725,7 @@ export default {
                 },
                 menuContainer: document.getElementById('conversation-content'),
             });
-            if (this.$refs["input"]) {
+            if (this.$refs['input']) {
                 this.tribute.attach(this.$refs['input']);
             }
         },
@@ -708,7 +733,7 @@ export default {
         handleMention(text) {
             let textMessageContent = new TextMessageContent();
             textMessageContent.content = text.trim();
-            this.mentions.forEach(e => {
+            this.mentions.forEach((e) => {
                 if (text.indexOf(e.key) > -1) {
                     if (e.value === '@' + this.conversationInfo.conversation.target) {
                         textMessageContent.mentionedType = 2;
@@ -729,13 +754,12 @@ export default {
             this.$nextTick(() => {
                 if (this.$refs['input']) {
                     this.$refs['input'].focus();
-                    console.log('focus end')
+                    console.log('focus end');
                 }
-            })
+            });
         },
 
         moveCursorToEnd(contentEditableDiv) {
-
             let range = document.createRange();
             range.selectNodeContents(contentEditableDiv);
             range.collapse(false);
@@ -753,7 +777,7 @@ export default {
             store.quoteMessage(draft.quotedMessage);
             let input = this.$refs['input'];
             if (input.innerHTML.trim()) {
-                console.log('inputting, ignore', draft.text)
+                console.log('inputting, ignore', draft.text);
             } else {
                 input.innerHTML = draft.text.replace(/ /g, '&nbsp').replace(/\n/g, '<br>');
                 this.moveCursorToEnd(input);
@@ -765,20 +789,20 @@ export default {
                 return;
             }
             let clonedInput = this.$refs['input'].cloneNode(true);
-            let children = [...clonedInput.children]
+            let children = [...clonedInput.children];
 
             for (let i = 0; i < children.length; i++) {
-                let e = children[i]
+                let e = children[i];
                 if (e.tagName === 'BR') {
-                    e.replaceWith('\n')
+                    e.replaceWith('\n');
                 } else {
-                    e.replaceWith(e.alt ? e.alt : '')
+                    e.replaceWith(e.alt ? e.alt : '');
                 }
             }
             let draftText = clonedInput.innerHTML.trim();
 
             let mentions = [];
-            this.mentions.forEach(e => {
+            this.mentions.forEach((e) => {
                 let mention;
                 /**
                  *  e.key: "13866666666"
@@ -788,17 +812,16 @@ export default {
                 let end = start + 1 + e.key.length;
                 if (start > -1) {
                     if (e.value === '@' + this.conversationInfo.conversation.target) {
-                        mention = new Mention(start, end, this.conversationInfo.conversation.target, true)
+                        mention = new Mention(start, end, this.conversationInfo.conversation.target, true);
                     } else {
-                        mention = new Mention(start, end, e.value.substring(1), false)
+                        mention = new Mention(start, end, e.value.substring(1), false);
                     }
                     mentions.push(mention);
                 }
             });
 
             let mentionCount = this.mentions ? this.mentions.length : 0;
-            if (mentionCount > 0
-                && draftText.endsWith('@' + this.mentions[mentionCount - 1].key + ' ')) {
+            if (mentionCount > 0 && draftText.endsWith('@' + this.mentions[mentionCount - 1].key + ' ')) {
                 // @的最后一个空格不能删除
                 // do nothing
             } else {
@@ -812,20 +835,18 @@ export default {
 
             if (draftText.length === 0 && !quoteInfo) {
                 if (conversationInfo.draft !== '') {
-                    Draft.setConversationDraft(conversationInfo.conversation, draftText, quoteInfo, mentions)
+                    Draft.setConversationDraft(conversationInfo.conversation, draftText, quoteInfo, mentions);
                 }
             } else {
                 if (draftText !== conversationInfo.draft || (!conversationInfo.draft && quoteInfo)) {
-                    Draft.setConversationDraft(conversationInfo.conversation, draftText, quoteInfo, mentions)
+                    Draft.setConversationDraft(conversationInfo.conversation, draftText, quoteInfo, mentions);
                 }
             }
         },
 
         onGroupMembersUpdate(groupId, groupMembers) {
-            console.log('messageInput onGroupMembersUpdate', groupId)
-            if (this.conversationInfo
-                && this.conversationInfo.conversation.type === ConversationType.Group
-                && this.conversationInfo.conversation.target === groupId) {
+            console.log('messageInput onGroupMembersUpdate', groupId);
+            if (this.conversationInfo && this.conversationInfo.conversation.type === ConversationType.Group && this.conversationInfo.conversation.target === groupId) {
                 let groupMember = wfc.getGroupMember(groupId, wfc.getUserId());
                 if (groupMember && groupMember.type === GroupMemberType.Muted) {
                     this.convMuted = true;
@@ -839,25 +860,25 @@ export default {
                 let talkingCallback = new TalkingCallback();
                 talkingCallback.onStartTalking = (conversation) => {
                     this.isPttTalking = true;
-                    console.log('onStartTalking', conversation)
+                    console.log('onStartTalking', conversation);
                     this.$notify({
                         text: '请开始说话',
-                        type: 'info'
+                        type: 'info',
                     });
                 };
                 talkingCallback.onRequestFail = (conversation, reason) => {
                     this.$notify({
                         text: '对讲请求失败: ' + reason,
-                        type: 'error'
+                        type: 'error',
                     });
-                }
+                };
                 talkingCallback.onTalkingEnd = (conversation, reason) => {
                     if (conversation.equal(this.conversationInfo.conversation)) {
                         this.isPttTalking = false;
                     }
-                }
-                pttClient.requestTalk(this.conversationInfo.conversation, talkingCallback)
-                window.addEventListener('mouseup', this.handleMouseUp)
+                };
+                pttClient.requestTalk(this.conversationInfo.conversation, talkingCallback);
+                window.addEventListener('mouseup', this.handleMouseUp);
             } else {
                 this.isPttTalking = false;
                 pttClient.releaseTalk(this.conversationInfo.conversation);
@@ -869,23 +890,26 @@ export default {
             if (start) {
                 if (!this.amrRecorder) {
                     this.amrRecorder = new BenzAMRRecorder();
-                    this.amrRecorder.initWithRecord().then(() => {
-                        this.isRecording = true;
-                        this.amrRecorder.startRecord();
-                        this.$notify({
-                            text: '请开始说话',
-                            type: 'info'
+                    this.amrRecorder
+                        .initWithRecord()
+                        .then(() => {
+                            this.isRecording = true;
+                            this.amrRecorder.startRecord();
+                            this.$notify({
+                                text: '请开始说话',
+                                type: 'info',
+                            });
+                        })
+                        .catch((e) => {
+                            this.$notify({
+                                text: '录音失败',
+                                type: 'error',
+                            });
+                            console.log('录音失败', e);
+                            this.amrRecorder = null;
                         });
-                    }).catch((e) => {
-                        this.$notify({
-                            text: '录音失败',
-                            type: 'error'
-                        });
-                        console.log('录音失败', e);
-                        this.amrRecorder = null;
-                    });
                 }
-                window.addEventListener('mouseup', this.handleMouseUp)
+                window.addEventListener('mouseup', this.handleMouseUp);
             } else {
                 this.isRecording = false;
                 if (this.amrRecorder) {
@@ -899,7 +923,7 @@ export default {
                         } else {
                             this.$notify({
                                 text: '录音时间太短',
-                                type: 'warn'
+                                type: 'warn',
                             });
                         }
                         this.amrRecorder = null;
@@ -913,15 +937,15 @@ export default {
             } else if (this.isRecording) {
                 this.recordAudio(false);
             }
-            window.removeEventListener('mouseup', this.handleMouseUp)
+            window.removeEventListener('mouseup', this.handleMouseUp);
         },
 
         setupConversationInput() {
             this.$refs.input.innerHTML = '';
             this.restoreDraft();
-            this.initMention(this.conversationInfo.conversation)
+            this.initMention(this.conversationInfo.conversation);
             this.focusInput();
-            this.initEmojiPicker()
+            this.initEmojiPicker();
         },
 
         showSendMixMediaMessageModal(fileList) {
@@ -931,17 +955,19 @@ export default {
                     files: [...fileList],
                     conversation: this.conversationInfo.conversation,
                     text: this.$refs.input.innerText,
-                }, null, {
-                name: 'send-mix-multi-media-message-modal',
-                width: 600,
-                height: 480,
-                clickToClose: true,
-            }, {
-                'before-close': null,
-            });
-
-        }
-
+                },
+                null,
+                {
+                    name: 'send-mix-multi-media-message-modal',
+                    width: 600,
+                    height: 480,
+                    clickToClose: true,
+                },
+                {
+                    'before-close': null,
+                }
+            );
+        },
     },
 
     activated() {
@@ -961,8 +987,8 @@ export default {
     mounted() {
         if (!this.sharedConversationState.showChannelMenu) {
             if (this.conversationInfo) {
-                this.initMention(this.conversationInfo.conversation)
-                this.initEmojiPicker()
+                this.initMention(this.conversationInfo.conversation);
+                this.initEmojiPicker();
                 this.restoreDraft();
             }
             this.focusInput();
@@ -971,26 +997,26 @@ export default {
 
         if (isElectron()) {
             ipcRenderer.on('screenshots-ok', (event, args) => {
-                console.log('screenshots-ok', args)
+                console.log('screenshots-ok', args);
                 if (Config.ENABLE_MIX_MEDIA_MESSAGE) {
                     // ctrl + v 粘贴
-                    return
+                    return;
                 }
                 if (args.filePath) {
                     setTimeout(() => {
                         document.execCommand('insertImage', false, 'local-resource://' + args.filePath);
                         this.styleImageInEditor();
-                    }, 100)
+                    }, 100);
                 }
             });
         }
         this.storeDraftIntervalId = setInterval(() => {
             this.storeDraft(this.conversationInfo);
-        }, 5 * 1000)
+        }, 5 * 1000);
     },
 
     created() {
-        wfc.eventEmitter.on(EventType.GroupMembersUpdate, this.onGroupMembersUpdate)
+        wfc.eventEmitter.on(EventType.GroupMembersUpdate, this.onGroupMembersUpdate);
     },
 
     unmounted() {
@@ -998,9 +1024,9 @@ export default {
             ipcRenderer.removeAllListeners('screenshots-ok');
         }
         if (this.storeDraftIntervalId) {
-            clearInterval(this.storeDraftIntervalId)
+            clearInterval(this.storeDraftIntervalId);
         }
-        wfc.eventEmitter.removeListener(EventType.GroupMembersUpdate, this.onGroupMembersUpdate)
+        wfc.eventEmitter.removeListener(EventType.GroupMembersUpdate, this.onGroupMembersUpdate);
     },
 
     watch: {
@@ -1009,7 +1035,7 @@ export default {
                 this.$nextTick(() => {
                     if (this.sharedConversationState.showChannelMenu) {
                         this.$parent.$refs['conversationMessageList'].style.flexGrow = 1;
-                        return
+                        return;
                     }
                     if (this.$parent.messageInputViewResized) {
                         this.$parent.$refs['conversationMessageList'].style.flexGrow = 0;
@@ -1022,7 +1048,7 @@ export default {
                         this.setupConversationInput();
                     }
                     this.lastConversationInfo = this.conversationInfo;
-                })
+                });
             } else {
                 // 其他端更新了草稿
                 // fixme
@@ -1030,18 +1056,18 @@ export default {
                 this.lastConversationInfo = this.conversationInfo;
             }
         },
-        'muted': {
+        muted: {
             handler(newValue) {
                 this.convMuted = newValue;
                 if (!newValue) {
                     this.$nextTick(() => {
                         this.setupConversationInput();
-                    })
+                    });
                 } else {
                     this.$parent.$refs['conversationMessageList'].style.flexGrow = 1;
                 }
-            }
-        }
+            },
+        },
     },
 
     computed: {
@@ -1054,22 +1080,23 @@ export default {
         hasInputTextOrImage() {
             // TODO 监听input的输入情况
             return true;
-        }
+        },
     },
 
     components: {
         ChannelMenuView,
         QuoteMessageView,
-        VEmojiPicker
+        VEmojiPicker,
+        GiftView,
     },
     directives: {
         vOnClickOutside,
         focus,
-    }
+    },
 };
 </script>
 
-<style lang='css' scoped>
+<style lang="css" scoped>
 .message-input-container {
     display: flex;
     flex-direction: column;
@@ -1082,7 +1109,7 @@ export default {
 }
 
 /*pls refer to https://vue-loader.vuejs.org/guide/scoped-css.html#child-component-root-elements*/
-#emoji>>>.container-emoji {
+#emoji >>> .container-emoji {
     height: 280px;
 }
 
@@ -1179,7 +1206,6 @@ i:hover {
     animation: glow 2s infinite;
 }
 
-
 .record-icon {
     color: #000b;
 }
@@ -1189,8 +1215,8 @@ i:hover {
     animation: glow 2s infinite;
 }
 
->>>.emoji-picker {
-    box-shadow: 5px 5px 20px 0 #C0C0C0;
+>>> .emoji-picker {
+    box-shadow: 5px 5px 20px 0 #c0c0c0;
     --ep-color-active: #3f64e4 !important;
 }
 </style>
