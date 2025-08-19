@@ -57,7 +57,6 @@ const getCustomGroupList = () => {
                 groupList.push({
                     name: item.groupName,
                     id: item.groupId,
-                    personList: item.personList || [],
                 });
             });
             navlist.value = groupList;

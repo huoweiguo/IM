@@ -1,16 +1,27 @@
 <template>
     <Layout>
         <section id="conversation-content" class="conversation-page">
-            <ChatUser class="conversation-list-panel" />
+            <ChatUser :activeId="activeId" class="conversation-list-panel" />
             <ConversationView class="conversation-view" />
         </section>
     </Layout>
 </template>
 
 <script setup>
+import { ref, onMounted, watch } from 'vue';
 import Layout from '../components/Layout.vue';
 import ChatUser from '../components/ChatUser.vue';
 import ConversationView from '../main/conversation/ConversationView.vue';
+import { useRouter, useRoute } from 'vue-router';
+const router = useRouter();
+const route = useRoute();
+const activeId = ref(route.query.activeId);
+watch(
+    () => route.query.activeId,
+    (newVal) => {
+        activeId.value = newVal;
+    }
+);
 </script>
 
 <style lang="scss" scoped>

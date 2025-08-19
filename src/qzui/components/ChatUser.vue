@@ -1,6 +1,6 @@
 <template>
     <div class="chat-user-container">
-        <ul v-if="activeId == 'private'">
+        <ul v-if="props.activeId == 'private'">
             <li @click="openFansWindow()">
                 <img :src="grpImg1" class="user-icon" />
                 <div class="user-info">
@@ -41,7 +41,7 @@
                 </div>
             </li>
         </ul>
-        <ConversationListView class="conversation-list-container" :activeId="activeId" :groupListItems="groupList" />
+        <ConversationListView class="conversation-list-container" :activeId="props.activeId" :groupListItems="groupList" />
     </div>
 </template>
 
@@ -56,11 +56,13 @@ import wfc from '../../wfc/client/wfc';
 import ConversationListView from '../main/conversationList/ConversationListView.vue';
 import { createNewWindow } from '@/qzui/util/electronHelper';
 import { getItem } from '../../qzui/util/storageHelper';
-import { useRouter, useRoute } from 'vue-router';
-const router = useRouter();
-const route = useRoute();
 
-const activeId = ref(route.query.activeId || 'private');
+const props = defineProps({
+    activeId: {
+        type: String,
+        default: 'private',
+    },
+});
 
 const groupList = ref([]);
 const userinfo = JSON.parse(getItem('userinfo')) || {};
@@ -84,11 +86,11 @@ const openKnowWindow = () => {
 };
 
 const getCustomGroupList = () => {
-    if (activeId.value == 'custom' || activeId.value == 'public') {
+    if (props.activeId == 'custom' || props.activeId == 'public') {
         let type = 0;
-        if (activeId.value == 'custom') {
+        if (props.activeId == 'custom') {
             type = 1;
-        } else if (activeId.value == 'public') {
+        } else if (props.activeId == 'public') {
             type = 2;
         }
         getGroupList({
@@ -96,14 +98,19 @@ const getCustomGroupList = () => {
             type: type, //类型(0-所有,1-公域群/2-私域群)
         }).then((res) => {
             if (res.code == 0) {
-                groupList.value = res.data;
+                const ids = res.data.map((item) => {
+                    return item.serviceGroupId;
+                });
+
+                groupList.value = wfc.getGroupInfos(ids);
+                console.log(123, groupList.value);
             }
         });
-    } else if (activeId.value == 'private') {
+    } else if (props.activeId == 'private') {
         groupList.value = [];
     } else {
         getChatInCustomGroup({
-            groupId: activeId.value,
+            groupId: props.activeId,
         }).then(async (res) => {
             if (res.code == 0) {
                 await Promise.all(
@@ -122,15 +129,15 @@ const getCustomGroupList = () => {
                 let info = wfc.getUserInfos(res.data.map((item) => item.userInfo.serviceId));
 
                 groupList.value = info;
+                console.log(123, groupList.value);
             }
         });
     }
 };
 
 watch(
-    () => route.query.activeId,
-    (newVal) => {
-        activeId.value = newVal;
+    () => props.activeId,
+    () => {
         getCustomGroupList();
     }
 );

@@ -258,8 +258,12 @@ export default {
             if (this.activeId !== 'private') {
                 let list = [];
                 this.groupListItems.forEach((item) => {
+                    // item.type 0 单聊 1 群聊
                     let conversation = new Conversation(ConversationType.Single, item.uid, 0);
-                    let conversationInfo = store._reloadConversation(conversation);
+                    if (item.type == 1) {
+                        conversation = new Conversation(ConversationType.Group, item.target, 0);
+                    }
+                    let conversationInfo = store.getConversationInfo(conversation);
                     list.push(conversationInfo);
                 });
 
