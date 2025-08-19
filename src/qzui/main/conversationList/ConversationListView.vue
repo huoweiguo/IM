@@ -80,6 +80,8 @@ import { markRaw } from 'vue';
 import { ElMessage } from 'element-plus';
 import Conversation from '../../../wfc/model/conversation';
 import ConversationType from '../../../wfc/model/conversationType';
+import { getUserByServiceId } from '../../../api/index.js';
+import { getGroupList } from '../../../api/customGroup.js';
 
 export default {
     name: 'ConversationListView',
@@ -171,11 +173,12 @@ export default {
                 this.groupList = res.data || [];
             });
         },
-        moveConversationToGroupSubmit() {
+        async moveConversationToGroupSubmit() {
             if (!this.selectUserInfo.groupId) {
                 ElMessage.error('请选择分组');
                 return;
             }
+            const userInfo = await getUserByServiceId(this.selectUserInfo.target);
             let data = {
                 groupId: this.selectUserInfo.groupId,
                 serviceGroupId: '',
@@ -185,9 +188,21 @@ export default {
             };
             if (this.selectUserInfo.conversation.type == 0) {
                 data.type = 3;
-                data.sourceChatId = 1 || this.selectUserInfo.target;
+                data.sourceChatId = userInfo.data.id;
             }
             if (this.selectUserInfo.conversation.type == 1) {
+                const groupList = await getGroupList({
+                    ownerId: this.userinfo.id,
+                    type: 0, //类型(0-所有,1-公域群/2-私域群)
+                });
+
+                groupList.data.forEach((item) => {
+                    if (item.serviceGroupId == this.selectUserInfo.target) {
+                        data.sourceChatId = item.id;
+                    }
+                });
+
+                // data.sourceChatId = 10; // 群ID
                 data.type = 1;
                 data.serviceGroupId = this.selectUserInfo.target;
             }
@@ -195,6 +210,7 @@ export default {
                 if (res.code == 0) {
                     ElMessage.success('移动成功');
                     this.visible = false;
+                    this.$emit('reloadList');
                 } else {
                     ElMessage.error('移动失败');
                 }

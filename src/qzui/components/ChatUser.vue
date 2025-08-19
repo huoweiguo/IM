@@ -41,7 +41,7 @@
                 </div>
             </li>
         </ul>
-        <ConversationListView class="conversation-list-container" :activeId="props.activeId" :groupListItems="groupList" />
+        <ConversationListView class="conversation-list-container" :activeId="props.activeId" :groupListItems="groupList" @reloadList="getCustomGroupList" />
     </div>
 </template>
 
@@ -103,7 +103,6 @@ const getCustomGroupList = () => {
                 });
 
                 groupList.value = wfc.getGroupInfos(ids);
-                console.log(123, groupList.value);
             }
         });
     } else if (props.activeId == 'private') {
@@ -126,10 +125,20 @@ const getCustomGroupList = () => {
                     })
                 );
 
-                let info = wfc.getUserInfos(res.data.map((item) => item.userInfo.serviceId));
+                // 处理群成员
+                let groupMembers = [];
+                res.data.forEach((item) => {
+                    if (item.chatType == 3) {
+                        // 单聊
+                        groupMembers.push(wfc.getUserInfo(item.userInfo.serviceId));
+                    }
+                    if (item.chatType == 1) {
+                        // 群聊
+                        groupMembers.push(wfc.getGroupInfo(item.serviceGroupId));
+                    }
+                });
 
-                groupList.value = info;
-                console.log(123, groupList.value);
+                groupList.value = groupMembers;
             }
         });
     }
