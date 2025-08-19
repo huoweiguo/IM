@@ -18,6 +18,7 @@
                 </template>
             </el-tab-pane>
         </el-tabs>
+        <view class="window-move" style="flex: 1; height: 100%"></view>
         <a class="addbtn" @click="addGroup"><img src="../assets/add.png" /></a>
     </div>
 </template>
@@ -136,7 +137,6 @@ onMounted(() => {
     }
 }
 .tabs {
-    flex: 1;
     :deep(.el-tabs__item) {
         padding: 0 10px;
     }

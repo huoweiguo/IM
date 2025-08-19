@@ -1,5 +1,5 @@
 <template>
-    <li v-for="(item, index) in groupList" :key="index">
+    <li v-for="item in groupList" :key="item.id">
         <div @click="isDown = item.id == isDown ? '' : item.id" class="category-item-container">
             <i class="arrow right" :class="{ down: isDown == item.id }"></i>
             <div class="category-item">
@@ -11,6 +11,18 @@
         </div>
         <UserListView v-if="isDown == item.id" :enable-pick="false" :users="item.personList" :click-user-item-func="setCurrentUser" :padding-left="'30px'" :enable-contact-context-menu="true" />
     </li>
+    <li v-for="item in defaultGroupList" :key="item.id">
+        <div @click="isDown = item.id == isDown ? '' : item.id" class="category-item-container">
+            <i class="arrow right" :class="{ down: isDown == item.id }"></i>
+            <div class="category-item">
+                <div>
+                    <span class="title">{{ item.name }}</span>
+                </div>
+                <span class="desc">{{ store.state.contact.favGroupList.length }}</span>
+            </div>
+        </div>
+        <GroupListVue v-if="isDown == item.id" :users="item.personList" />
+    </li>
 </template>
 
 <script setup>
@@ -19,6 +31,7 @@ import store from '../../store';
 import wfc from '../../wfc/client/wfc';
 import { getItem } from '../../qzui/util/storageHelper';
 import UserListView from '../main/user/UserListView.vue';
+import GroupListVue from '../main/contact/GroupListView.vue';
 import { getCustomChatGroupList, getChatInCustomGroup } from '../../api/customGroup.js';
 import { getUserById } from '../../api/index.js';
 
@@ -26,22 +39,22 @@ const isDown = ref('');
 const defaultGroupList = ref([
     {
         name: '我创建的群',
-        id: '0',
+        id: 'q0',
         personList: [],
     },
     {
         name: '我管理的群',
-        id: '1',
+        id: 'q1',
         personList: [],
     },
     {
         name: '我加入的私域群',
-        id: '2',
+        id: 'q2',
         personList: [],
     },
     {
         name: '我加入的公域群',
-        id: '3',
+        id: 'q3',
         personList: [],
     },
 ]);
@@ -84,7 +97,7 @@ const getCustomGroupList = async () => {
             });
         }
 
-        groupList.value = [...newList, ...defaultGroupList.value];
+        groupList.value = newList;
     }
 };
 
