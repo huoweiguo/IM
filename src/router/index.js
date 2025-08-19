@@ -383,12 +383,12 @@ const routes = [
         },
     },
     {
-        path: '/otherInfo',
+        path: '/otherInfo/:serviceId',
         name: 'OtherInfo',
         component: OtherInfo,
         meta: {
             requiresAuth: false,
-            title: '他人信息',
+            title: '用户信息',
         },
     },
     {

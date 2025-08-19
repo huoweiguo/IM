@@ -7,7 +7,10 @@ import Config from '@/config';
  * @returns {Promise<Object>} 新创建的窗口对象
  */
 let newWindow = null;
-export async function createNewWindow(options) {
+export async function createNewWindow(options, isCloseOld = true) {
+    if (isCloseOld) {
+        closeNewWindow();
+    }
     if (isElectron()) {
         let hash = window.location.hash;
         let url = window.location.origin;
@@ -16,14 +19,16 @@ export async function createNewWindow(options) {
         }
 
         const windowOptions = {
-            width: options.width || 800,
-            height: options.height || 600,
+            width: options.width || 375,
+            height: options.height || 720,
             webPreferences: {
                 nodeIntegration: true,
                 contextIsolation: false,
             },
             url: url,
             title: options.title || '圈子',
+            resizable: false, // 禁止改变窗口大小
+            fullscreenable: false, // 禁止全屏
         };
         try {
             newWindow = await BrowserWindow.new(windowOptions);

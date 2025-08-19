@@ -2,14 +2,16 @@
     <div class="other-info-container">
         <!-- 头部信息 -->
         <div class="header">
-            <img class="avatar" src="../assets/usr-1.png" alt="头像" />
+            <img v-if="avatar" class="avatar" :src="avatar" alt="头像" />
+            <img v-else class="avatar" :src="store.state.contact?.selfUserInfo?.portrait" alt="头像" />
             <div class="user-info">
                 <div class="nickname-row">
-                    <span class="nickname">爱探险的朵拉</span>
-                    <img class="gender-icon" src="../assets/female_icon.png" alt="女" />
+                    <span class="nickname">{{ userInfo.realName }}</span>
+                    <img v-if="userInfo.sex === 2" class="gender-icon" src="../assets/female_icon.png" alt="女" />
+                    <img v-else-if="userInfo.sex === 1" class="gender-icon" src="../assets/male_icon.png" alt="男" />
                 </div>
-                <div class="desc">昵称：小肥羊</div>
-                <div class="desc">个性签名：青青草原</div>
+                <div class="desc">昵称：{{ userInfo.nickname }}</div>
+                <div class="desc">个性签名：{{ userInfo.intro }}</div>
             </div>
         </div>
 
@@ -85,8 +87,15 @@
 
 <script setup>
 import { createNewWindow } from '@/qzui/util/electronHelper';
-// 这里可后续添加逻辑
-import { ref, reactive } from 'vue';
+import { ref, reactive, onMounted } from 'vue';
+import { useRoute } from 'vue-router';
+import { getUserByServiceId } from '../../api/index.js';
+import store from '../../store';
+
+const route = useRoute();
+const serviceId = route.params.serviceId;
+const userInfo = ref({});
+
 const otherInfo = reactive({
     notSee: false,
     blacklist: false,
@@ -97,7 +106,7 @@ const handleIdAuth = () => {
         width: 375,
         height: 800,
         title: '实名认证',
-        url: `#/idAuth?id=111`,
+        url: `#/idAuth?id=${serviceId}`,
     });
 };
 const handleSchoolAuth = () => {
@@ -108,6 +117,14 @@ const handleSchoolAuth = () => {
         url: `#/schoolAuth?id=111`,
     });
 };
+const getUserInfo = () => {
+    getUserByServiceId(serviceId).then((res) => {
+        userInfo.value = res.data;
+    });
+};
+onMounted(() => {
+    getUserInfo();
+});
 </script>
 
 <style scoped>
@@ -115,8 +132,8 @@ const handleSchoolAuth = () => {
     background: #f7f6ff;
     width: 375px;
     height: 100vh;
+    overflow: auto;
     box-sizing: border-box;
-    font-family: 'PingFang SC', 'Microsoft YaHei', Arial, sans-serif;
 }
 
 .header {

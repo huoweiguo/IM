@@ -1,10 +1,5 @@
 <template>
     <nav class="chat-slider">
-        <tippy to="#infoTrigger" interactive :animate-fill="false" distant="7" theme="light" animation="fade" trigger="click" :arrow="true">
-            <template #content>
-                <UserCardView v-if="sharedContactState.selfUserInfo" v-on:close="closeUserCard" :enable-update-portrait="true" :user-info="sharedContactState.selfUserInfo" />
-            </template>
-        </tippy>
         <img :src="store.state.contact?.selfUserInfo?.portrait" class="avatar" id="infoTrigger" alt="用户头像" @click="onClickPortrait" />
 
         <ul class="nav-list nav-list--main window-move">
@@ -40,7 +35,6 @@ import { createNewWindow } from '../util/electronHelper';
 import { ipcRenderer, isElectron } from '../../platform';
 import IpcEventType from '../../ipcEventType';
 import 'tippy.js/dist/tippy.css'; // optional for styling
-import UserCardView from '../main/user/UserCardView.vue';
 
 const route = useRoute();
 const router = useRouter();
@@ -67,7 +61,10 @@ const navItems = computed(() => [
 ]);
 
 const onClickPortrait = () => {
-    wfc.getUserInfo(sharedContactState.selfUserInfo.uid, true);
+    createNewWindow({
+        height: 800,
+        url: `#/otherInfo/${sharedContactState.selfUserInfo.uid}`,
+    });
 };
 
 const navigate = (path) => {

@@ -4,15 +4,13 @@
             <div class="desc">
                 <div style="display: flex; align-items: center">
                     <h2>{{ userInfo.displayName }}</h2>
-                    <p v-if="isExternalDomainUser" class="single-line" style="color: #F0A040; border-radius: 2px;  padding: 1px 2px; font-size: 9px">{{ domainName }}</p>
+                    <p v-if="isExternalDomainUser" class="single-line" style="color: #f0a040; border-radius: 2px; padding: 1px 2px; font-size: 9px">{{ domainName }}</p>
                 </div>
                 <label style="max-width: 200px; text-overflow: ellipsis" class="single-line">{{ $t('common.wfc_id') + ': ' + userInfo.name }}</label>
             </div>
             <div>
-                <img class="avatar" draggable="false" v-bind:src="userInfo.portrait" @click="pickFile"/>
-                <input v-if="enableUpdatePortrait" ref="fileInput" @change="onPickFile($event)" class="icon-ion-android-attach" type="file"
-                       accept="image/png, image/jpeg"
-                       style="display: none">
+                <img class="avatar" draggable="false" v-bind:src="userInfo.portrait" @click="pickFile" />
+                <input v-if="enableUpdatePortrait" ref="fileInput" @change="onPickFile($event)" class="icon-ion-android-attach" type="file" accept="image/png, image/jpeg" style="display: none" />
             </div>
         </div>
         <div class="content">
@@ -20,10 +18,7 @@
                 <li v-if="isFriend">
                     <label>{{ $t('common.alias') }}</label>
                     <div class="alias">
-                        <input @click.stop="" type="text"
-                               v-model.trim="friendAlias"
-                               @keyup.enter="updateFriendAlias"
-                               placeholder="备注名"/>
+                        <input @click.stop="" type="text" v-model.trim="friendAlias" @keyup.enter="updateFriendAlias" placeholder="备注名" />
                     </div>
                 </li>
                 <li>
@@ -47,19 +42,19 @@
 </template>
 
 <script>
-import store from "../../../store";
-import Conversation from "../../../wfc/model/conversation";
-import ConversationType from "../../../wfc/model/conversationType";
-import FriendRequestView from "../../main/contact/FriendRequestView";
-import wfc from "../../../wfc/client/wfc";
-import MessageContentMediaType from "../../../wfc/messages/messageContentMediaType";
-import ModifyMyInfoEntry from "../../../wfc/model/modifyMyInfoEntry";
-import ModifyMyInfoType from "../../../wfc/model/modifyMyInfoType";
-import IpcSub from "../../../ipc/ipcSub";
-import WfcUtil from "../../../wfc/util/wfcUtil";
+import store from '../../../store';
+import Conversation from '../../../wfc/model/conversation';
+import ConversationType from '../../../wfc/model/conversationType';
+import FriendRequestView from '../../main/contact/FriendRequestView';
+import wfc from '../../../wfc/client/wfc';
+import MessageContentMediaType from '../../../wfc/messages/messageContentMediaType';
+import ModifyMyInfoEntry from '../../../wfc/model/modifyMyInfoEntry';
+import ModifyMyInfoType from '../../../wfc/model/modifyMyInfoType';
+import IpcSub from '../../../ipc/ipcSub';
+import WfcUtil from '../../../wfc/util/wfcUtil';
 
 export default {
-    name: "UserCardView",
+    name: 'UserCardView',
     props: {
         userInfo: {
             type: Object,
@@ -68,13 +63,13 @@ export default {
         enableUpdatePortrait: {
             type: Boolean,
             required: false,
-        }
+        },
     },
     data() {
         return {
             friendAlias: this.userInfo.uid === wfc.getUserId() ? this.userInfo.displayName : this.userInfo.friendAlias,
             sharedMiscState: store.state.misc,
-        }
+        };
     },
     methods: {
         share() {
@@ -84,7 +79,7 @@ export default {
         chat() {
             let conversation = new Conversation(ConversationType.Single, this.userInfo.uid, 0);
             if (store.isConversationInCurrentWindow(conversation)) {
-                store.setCurrentConversation(conversation)
+                store.setCurrentConversation(conversation);
             } else {
                 IpcSub.startConversation(conversation);
             }
@@ -98,13 +93,13 @@ export default {
         startAudioCall() {
             this.close();
             let conversation = new Conversation(ConversationType.Single, this.userInfo.uid, 0);
-            this.$startVoipCall({audioOnly: true, conversation: conversation});
+            this.$startVoipCall({ audioOnly: true, conversation: conversation });
         },
 
         startVideoCall() {
             this.close();
             let conversation = new Conversation(ConversationType.Single, this.userInfo.uid, 0);
-            this.$startVoipCall({audioOnly: false, conversation: conversation});
+            this.$startVoipCall({ audioOnly: false, conversation: conversation });
         },
         addFriend() {
             this.close();
@@ -112,13 +107,16 @@ export default {
                 FriendRequestView,
                 {
                     userInfo: this.userInfo,
-                }, null,
+                },
+                null,
                 {
                     name: 'friend-request-modal',
                     width: 600,
                     height: 250,
                     clickToClose: false,
-                }, {})
+                },
+                {}
+            );
         },
         updateFriendAlias() {
             if (this.userInfo.uid === wfc.getUserId()) {
@@ -130,13 +128,16 @@ export default {
                 }
             } else {
                 if (this.friendAlias !== this.userInfo.friendAlias) {
-                    wfc.setFriendAlias(this.userInfo.uid, this.friendAlias,
+                    wfc.setFriendAlias(
+                        this.userInfo.uid,
+                        this.friendAlias,
                         () => {
                             // do nothing
                         },
                         (error) => {
                             // do nothing
-                        })
+                        }
+                    );
                 }
             }
             this.close();
@@ -155,29 +156,39 @@ export default {
             // this.batchProcess(e.target.files[0]);
             let file = event.target.files[0];
 
-            wfc.uploadMedia(file.name, file, MessageContentMediaType.Portrait, (url) => {
-                let entry = new ModifyMyInfoEntry();
-                entry.type = ModifyMyInfoType.Modify_Portrait;
-                entry.value = url;
+            wfc.uploadMedia(
+                file.name,
+                file,
+                MessageContentMediaType.Portrait,
+                (url) => {
+                    let entry = new ModifyMyInfoEntry();
+                    entry.type = ModifyMyInfoType.Modify_Portrait;
+                    entry.value = url;
 
-                wfc.modifyMyInfo([entry], () => {
-                    //this.userInfo.portrait = url;
-                    // 会触发userInfosUpdate 通知
-                }, (err) => {
-                    console.log('modify my info error', err)
-                })
-            }, (err) => {
-                console.log('err', err)
-            }, (p, t) => {
-                console.log('progress', p, t)
-            })
+                    wfc.modifyMyInfo(
+                        [entry],
+                        () => {
+                            //this.userInfo.portrait = url;
+                            // 会触发userInfosUpdate 通知
+                        },
+                        (err) => {
+                            console.log('modify my info error', err);
+                        }
+                    );
+                },
+                (err) => {
+                    console.log('err', err);
+                },
+                (p, t) => {
+                    console.log('progress', p, t);
+                }
+            );
         },
-
     },
 
     computed: {
         isFriend() {
-            return wfc.getUserId() === this.userInfo.uid || wfc.isMyFriend(this.userInfo.uid)
+            return wfc.getUserId() === this.userInfo.uid || wfc.isMyFriend(this.userInfo.uid);
         },
         isSelf() {
             return this.userInfo.uid === wfc.getUserId();
@@ -185,7 +196,6 @@ export default {
         isExternalDomainUser() {
             let user = this.userInfo;
             return WfcUtil.isExternal(user.uid);
-
         },
         domainName() {
             let user = this.userInfo;
@@ -196,7 +206,7 @@ export default {
             }
             return '';
         },
-    }
+    },
 };
 </script>
 
@@ -226,7 +236,6 @@ export default {
     justify-content: space-between;
     border-bottom: 1px solid lightgray;
 }
-
 
 .header .desc {
     display: flex;
@@ -309,6 +318,4 @@ export default {
 i:hover {
     color: #3f64e4;
 }
-
-
 </style>
