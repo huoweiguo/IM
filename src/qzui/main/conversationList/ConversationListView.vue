@@ -1,5 +1,6 @@
 <template>
     <section class="conversation-list">
+        <div class="nodata" v-if="conversationInfoList.length < 1">暂无数据</div>
         <virtual-list
             v-if="true"
             :data-component="conversationItemView"
@@ -301,5 +302,12 @@ export default {
 .conversation-list {
     height: 100%;
     overflow: auto;
+}
+
+.nodata {
+    text-align: center;
+    font-size: 14px;
+    color: #999;
+    margin-top: 20px;
 }
 </style>

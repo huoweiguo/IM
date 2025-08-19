@@ -26,19 +26,15 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { getFansNoticeList } from '../../api/follow';
-import { getItem, setItem } from '../../ui/util/storageHelper';
+import { getItem } from '../../ui/util/storageHelper';
 import { formatCommentTime } from '../util/timeformat.js';
 import { throttle } from 'lodash-es';
 const fans = ref([]);
 const scrollableDiv = ref(null);
-
-const formatTime = (timestamp) => {
-    return new Date(timestamp).toLocaleString();
-};
+const userinfo = JSON.parse(getItem('userinfo')) || {};
 
 const getFollowList = async () => {
-    const userId = getItem('userPortrait') ? getItem('userPortrait') : '';
-    const res = await getFansNoticeList(userId);
+    const res = await getFansNoticeList(userinfo.id);
     fans.value = res.data || [];
 };
 
