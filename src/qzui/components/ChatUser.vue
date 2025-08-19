@@ -110,9 +110,7 @@ const getCustomGroupList = () => {
                     res.data.map(async (item) => {
                         if (item.chatType == 3) {
                             //
-                            await getUserById({
-                                userId: item.chatId,
-                            }).then((res) => {
+                            await getUserById(item.chatId).then((res) => {
                                 if (res.code == 0) {
                                     item.userInfo = res.data;
                                 }

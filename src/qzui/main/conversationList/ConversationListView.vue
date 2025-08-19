@@ -161,6 +161,8 @@ export default {
         },
 
         moveConversationToGroup(conversationInfo) {
+            console.log(123, conversationInfo);
+
             this.visible = true;
             this.selectUserInfo = conversationInfo;
             getCustomChatGroupList({

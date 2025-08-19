@@ -6,7 +6,7 @@
                 <div class="gift-name">{{ giftName }}</div>
                 <div class="gift-details">
                     <span class="gift-count">x {{ giftCount }}</span>
-                    <span class="gift-price">{{ giftPrice }}金币</span>
+                    <span class="gift-price">{{ giftPrice }}圈币</span>
                 </div>
             </div>
         </div>

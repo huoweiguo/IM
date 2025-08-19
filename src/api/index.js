@@ -53,6 +53,27 @@ export function setUserInfo(data) {
 }
 
 // 根据用户ID查询他人信息
-export function getUserById(params) {
-    return GET('/api/user/userId', params);
+export function getUserById(userId) {
+    return GET('/api/user/userId', { userId });
+}
+
+// ## 搜索查找管理
+// 查询所有用户信息(sort 排序：0 按注册时间)
+export function searchAllUserInfo(params) {
+    return GET('/api/search/info/userAll', params);
+}
+
+// 根据名称查找公域群
+export function searchPublicGroupByName(params) {
+    return GET('/api/search/search/group/chat', params);
+}
+
+// 根据野火的用户ID查询用户信息
+export function getUserByServiceId(serviceId) {
+    return GET('/api/search/search/user/serviceId', { serviceId });
+}
+
+// 根据条件参数搜索所有用户
+export function searchAllUsersByParams(params) {
+    return GET('/api/search/search/userAll', params);
 }

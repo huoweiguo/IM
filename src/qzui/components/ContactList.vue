@@ -70,9 +70,7 @@ const getCustomGroupList = async () => {
             let userServiceId = [];
             for (const item3 of item2.data) {
                 if (item3.chatType == 3) {
-                    const user = await getUserById({
-                        userId: item3.chatId,
-                    });
+                    const user = await getUserById(item3.chatId);
                     userServiceId.push(user.data.serviceId);
                 } else {
                     // personList.push(await wfc.getGroupInfo(item3.serviceGroupId));
