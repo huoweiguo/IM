@@ -63,7 +63,7 @@ const navItems = computed(() => [
 const onClickPortrait = () => {
     createNewWindow({
         height: 750,
-        url: `#/otherInfo/${sharedContactState.selfUserInfo.uid}`,
+        url: `#/otherInfo?serviceId=${sharedContactState.selfUserInfo.uid}`,
     });
 };
 

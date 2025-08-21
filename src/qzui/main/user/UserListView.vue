@@ -122,7 +122,7 @@ export default {
             // this.clickUserItemFunc && this.clickUserItemFunc(user);
             createNewWindow({
                 height: 750,
-                url: `#/otherInfo/?serviceId=${user.uid}`,
+                url: `#/otherInfo?serviceId=${user.uid}`,
             });
         },
 

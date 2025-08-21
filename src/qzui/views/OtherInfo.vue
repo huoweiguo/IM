@@ -2,7 +2,8 @@
     <div class="other-info-container">
         <!-- 头部信息 -->
         <div class="header">
-            <img class="avatar" :src="userInfo.avatar" alt="头像" />
+            <img class="avatar" v-if="userInfo.avatar" :src="userInfo.avatar" alt="头像" />
+            <img class="avatar" v-else :src="userInfo?.serverInfo?.portrait" alt="默认头像" />
             <div class="user-info">
                 <div class="nickname-row">
                     <span class="nickname">{{ userInfo.realName }}</span>
@@ -89,6 +90,7 @@
 <script setup>
 import { createNewWindow } from '@/qzui/util/electronHelper';
 import { ref, reactive, onMounted, computed } from 'vue';
+import wfc from '../../wfc/client/wfc';
 import { useRoute } from 'vue-router';
 import { getUserByServiceId } from '../../api/index.js';
 import store from '../../store';
@@ -125,6 +127,7 @@ const handleSchoolAuth = () => {
 const getUserInfo = () => {
     getUserByServiceId(serviceId).then((res) => {
         userInfo.value = res.data;
+        userInfo.value['serverInfo'] = wfc.getUserInfo(serviceId, false);
     });
 };
 const handleChat = () => {
