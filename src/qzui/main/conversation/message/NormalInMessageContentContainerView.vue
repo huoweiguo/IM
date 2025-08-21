@@ -3,7 +3,7 @@
         <div class="message-time-container" v-bind:class="{ checked: sharedPickState.messages.indexOf(message) >= 0 }">
             <p v-if="this.message._showTime" class="time">{{ message._timeStr }}</p>
             <div class="message-avatar-content-container">
-                <tippy
+                <!-- <tippy
                     v-if="enableClickMessageSenderPortrait"
                     :to="'#infoTrigger' + this.message.messageId"
                     interactive
@@ -18,7 +18,7 @@
                         <ChannelCardView v-if="message.conversation.type === 3" v-on:close="closeUserCard" :channel-id="message.conversation.target" />
                         <UserCardView v-else v-on:close="closeUserCard" :user-info="message._from" />
                     </template>
-                </tippy>
+                </tippy> -->
                 <div class="avatar-container">
                     <input id="checkbox" v-if="sharedConversationState.enableMessageMultiSelection" type="checkbox" :value="message" v-model="sharedPickState.messages" />
                     <img
@@ -84,11 +84,11 @@ export default {
     },
     methods: {
         onClickUserPortrait(userId) {
-            if (this.message.conversation.type === ConversationType.Channel) {
-                wfc.getChannelInfo(this.message.conversation.target, true);
-            } else {
-                wfc.getUserInfo(userId, true);
-            }
+            // if (this.message.conversation.type === ConversationType.Channel) {
+            //     wfc.getChannelInfo(this.message.conversation.target, true);
+            // } else {
+            //     wfc.getUserInfo(userId, true);
+            // }
         },
         closeUserCard() {
             console.log('closeUserCard');

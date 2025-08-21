@@ -28,11 +28,11 @@
                         />
                     </div>
 
-                    <tippy :to="'#infoTrigger' + this.message.messageId" :animate-fill="false" placement="left" distant="7" theme="light" animation="fade" trigger="click">
+                    <!-- <tippy :to="'#infoTrigger' + this.message.messageId" :animate-fill="false" placement="left" distant="7" theme="light" animation="fade" trigger="click">
                         <template #content>
                             <UserCardView v-on:close="closeUserCard" :user-info="message._from" />
                         </template>
-                    </tippy>
+                    </tippy> -->
 
                     <img
                         ref="userCardTippy"
@@ -120,7 +120,7 @@ export default {
             this.highLight = false;
         },
         onClickUserPortrait(userId) {
-            wfc.getUserInfo(userId, true);
+            // wfc.getUserInfo(userId, true);
         },
         closeUserCard() {
             console.log('closeUserCard', this.$refs['userCardTippy']);

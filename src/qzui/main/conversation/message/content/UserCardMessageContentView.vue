@@ -1,41 +1,30 @@
 <template>
-    <div ref="userCardTippy"
-         :id="'#userCardInfoTrigger' + message.messageId"
-         class="user-card-content-container">
+    <div ref="userCardTippy" :id="'#userCardInfoTrigger' + message.messageId" class="user-card-content-container">
         <div class="portrait-name-container">
-            <img :src="message.messageContent.portrait">
+            <img :src="message.messageContent.portrait" />
             <p>{{ message.messageContent.displayName }}</p>
         </div>
         <p class="desc single-line">个人名片</p>
-        <tippy
-            :to="'#userCardInfoTrigger' + message.messageId"
-            interactive
-            :animate-fill="false"
-            placement="left"
-            distant="7"
-            theme="light"
-            animation="fade"
-            trigger="click"
-        >
+        <tippy :to="'#userCardInfoTrigger' + message.messageId" interactive :animate-fill="false" placement="left" distant="7" theme="light" animation="fade" trigger="click">
             <template #content>
-                <UserCardView v-on:close="closeUserCard" :user-info="userInfo()"/>
+                <UserCardView v-on:close="closeUserCard" :user-info="userInfo()" />
             </template>
         </tippy>
     </div>
 </template>
 
 <script>
-import Message from "../../../../../wfc/messages/message";
-import UserCardView from "../../../user/UserCardView";
-import wfc from "../../../../../wfc/client/wfc";
+import Message from '../../../../../wfc/messages/message';
+import UserCardView from '../../../user/UserCardView';
+import wfc from '../../../../../wfc/client/wfc';
 
 export default {
-    name: "UserCardMessageContentView",
+    name: 'UserCardMessageContentView',
     props: {
         message: {
             required: true,
             type: Message,
-        }
+        },
     },
     components: {
         UserCardView,
@@ -43,17 +32,17 @@ export default {
 
     methods: {
         closeUserCard() {
-            console.log('closeUserCard')
-            this.$refs["userCardTippy"]._tippy.hide();
+            console.log('closeUserCard');
+            this.$refs['userCardTippy']._tippy.hide();
         },
         userInfo() {
             let userCard = this.message.messageContent;
             if (userCard.cardType === 0 || !userCard.cardType) {
-                return wfc.getUserInfo(userCard.target)
+                return wfc.getUserInfo(userCard.target);
             }
-        }
-    }
-}
+        },
+    },
+};
 </script>
 
 <style scoped lang="css">
@@ -90,5 +79,4 @@ export default {
     font-size: 13px;
     color: #b8b8b8;
 }
-
 </style>

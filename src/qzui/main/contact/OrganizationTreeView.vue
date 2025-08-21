@@ -1,9 +1,7 @@
 <template>
     <section class="organization-tree-container">
         <div>
-            <h2 class="title">
-                组织结构
-            </h2>
+            <h2 class="title">组织结构</h2>
         </div>
         <nav class="breadcrumb">
             <ul>
@@ -16,15 +14,13 @@
             <ul>
                 <li v-for="(org, index) in subOrganizations" :key="org.id">
                     <div class="organization-item">
-                        <img :src="org.portrait ? org.portrait : defaultDepartmentPortraitUrl">
+                        <img :src="org.portrait ? org.portrait : defaultDepartmentPortraitUrl" />
                         <p class="name">{{ org.name }}</p>
                         <p class="button" @click="loadAndShowOrganization(org)">下级</p>
                     </div>
                 </li>
                 <li v-for="(employee, index) in employees" :key="employee.employeeId">
-                    <div class="organization-item"
-                         @click="showUserCardView($event, employee)"
-                    >
+                    <div class="organization-item" @click="showUserCardView($event, employee)">
                         <tippy
                             :to="'#infoTrigger-' + employee.employeeId"
                             interactive
@@ -37,15 +33,10 @@
                             trigger="manual"
                         >
                             <template #content>
-                                <UserCardView
-                                    v-on:close="closeUserCard"
-                                    :enable-update-portrait="false"
-                                    :user-info="employeeToUserInfo(employee)"/>
+                                <UserCardView v-on:close="closeUserCard" :enable-update-portrait="false" :user-info="employeeToUserInfo(employee)" />
                             </template>
                         </tippy>
-                        <img :src="employee.portrait ? employee.portrait : defaultEmployeePortraitUrl"
-                             :ref="'ref-employee-' + employee.employeeId"
-                             :id="'infoTrigger-' + employee.employeeId">
+                        <img :src="employee.portrait ? employee.portrait : defaultEmployeePortraitUrl" :ref="'ref-employee-' + employee.employeeId" :id="'infoTrigger-' + employee.employeeId" />
                         <p class="name">{{ employee.name }}</p>
                     </div>
                 </li>
@@ -55,13 +46,13 @@
 </template>
 
 <script>
-import store from "../../../store";
-import Config from "../../../config";
-import organizationServerApi from "../../../api/organizationServerApi";
-import UserCardView from "../user/UserCardView.vue";
+import store from '../../../store';
+import Config from '../../../config';
+import organizationServerApi from '../../../api/organizationServerApi';
+import UserCardView from '../user/UserCardView.vue';
 
 export default {
-    name: "OrganizationTreeView",
+    name: 'OrganizationTreeView',
     props: {},
     components: {
         UserCardView,
@@ -75,22 +66,20 @@ export default {
             defaultDepartmentPortraitUrl: Config.DEFAULT_DEPARTMENT_PORTRAIT_URL,
             defaultEmployeePortraitUrl: Config.DEFAULT_PORTRAIT_URL,
             activeTippy: null,
-        }
+        };
     },
     mounted() {
         this.loadAndShowOrganization(this.sharedContactState.currentOrganization);
     },
     methods: {
         loadAndShowOrganization(org) {
-            organizationServerApi.getOrganizationEx(org.id)
-                .then(res => {
-                    this.subOrganizations = res.subOrganizations;
-                    this.employees = res.employees;
-                });
-            organizationServerApi.getOrganizationPath(org.id)
-                .then(orgs => {
-                    this.currentOrganizationPathList = orgs.reverse();
-                })
+            organizationServerApi.getOrganizationEx(org.id).then((res) => {
+                this.subOrganizations = res.subOrganizations;
+                this.employees = res.employees;
+            });
+            organizationServerApi.getOrganizationPath(org.id).then((orgs) => {
+                this.currentOrganizationPathList = orgs.reverse();
+            });
         },
         employeeToUserInfo(employee) {
             return organizationServerApi.employeeToUserInfo(employee);
@@ -111,14 +100,12 @@ export default {
             if (this.activeTippy) {
                 this.activeTippy.hide();
             }
-        }
+        },
     },
-
-}
+};
 </script>
 
 <style lang="css" scoped>
-
 .organization-tree-container {
     display: flex;
     height: 100%;
@@ -153,7 +140,7 @@ export default {
     display: inline-block;
     margin: 0 10px;
     color: #8f959f;
-    content: ">";
+    content: '>';
 }
 
 .breadcrumb li:not(:last-child) a {
@@ -204,5 +191,4 @@ export default {
     background: #dbe1f0;
     border-radius: 5px;
 }
-
 </style>
