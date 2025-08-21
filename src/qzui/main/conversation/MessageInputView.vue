@@ -41,7 +41,7 @@
                         <i id="voice" v-bind:class="{ active: isRecording }" @mousedown="recordAudio(true)" class="icon-ion-android-microphone record-icon" />
                     </li>
                     <li>
-                        <i id="gift" @click="showGift = true" class="icon-ion-ios-heart" style="color: #f00" />
+                        <img id="gift" @click="showGift = true" src="../../assets/gift-red.png" style="width: 20px; height: 20px" />
                     </li>
                 </ul>
                 <ul>

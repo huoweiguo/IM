@@ -383,7 +383,7 @@ const routes = [
         },
     },
     {
-        path: '/otherInfo/:serviceId',
+        path: '/otherInfo',
         name: 'OtherInfo',
         component: OtherInfo,
         meta: {

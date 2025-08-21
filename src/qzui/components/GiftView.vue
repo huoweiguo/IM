@@ -2,7 +2,7 @@
     <el-dialog v-model="dialogVisible" title="礼物" width="400" :close-on-click-modal="false" @close="close" align-center>
         <div class="gift-list">
             <div v-for="item in giftList" :key="item.id" class="gift-item" :class="{ active: selectedGiftID == item.id }" @click="selectedGiftID = selectedGiftID == item.id ? null : item.id">
-                <img class="gift-icon" :src="item.animationUrl" alt="礼物" />
+                <img class="gift-icon" :src="item.animationUrl || GiftImg" alt="礼物" />
                 <div class="gift-name">{{ item.name }}</div>
                 <div class="gift-price">{{ item.price }}圈币</div>
             </div>
@@ -22,6 +22,7 @@ import { getGiftConfigList, sendGift } from '../../api/gift.js';
 import { defineProps, defineEmits } from 'vue';
 import { ElMessage } from 'element-plus';
 import GiftMessageContent from '../../wfc_custom_message/giftMessageContent';
+import GiftImg from '../assets/gift-red.png';
 
 const props = defineProps({
     open: {

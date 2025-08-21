@@ -2,34 +2,36 @@
     <section>
         <ul>
             <li v-for="(group, index) in sharedContactState.favGroupList" :key="index" @click="showGroup(group)">
-                <div class="group-item"
-                     v-bind:class="{active: sharedContactState.currentGroup && sharedContactState.currentGroup.target === group.target}">
-                    <img class="avatar" :src="group.portrait">
+                <div class="group-item" v-bind:class="{ active: sharedContactState.currentGroup && sharedContactState.currentGroup.target === group.target }">
+                    <img class="avatar" :src="group.portrait" @error="imgUrlAlt" alt="群头像" />
                     <span class="single-line">{{ group.remark ? group.remark : group.name }}</span>
                 </div>
             </li>
         </ul>
     </section>
-
 </template>
 
 <script>
-import store from "../../../store";
+import store from '../../../store';
+import Config from '../../../config';
 
 export default {
-    name: "GroupListView",
+    name: 'GroupListView',
     props: {},
     data() {
         return {
             sharedContactState: store.state.contact,
-        }
+        };
     },
     methods: {
         showGroup(group) {
-            store.setCurrentGroup(group)
-        }
+            store.setCurrentGroup(group);
+        },
+        imgUrlAlt(e) {
+            e.target.src = Config.DEFAULT_GROUP_PORTRAIT_URL;
+        },
     },
-}
+};
 </script>
 
 <style scoped>
@@ -54,5 +56,4 @@ export default {
 .group-item span {
     margin-left: 10px;
 }
-
 </style>

@@ -1,7 +1,7 @@
 <template>
     <section class="group-info-container">
         <div class="group-info">
-            <img :src="sharedContactState.currentGroup?.portrait" />
+            <img :src="sharedContactState.currentGroup?.portrait" @error="imgUrlAlt" />
             <p>{{ sharedContactState.currentGroup?.name }}</p>
         </div>
         <a @click="chat">{{ $t('group.chat') }}</a>
@@ -16,6 +16,7 @@ import store from '../../../store';
 import Conversation from '../../../wfc/model/conversation';
 import ConversationType from '../../../wfc/model/conversationType';
 import wfc from '../../../wfc/client/wfc';
+import Config from '../../../config';
 
 export default {
     name: 'GroupDetailView',
@@ -31,7 +32,9 @@ export default {
             store.setCurrentConversation(conversation);
             this.$router.replace('/home');
         },
-
+        imgUrlAlt(e) {
+            e.target.src = Config.DEFAULT_GROUP_PORTRAIT_URL;
+        },
         unfavGroup() {
             wfc.setFavGroup(
                 this.sharedContactState.currentGroup.target,

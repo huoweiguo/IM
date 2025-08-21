@@ -7,7 +7,7 @@
                 </div>
                 <ul>
                     <li v-for="user in groupedUser.users" :key="user.uid">
-                        <tippy
+                        <!-- <tippy
                             v-if="!clickUserItemFunc"
                             :to="'#user-' + user.uid.replace('@', '-').replace('.', '-')"
                             theme="light"
@@ -21,7 +21,7 @@
                             <template #content>
                                 <UserCardView :user-info="user" v-on:close="closeUserCard(user)" />
                             </template>
-                        </tippy>
+                        </tippy> -->
                         <div
                             class="content"
                             :ref="'userCardTippy-' + user.uid.replace('@', '#')"
@@ -68,6 +68,7 @@
 </template>
 
 <script>
+import { createNewWindow } from '../../util/electronHelper';
 import store from '../../../store';
 import UserCardView from './UserCardView.vue';
 import Config from '../../../config';
@@ -118,7 +119,11 @@ export default {
     },
     methods: {
         clickUserItem(user) {
-            this.clickUserItemFunc && this.clickUserItemFunc(user);
+            // this.clickUserItemFunc && this.clickUserItemFunc(user);
+            createNewWindow({
+                height: 750,
+                url: `#/otherInfo/?serviceId=${user.uid}`,
+            });
         },
 
         scrollActiveElementCenter() {

@@ -2,8 +2,7 @@
     <div class="other-info-container">
         <!-- 头部信息 -->
         <div class="header">
-            <img v-if="avatar" class="avatar" :src="avatar" alt="头像" />
-            <img v-else class="avatar" :src="store.state.contact?.selfUserInfo?.portrait" alt="头像" />
+            <img class="avatar" :src="userInfo.avatar" alt="头像" />
             <div class="user-info">
                 <div class="nickname-row">
                     <span class="nickname">{{ userInfo.realName }}</span>
@@ -24,11 +23,13 @@
                     <span>手机认证</span>
                 </div>
                 <div class="cert-item" @click="handleIdAuth">
-                    <img src="../assets/sm.png" alt="实名认证" />
+                    <img v-if="userInfo.isAutonym == 1" src="../assets/sm.png" alt="实名认证" />
+                    <img v-else src="../assets/sm-un.png" alt="实名认证" />
                     <span>实名认证</span>
                 </div>
                 <div class="cert-item" @click="handleSchoolAuth">
-                    <img src="../assets/xx.png" alt="学校认证" />
+                    <img v-if="userInfo.isSchool == 1" src="../assets/xx.png" alt="学校认证" />
+                    <img v-else src="../assets/xx-un.png" alt="学校认证" />
                     <span>学校认证</span>
                 </div>
             </div>
@@ -37,7 +38,7 @@
         <!-- 备注名 -->
         <div class="section remark-section">
             <span>备注名</span>
-            <span class="remark-value">我是小肥羊</span>
+            <span class="remark-value">{{ userInfo.friendAlias }}</span>
         </div>
 
         <!-- 共同圈子/群聊 -->
@@ -69,13 +70,13 @@
         </div>
 
         <!-- 添加分组 -->
-        <div class="section group-section">
+        <!-- <div class="section group-section">
             <span>添加分组</span>
-        </div>
+        </div> -->
 
         <!-- 底部按钮 -->
         <div class="footer-btns">
-            <button class="chat-btn">私聊</button>
+            <button class="chat-btn" @click="handleChat">私聊</button>
             <div class="follow-btn" @click="otherInfo.isFollow = !otherInfo.isFollow">
                 <img v-if="otherInfo.isFollow" src="../assets/star-fill.png" alt="关注" />
                 <img v-else src="../assets/star-un.png" alt="关注" />
@@ -87,13 +88,17 @@
 
 <script setup>
 import { createNewWindow } from '@/qzui/util/electronHelper';
-import { ref, reactive, onMounted } from 'vue';
+import { ref, reactive, onMounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { getUserByServiceId } from '../../api/index.js';
 import store from '../../store';
+import Conversation from '../../wfc/model/conversation';
+import ConversationType from '../../wfc/model/conversationType';
+import { ipcRenderer } from '../../platform';
+import IpcEventType from '../../ipcEventType';
 
 const route = useRoute();
-const serviceId = route.params.serviceId;
+const serviceId = route.query.serviceId;
 const userInfo = ref({});
 
 const otherInfo = reactive({
@@ -121,6 +126,26 @@ const getUserInfo = () => {
     getUserByServiceId(serviceId).then((res) => {
         userInfo.value = res.data;
     });
+};
+const handleChat = () => {
+    // 私聊
+    let conversation = new Conversation(ConversationType.Single, serviceId, 0);
+
+    let hash = window.location.hash;
+    let url = window.location.origin;
+    if (hash) {
+        url = window.location.href.replace(hash, '#/conversation-window');
+    } else {
+        url += '/conversation-window';
+    }
+    ipcRenderer.send(IpcEventType.showConversationFloatPage, {
+        url: url,
+        type: conversation.type,
+        target: conversation.target,
+        line: conversation.line,
+    });
+
+    store.addFloatingConversation(conversation);
 };
 onMounted(() => {
     getUserInfo();
@@ -201,7 +226,6 @@ onMounted(() => {
     align-items: center;
     font-size: 13px;
     color: #666;
-    cursor: pointer;
 }
 
 .cert-item img {
