@@ -2,10 +2,11 @@
     <div class="voucher-center">
         <!-- 用户信息 -->
         <div class="user-info">
-            <img class="avatar" src="../../assets/usr-1.png" alt="头像" />
+            <img v-if="userinfo?.avatar" class="avatar" :src="userinfo?.avatar" alt="头像" />
+            <img v-else class="avatar" :src="userinfo?.serverInfo?.portrait" alt="头像" />
             <div class="user-detail">
-                <div class="nickname">喜羊羊</div>
-                <div class="balance"><img src="../../assets/coin.png" />剩余300圈币</div>
+                <div class="nickname">{{ userinfo?.realName }}</div>
+                <div class="balance"><img src="../../assets/coin.png" />剩余{{ userinfo?.userMoney }}圈币</div>
             </div>
             <button class="bill-btn" @click="router.push('/my/bill')">账单</button>
         </div>
@@ -60,9 +61,12 @@ import { useRouter } from 'vue-router';
 import wechatIcon from '../../assets/wechat-icon-2.png';
 import bankCardIcon from '../../assets/bankcard-icon.png';
 import alipayIcon from '../../assets/alipay-icon.png';
+import wfc from '../../../wfc/client/wfc';
+import { getUserCenter } from '../../../api/index.js';
 
 const router = useRouter();
 
+const userinfo = ref({});
 const amountOptions = [
     { label: '60圈币', oldPrice: 18, newPrice: 6, save: 12, value: 60 },
     { label: '300圈币', oldPrice: 54, newPrice: 30, save: 24, value: 300 },
@@ -78,6 +82,11 @@ const payOptions = [
 const selectedAmount = ref(0);
 const selectedPay = ref(1);
 const checked = ref(false);
+
+getUserCenter().then((res) => {
+    userinfo.value = res.data;
+    userinfo.value['serverInfo'] = wfc.getUserInfo(userinfo.value.serviceId, false);
+});
 </script>
 
 <style scoped>

@@ -3,13 +3,14 @@
         <div class="my-page" style="overflow: auto">
             <div class="my-page__header">
                 <div class="my-page__header__avatar">
-                    <img class="avator_img" src="../assets/header1.png" />
+                    <img v-if="userinfo?.avatar" class="avator_img" :src="userinfo?.avatar" />
+                    <img v-else class="avator_img" :src="userinfo?.serverInfo?.portrait" alt="默认头像" />
                     <div class="my-page__header__info">
                         <div class="my-page__header__info__name">
-                            <span>请叫我女王</span>
-                            <el-button type="primary" :icon="Edit" size="small" round @click="handleEditUserInfo">编辑资料</el-button>
+                            <span>{{ userinfo?.realName }}</span>
+                            <!-- <el-button type="primary" :icon="Edit" size="small" round @click="handleEditUserInfo">编辑资料</el-button> -->
                         </div>
-                        <div class="my-page__header__info__coin"><img src="../assets/coin.png" />剩余300圈币</div>
+                        <div class="my-page__header__info__coin"><img src="../assets/coin.png" />剩余{{ userinfo?.userMoney }}圈币</div>
                     </div>
                 </div>
                 <div class="my-page__header__coin" @click="handleVoucherCenter"><img src="../assets/coin.png" />圈币充值</div>
@@ -98,7 +99,7 @@
                 </li>
             </ul>
 
-            <ul class="my-page__list">
+            <!-- <ul class="my-page__list">
                 <li>
                     <img src="../assets/topic_icon.png" alt="" />
                     主题
@@ -111,7 +112,7 @@
                     <img src="../assets/setting_icon.png" alt="" />
                     设置
                 </li>
-            </ul>
+            </ul> -->
         </div>
     </div>
 </template>
@@ -120,7 +121,11 @@
 import { ref } from 'vue';
 import { Edit } from '@element-plus/icons-vue';
 import { createNewWindow } from '@/qzui/util/electronHelper';
+import wfc from '../../wfc/client/wfc';
+import { getUserCenter } from '../../api/index.js';
+
 const watchSwitch = ref(false);
+const userinfo = ref({});
 const coinList = ref([
     { id: 1, num: 1, received: true },
     { id: 2, num: 1, received: true },
@@ -178,6 +183,11 @@ const handleSettings = () => {
         url: `#/my/settings`,
     });
 };
+
+getUserCenter().then((res) => {
+    userinfo.value = res.data;
+    userinfo.value['serverInfo'] = wfc.getUserInfo(userinfo.value.serviceId, false);
+});
 </script>
 
 <style lang="scss" scoped>
@@ -474,7 +484,7 @@ const handleSettings = () => {
             padding: 0 16px;
             border-bottom: 1px solid rgba(170, 170, 170, 0.4);
             background-image: url(../assets/right-arrow.png);
-            background-position: right center;
+            background-position: 97% center;
             background-repeat: no-repeat;
             background-size: 12px 12px;
 
