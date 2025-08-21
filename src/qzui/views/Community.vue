@@ -18,9 +18,25 @@
             </aside>
 
             <main class="content">
-                <CommunityComp />
+                <CommunityComp :communityId="activeId" v-if="activeId" />
+                <div v-else class="contact-container">
+                    <h1 style="font-size: 30px; color: #f0f0f0; text-shadow: 1px 1px 0 #fff">圈子社区</h1>
+                </div>
             </main>
         </div>
+
+        <!-- 选择社区弹窗 -->
+        <el-dialog v-model="visible" title="选择社区" width="500">
+            <el-select v-model="selectedCommunityId" placeholder="请选择社区">
+                <el-option v-for="item in shequList" :label="item.name" :value="item.id" />
+            </el-select>
+            <template #footer>
+                <div class="dialog-footer">
+                    <el-button @click="visible = false">取消</el-button>
+                    <el-button type="primary" @click="joinCommunity"> 加入社区 </el-button>
+                </div>
+            </template>
+        </el-dialog>
     </Layout>
 </template>
 
@@ -30,14 +46,19 @@ import { useRouter } from 'vue-router';
 import Layout from '../components/Layout.vue';
 import CommunityComp from '../components/CommunityComp.vue';
 import { getItem, setItem } from '@/ui/util/storageHelper';
-import { communityUserList } from '@/api/community';
+import { communityUserList, communityList, communityUserAdd } from '@/api/community';
 import emitter from '@/qzui/util/eventBus.js';
+import { ElMessage } from 'element-plus';
 
 const router = useRouter();
 const searchText = ref('');
 const activeId = ref();
+const userinfo = JSON.parse(getItem('userinfo')) || {};
 
 const communities = ref([]);
+const shequList = ref([]);
+const visible = ref(false);
+const selectedCommunityId = ref('');
 
 const filteredList = computed(() => {
     if (!searchText.value) return communities.value;
@@ -47,30 +68,44 @@ const filteredList = computed(() => {
 const selectCommunity = (id) => {
     activeId.value = id;
     setItem('communityId', id);
-    emitter.emit('changeCommunityId', id);
 };
 
 const createCommunity = () => {
     // TODO: 创建社区功能
     console.log('创建社区');
+    visible.value = true;
 };
 const getCommunityUserList = async () => {
-    const userId = getItem('userPortrait') ? getItem('userPortrait') : '';
-    const res = await communityUserList(userId);
+    const res = await communityUserList(userinfo.id);
     if (res.code === 0) {
         communities.value = res.data || [];
-        if (communities.value.length > 0) {
-            activeId.value = communities.value[0].communityId;
-            console.log('activeId', activeId.value);
-            emitter.emit('changeCommunityId', communities.value[0].communityId.toString());
-            // 设置当前社区id
-            setItem('communityId', activeId.value.toString());
-        }
+        // activeId.value = communities.value[0].communityId;
+    }
+};
+
+const getCommunityList = async () => {
+    const res = await communityList();
+    if (res.code === 0) {
+        shequList.value = res.data || [];
+    }
+};
+
+const joinCommunity = async () => {
+    if (!selectedCommunityId.value) {
+        ElMessage.error('请选择社区');
+        return;
+    }
+    const res = await communityUserAdd(selectedCommunityId.value);
+    if (res.code === 0) {
+        ElMessage.success('加入成功');
+        visible.value = false;
+        getCommunityUserList();
     }
 };
 
 onMounted(() => {
     getCommunityUserList();
+    getCommunityList();
 });
 </script>
 
@@ -195,5 +230,11 @@ onMounted(() => {
 .content {
     flex: 1;
     overflow: hidden;
+}
+.contact-container {
+    height: calc(100vh - 40px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 </style>

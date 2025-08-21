@@ -5,8 +5,8 @@
                 <div class="avatars">
                     <!-- <img v-for="(avatar, index) in chatAvatars" :key="index" :src="avatar" :style="{ marginLeft: index > 0 ? '-10px' : 0 }" /> -->
                     <img src="../assets/el1.png" />
-                    <img src="../assets/el2.png" />
-                    <img src="../assets/el3.png" />
+                    <img src="../assets/el2.png" :style="{ marginLeft: '-10px' }" />
+                    <img src="../assets/el3.png" :style="{ marginLeft: '-10px' }" />
                 </div>
                 <span class="title">聊天室</span>
             </div>
@@ -25,6 +25,12 @@
                 <el-button type="primary" :icon="EditPen" size="small" @click="openPostEditor">新发布</el-button>
             </div>
         </nav>
+
+        <div class="loading" v-if="loading">
+            <el-icon class="is-loading">
+                <Loading />
+            </el-icon>
+        </div>
 
         <!--最新-->
         <main class="feed-content" v-show="activeTab === 0">
@@ -206,10 +212,15 @@
             </div>
         </el-dialog>
     </div>
+
+    <!-- 发布弹窗 -->
+    <el-dialog v-model="visible" title="发布动态" width="500">
+        <Posting v-if="visible" @close="visible = false" @reload="reloadData()" />
+    </el-dialog>
 </template>
 
 <script setup>
-import { ref, reactive, onUnmounted } from 'vue';
+import { ref, reactive, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { EditPen, Help, Check } from '@element-plus/icons-vue';
 import { createNewWindow } from '@/qzui/util/electronHelper';
@@ -218,24 +229,25 @@ import emitter from '@/qzui/util/eventBus';
 import { dynamicList, interactionComment, interactionList, interactionLike } from '@/api/community';
 import { getItem, setItem } from '@/ui/util/storageHelper';
 import { formatCommentTime } from '@/qzui/util/timeformat';
+import Posting from '@/qzui/views/posting.vue';
 const start_time = ref('');
 const userId = ref(getItem('userPortrait') ? getItem('userPortrait') : '');
 
 // 图标导入
 import deleteIcon from '../assets/delete_icon.png';
 import moreIcon from '../assets/down-icon.png';
-import headerImg from '../assets/header1.png';
-import img1 from '../assets/img1.png';
-import img2 from '../assets/img2.png';
-import img3 from '../assets/img3.png';
 
+const props = defineProps({
+    communityId: {
+        type: String,
+        default: '',
+    },
+});
+const loading = ref(false);
 const router = useRouter();
-const communityId = ref();
+const visible = ref(false);
 const visibleComment = ref(false);
 const commentHolder = ref('');
-
-// 头像图片
-const chatAvatars = ['../assets/el1.png', '../assets/el2.png', '../assets/el3.png'];
 
 // 状态管理
 const activeTab = ref(0);
@@ -331,11 +343,14 @@ const submitComment = async () => {
 };
 
 const getCommunityList = async (start_time = '') => {
+    loading.value = true;
     const res = await dynamicList(10, start_time, {
-        communityId: communityId.value,
+        communityId: props.communityId,
         userId: userId.value,
         type: 0,
     });
+
+    loading.value = false;
 
     if (res.code === 0) {
         let data = res.data || [];
@@ -364,12 +379,14 @@ const getCommunityList = async (start_time = '') => {
 };
 
 const getCommunityHotList = async (start_time = '') => {
+    loading.value = true;
     const res = await dynamicList(10, start_time, {
-        communityId: communityId.value,
+        communityId: props.communityId,
         userId: userId.value,
         type: 1,
     });
 
+    loading.value = false;
     if (res.code === 0) {
         let data = res.data || [];
         let newData = data.map((item) => {
@@ -397,12 +414,14 @@ const getCommunityHotList = async (start_time = '') => {
 };
 
 const getCommunityFollowList = async (start_time = '') => {
+    loading.value = true;
     const res = await dynamicList(10, start_time, {
-        communityId: communityId.value,
+        communityId: props.communityId,
         userId: userId.value,
         type: 2,
     });
 
+    loading.value = false;
     if (res.code === 0) {
         let data = res.data || [];
         let newData = data.map((item) => {
@@ -447,12 +466,13 @@ const openMyPosts = () => {
 };
 
 const openPostEditor = () => {
-    createNewWindow({
-        width: 375,
-        height: 720,
-        title: '发贴',
-        url: '#/posting',
-    });
+    // createNewWindow({
+    //     width: 375,
+    //     height: 720,
+    //     title: '发贴',
+    //     url: '#/posting',
+    // });
+    visible.value = true;
 };
 
 const openUserProfile = (userId) => {
@@ -497,21 +517,38 @@ const deletePost = () => {
         deletingPostId.value = null;
     }
 };
-emitter.on('changeCommunityId', (id) => {
-    communityId.value = id;
+
+const reloadData = () => {
     posts.value = [];
     hots.value = [];
     follows.value = [];
     getCommunityList();
     getCommunityHotList();
     getCommunityFollowList();
-});
-onUnmounted(() => {
-    emitter.off('changeCommunityId');
-});
+};
+
+watch(
+    () => props.communityId,
+    (id) => {
+        if (id) {
+            reloadData();
+        }
+    }
+);
 </script>
 
 <style lang="scss" scoped>
+.loading {
+    position: relative;
+    text-align: center;
+    height: 0;
+    .is-loading {
+        position: absolute;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+}
 .community-feed {
     background: #fff;
     height: 100vh;

@@ -8,32 +8,31 @@
                         <div class="friend-name">
                             <h2>{{ item.realName ? item.realName : item.nickName }}</h2>
                             <!-- <el-dropdown placement="bottom">
-                <img :src="downIcon" class="down-icon" />
-                <template #dropdown>
-                  <el-dropdown-menu>
-                    <el-dropdown-item @click="reportIdentity(item.id)">举报身份</el-dropdown-item>
-                    <el-dropdown-item>举报内容</el-dropdown-item>
-                    <el-dropdown-item>屏蔽TA的圈</el-dropdown-item>
-                  </el-dropdown-menu>
-                </template>
-</el-dropdown> -->
+                                <img :src="downIcon" class="down-icon" />
+                                <template #dropdown>
+                                    <el-dropdown-menu>
+                                        <el-dropdown-item @click="reportIdentity(item.id)">举报身份</el-dropdown-item>
+                                        <el-dropdown-item>举报内容</el-dropdown-item>
+                                        <el-dropdown-item>屏蔽TA的圈</el-dropdown-item>
+                                    </el-dropdown-menu>
+                                </template>
+                            </el-dropdown> -->
                         </div>
                         <div class="friend-text">{{ item.content }}</div>
                         <div class="friend-imgs" v-if="item.mediaResourcesList?.length > 0">
                             <img v-for="(img, index) in item.mediaResourcesList" :key="index" :src="img.fileUrl" />
                         </div>
                         <div class="friend-time">
-                            <div>{{ formatCommentTime(item.createTime) }} <img :src="deleteIcon"
-                                    @click="deletePost(item.id)" /></div>
+                            <div>{{ formatCommentTime(item.createTime) }} <img :src="deleteIcon" @click="deletePost(item.id)" /></div>
                             <!-- <div class="friend-circle">
-                <el-tooltip class="box-item" effect="dark" placement="left">
-                  <template #content>
-                    <span class="friend-icon"><img src="../assets/comment.png" />评论</span>
-                    <span class="friend-icon"><img src="../assets/like.png" />点赞</span>
-                  </template>
-                  &middot;&middot;&middot;
-                </el-tooltip>
-              </div> -->
+                                <el-tooltip class="box-item" effect="dark" placement="left">
+                                    <template #content>
+                                        <span class="friend-icon"><img src="../assets/comment.png" />评论</span>
+                                        <span class="friend-icon"><img src="../assets/like.png" />点赞</span>
+                                    </template>
+                                    &middot;&middot;&middot;
+                                </el-tooltip>
+                            </div> -->
                         </div>
                     </div>
                 </li>
@@ -101,7 +100,7 @@ const getMyPublishList = async (start_time = '') => {
             isEmpty.value = true;
         }
     }
-}
+};
 
 const handleScroll = throttle((event) => {
     const element = event.target;
@@ -109,14 +108,14 @@ const handleScroll = throttle((event) => {
     const isBottom = element.scrollHeight - element.scrollTop === element.clientHeight;
     if (isBottom) {
         console.log('已经滚动到底部scroll');
-        getMyPublishList(startTime.value)
+        getMyPublishList(startTime.value);
     }
 }, 100);
 
 onMounted(() => {
     getMyPublishList(startTime.value);
     scrollableDiv.value.addEventListener('scroll', handleScroll);
-})
+});
 </script>
 
 <style lang="scss" scoped>
@@ -144,7 +143,7 @@ onMounted(() => {
             display: flex;
             align-items: center;
 
-            &>div {
+            & > div {
                 display: flex;
                 align-items: center;
                 margin-right: 8px;
@@ -311,7 +310,7 @@ onMounted(() => {
                     color: rgba(170, 170, 170, 1);
                     font-size: 14px;
 
-                    &>div {
+                    & > div {
                         display: flex;
                         align-items: center;
 

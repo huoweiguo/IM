@@ -1,9 +1,15 @@
 <template>
     <div class="posting-container">
         <div class="posting-uploader">
-            <el-upload v-model:file-list="fileList" :action="actionUrl" list-type="picture-card"
-                :on-preview="handlePictureCardPreview" :on-success="handleRealAvatarSuccess" :data="uploadData"
-                :before-upload="beforeAvatarUpload">
+            <el-upload
+                v-model:file-list="fileList"
+                :action="actionUrl"
+                list-type="picture-card"
+                :on-preview="handlePictureCardPreview"
+                :on-success="handleRealAvatarSuccess"
+                :data="uploadData"
+                :before-upload="beforeAvatarUpload"
+            >
                 <el-icon>
                     <Plus />
                 </el-icon>
@@ -15,10 +21,8 @@
                                 <Delete color="#fff" />
                             </el-icon>
                         </div>
-                        <video v-if="file.response?.data?.format == 'mp4'" controls :src="file.response?.data?.uri"
-                            style="width: 76px; height: 76px;"></video>
-                        <img v-else :src="file.response?.data?.uri" style="width: 76px; height: 76px;"
-                            class="delete-icon" />
+                        <video v-if="file.response?.data?.format == 'mp4'" controls :src="file.response?.data?.uri" style="width: 76px; height: 76px"></video>
+                        <img v-else :src="file.response?.data?.uri" style="width: 76px; height: 76px" class="delete-icon" />
                         <!-- <video controls :src="file.url" style="width: 100%; height: 100%; object-fit: cover"></video> -->
                     </div>
                 </template>
@@ -32,10 +36,15 @@
                 <div>谁可以看</div>
                 <div>
                     {{
-                        params.visibilityType == '0' ? '所有圈友' :
-                            params.visibilityType == '1' ? '仅陌生人可见' :
-                                params.visibilityType == '2' ? '关注我的圈友' :
-                                    params.visibilityType == '3' ? '我关注的圈友' : ''
+                        params.visibilityType == '0'
+                            ? '所有圈友'
+                            : params.visibilityType == '1'
+                            ? '仅陌生人可见'
+                            : params.visibilityType == '2'
+                            ? '关注我的圈友'
+                            : params.visibilityType == '3'
+                            ? '我关注的圈友'
+                            : ''
                     }}
                     <el-icon color="#999">
                         <ArrowRight />
@@ -91,43 +100,43 @@
         <el-drawer v-model="drawer2" title="对谁可见" direction="btt" size="60%">
             <div class="drawer-container">
                 <ul>
-                    <li v-for="item in allFriends" :key="item.id" @click="selectLi(item.id)"
-                        :class="{ active: params.selected.includes(item.id) }">
+                    <li v-for="item in allFriends" :key="item.id" @click="selectLi(item.id)" :class="{ active: params.selected.includes(item.id) }">
                         <i></i>
                         <img :src="item.url" alt="" />
                         <span>{{ item.name }}</span>
                     </li>
                 </ul>
-                <div class="drawer-button" @click="drawer2 = false">确定 ({{ params.selected.length }}/{{
-                    allFriends.length }})
-                </div>
+                <div class="drawer-button" @click="drawer2 = false">确定 ({{ params.selected.length }}/{{ allFriends.length }})</div>
             </div>
         </el-drawer>
     </div>
 </template>
 
 <script setup>
-import { reactive, ref, onMounted } from 'vue'
-import { ElMessage } from 'element-plus'
-import { getItem } from '@/ui/util/storageHelper'
-import { ipcRenderer } from 'electron'
-import { closeNewWindow } from '@/platformHelper'
-import Config from "@/config";
-import { publishDynamic } from '@/api/community'
-import emitter from '@/qzui/util/eventBus'
-import { ArrowRight, User, Plus, Delete } from '@element-plus/icons-vue'
-const drawer = ref(false)
-const drawer2 = ref(false)
-import img1 from '@/assets/images/img-preview.png'
-const dialogImageUrl = ref('')
-const dialogVisible = ref(false)
-let userId = getItem('userPortrait') ? getItem('userPortrait') : ''
-let actionUrl = `${Config.APP_SERVER}/api/upload/fileAdd`
+import { reactive, ref, onMounted } from 'vue';
+import { ElMessage } from 'element-plus';
+import { getItem } from '@/ui/util/storageHelper';
+import { ipcRenderer } from 'electron';
+import { closeNewWindow } from '@/platformHelper';
+import Config from '@/config';
+import { publishDynamic } from '@/api/community';
+import emitter from '@/qzui/util/eventBus';
+import { ArrowRight, User, Plus, Delete } from '@element-plus/icons-vue';
+const drawer = ref(false);
+const drawer2 = ref(false);
+import img1 from '@/assets/images/img-preview.png';
+const dialogImageUrl = ref('');
+const dialogVisible = ref(false);
+const emit = defineEmits(['reload', 'close']);
+const userinfo = JSON.parse(getItem('userinfo')) || {};
+
+let userId = userinfo.id;
+let actionUrl = `${Config.APP_SERVER}/api/upload/fileAdd`;
 let uploadData = {
     sourceId: userId,
-    type: 10 // 10:图片 20:视频
-}
-const fileList = ref([])
+    type: 10, // 10:图片 20:视频
+};
+const fileList = ref([]);
 const params = reactive({
     userId,
     communityId: '',
@@ -135,114 +144,102 @@ const params = reactive({
     isPush: '0', // 是否推送0:否 1:是
     isTop: '0', // 是否置顶0:否 1:是
     visibilityType: '0',
-    mediaResourcesList: []
-})
-const allFriends = ref([])
+    mediaResourcesList: [],
+});
+const allFriends = ref([]);
 const handleRemove = (uploadFile, uploadFiles) => {
-    console.log(uploadFile, uploadFiles)
-}
+    console.log(uploadFile, uploadFiles);
+};
 const handlePictureCardPreview = (uploadFile) => {
-    dialogImageUrl.value = uploadFile.url
-    dialogVisible.value = true
-}
+    dialogImageUrl.value = uploadFile.url;
+    dialogVisible.value = true;
+};
 const selectLi = (id) => {
-    const index = params.selected.indexOf(id)
+    const index = params.selected.indexOf(id);
     if (index == -1) {
-        params.selected.push(id)
+        params.selected.push(id);
     } else {
-        params.selected.splice(index, 1)
+        params.selected.splice(index, 1);
     }
-}
+};
 
 const handleRealAvatarSuccess = async (response, uploadFile) => {
-    console.log(response, uploadFile)
+    console.log(response, uploadFile);
     if (response.code == 0) {
-        const { uri, name } = response.data
-        console.log(fileList.value, 'fileList')
+        const { uri, name } = response.data;
+        console.log(fileList.value, 'fileList');
     }
-    console.log(URL.createObjectURL(uploadFile.raw))
-}
+    console.log(URL.createObjectURL(uploadFile.raw));
+};
 
 const beforeAvatarUpload = (rawFile) => {
     if (rawFile.type !== 'image/jpeg' && rawFile.type !== 'image/jpg' && rawFile.type !== 'image/png' && rawFile.type !== 'video/mp4') {
-        ElMessage.error('上传的必须是JPG,JPEG,PNG的图片格式或者MP4格式!')
-        return false
+        ElMessage.error('上传的必须是JPG,JPEG,PNG的图片格式或者MP4格式!');
+        return false;
     } else if (rawFile.size / 1024 / 1024 > 2) {
-        ElMessage.error('上传的图片或者视频不能超过2MB!')
-        return false
+        ElMessage.error('上传的图片或者视频不能超过2MB!');
+        return false;
     }
 
     if (rawFile.type == 'video/mp4') {
-        uploadData.type = 20
+        uploadData.type = 20;
     } else if (rawFile.type == 'image/jpeg' || rawFile.type == 'image/jpg' || rawFile.type == 'image/png') {
-        uploadData.type = 10
+        uploadData.type = 10;
     }
-    return true
-}
+    return true;
+};
 
 const handlePublish = () => {
     // 校验是否上传了图片或者视频
     if (fileList.value.length == 0) {
-        ElMessage.error('请选择要上传的文件!')
-        return false
+        ElMessage.error('请选择要上传的文件!');
+        return false;
     }
     // 校验是否填写了内容
     if (params.content.replace(/\s/g, '').length == 0) {
-        ElMessage.error('请填写内容!')
-        return false
+        ElMessage.error('请填写内容!');
+        return false;
     }
 
-    params.mediaResourcesList = []
+    params.mediaResourcesList = [];
     fileList.value.forEach((item) => {
         params.mediaResourcesList.push({
             mediaType: item.response?.data?.type == 10 ? 'image' : 'video',
             fileUrl: item.response?.data?.uri,
-        })
-    })
+        });
+    });
     publishDynamic(params).then((res) => {
         if (res.code == 0) {
-            ElMessage.success('发布成功!')
-            const communityId = getItem(getItem('communityId') || '')
-            emitter.emit('changeCommunityId', communityId)
-            params.userId = userId
-            params.communityId = communityId
-            params.content = ''
-            params.isPush = '0'
-            params.isTop = '0'
-            params.visibilityType = '0'
-            params.mediaResourcesList = []
-            fileList.value = []
+            ElMessage.success('发布成功!');
+            emit('reload');
+            emit('close');
         } else {
-            ElMessage.error(res.msg)
+            ElMessage.error(res.msg);
         }
-    })
-
-
-
-}
+    });
+};
 
 const deleteFile = (file) => {
-    const uid = file.uid
-    fileList.value = fileList.value.filter(item => item.uid !== uid)
-}
-
-
-
+    const uid = file.uid;
+    fileList.value = fileList.value.filter((item) => item.uid !== uid);
+};
 
 onMounted(() => {
-    params.communityId = getItem('communityId') || '0'
+    params.communityId = getItem('communityId') || '0';
 
-    if ("geolocation" in navigator) {
-        navigator.geolocation.getCurrentPosition(position => {
-            console.log("定位成功", position)
-        }, (err) => {
-            console.error("定位失败:", err.message);
-        })
-
+    if ('geolocation' in navigator) {
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                console.log('定位成功', position);
+            },
+            (err) => {
+                console.error('定位失败:', err.message);
+            }
+        );
     } else {
-        console.error("您的浏览器不支持定位功能");
+        console.error('您的浏览器不支持定位功能');
     }
-})
+});
 </script>
 
 <style lang="scss" scoped>
@@ -303,7 +300,7 @@ onMounted(() => {
             cursor: pointer;
             padding: 0 16px;
 
-            &>div {
+            & > div {
                 display: flex;
                 align-items: center;
                 color: #333;
@@ -427,7 +424,7 @@ onMounted(() => {
             align-items: center;
             width: 100%;
             height: 35px;
-            background-color: #5E97FF;
+            background-color: #5e97ff;
             color: #fff;
             font-size: 14px;
             border-radius: 8px;
@@ -444,7 +441,7 @@ onMounted(() => {
         align-items: center;
         width: 100%;
         height: 35px;
-        background-color: #5E97FF;
+        background-color: #5e97ff;
         color: #fff;
         font-size: 14px;
         border-radius: 8px;
