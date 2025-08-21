@@ -72,7 +72,7 @@
 
 <script>
 import ConversationItemView from './ConversationItemView.vue';
-import { getCustomChatGroupList, addChatInCustomGroup, getGroupList } from '../../../api/customGroup.js';
+import { getCustomChatGroupList, addChatInCustomGroup, getGroupDetailByServiceGroupId } from '../../../api/customGroup.js';
 import { getItem } from '../../../qzui/util/storageHelper';
 import store from '../../../store';
 import wfc from '../../../wfc/client/wfc';
@@ -190,18 +190,10 @@ export default {
                 data.sourceChatId = userInfo.data.id;
             }
             if (this.selectUserInfo.conversation.type == 1) {
-                const groupList = await getGroupList({
-                    ownerId: this.userinfo.id,
-                    type: 0, //类型(0-所有,1-公域群/2-私域群)
-                });
+                const groupDetail = await getGroupDetailByServiceGroupId(this.selectUserInfo.target);
+                console.log(123, groupDetail);
 
-                groupList.data.forEach((item) => {
-                    if (item.serviceGroupId == this.selectUserInfo.target) {
-                        data.sourceChatId = item.id;
-                    }
-                });
-
-                // data.sourceChatId = 10; // 群ID
+                data.sourceChatId = groupDetail.data.id;
                 data.type = 1;
                 data.serviceGroupId = this.selectUserInfo.target;
             }

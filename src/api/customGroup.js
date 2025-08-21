@@ -70,8 +70,13 @@ export function deleteGroupInfo(data) {
 }
 
 // 查询群聊信息详情
-export function getGroupDetail(data) {
-    return GET('/api/community/group/detail', data);
+export function getGroupDetail(id) {
+    return GET(`/api/community/group/detail?id=${id}`);
+}
+
+// 根据野火群聊ID查询群聊信息详情
+export function getGroupDetailByServiceGroupId(serviceGroupId) {
+    return GET(`/api/community/group/detail/serviceGroupId?serviceGroupId=${serviceGroupId}`);
 }
 
 // 修改群聊信息(已同步野火)
