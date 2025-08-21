@@ -55,7 +55,8 @@
             </li>
         </vue-context>
 
-        <el-dialog v-model="visible" title="Tips" width="500">
+        <!-- 移动到分组弹窗 -->
+        <el-dialog v-model="visible" title="移动到分组" width="500">
             <el-select v-model="selectUserInfo.groupId" placeholder="请选择分组">
                 <el-option v-for="item in groupList" :label="item.groupName" :value="item.groupId" />
             </el-select>
@@ -71,7 +72,7 @@
 
 <script>
 import ConversationItemView from './ConversationItemView.vue';
-import { getCustomChatGroupList, addChatInCustomGroup } from '../../../api/customGroup.js';
+import { getCustomChatGroupList, addChatInCustomGroup, getGroupList } from '../../../api/customGroup.js';
 import { getItem } from '../../../qzui/util/storageHelper';
 import store from '../../../store';
 import wfc from '../../../wfc/client/wfc';
@@ -82,7 +83,6 @@ import { ElMessage } from 'element-plus';
 import Conversation from '../../../wfc/model/conversation';
 import ConversationType from '../../../wfc/model/conversationType';
 import { getUserByServiceId } from '../../../api/index.js';
-import { getGroupList } from '../../../api/customGroup.js';
 
 export default {
     name: 'ConversationListView',
@@ -164,8 +164,6 @@ export default {
         },
 
         moveConversationToGroup(conversationInfo) {
-            console.log(123, conversationInfo);
-
             this.visible = true;
             this.selectUserInfo = conversationInfo;
             getCustomChatGroupList({

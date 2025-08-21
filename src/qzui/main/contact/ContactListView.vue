@@ -101,12 +101,29 @@
                     <li>
                         <a @click.prevent="sendUserCard(userInfo)">{{ $t('misc.share_to_friend') }}</a>
                     </li>
+                    <li>
+                        <a @click.prevent="addUserToGroup(userInfo)">添加到分组</a>
+                    </li>
                 </vue-context>
             </li>
         </ul>
     </section>
+
+    <!-- 添加到分组弹窗 -->
+    <el-dialog v-model="visible" title="添加到分组" width="500">
+        <el-select v-model="selectUserInfo.groupId" placeholder="请选择分组">
+            <el-option v-for="item in groupList" :label="item.groupName" :value="item.groupId" />
+        </el-select>
+        <template #footer>
+            <div class="dialog-footer">
+                <el-button @click="visible = false">取消</el-button>
+                <el-button type="primary" @click="addUserToGroupSubmit"> 确认 </el-button>
+            </div>
+        </template>
+    </el-dialog>
 </template>
 <script>
+import emitter from '@/qzui/util/eventBus';
 import FriendRequestListView from '../../main/contact/FriendRequestListView';
 import GroupListVue from '../../main/contact/GroupListView';
 import store from '../../../store';
@@ -124,6 +141,10 @@ import ChatroomListView from './ChatroomListView.vue';
 import { markRaw } from 'vue';
 import ExternalDomainListView from './ExternalDomainListView.vue';
 import ContactList from '../../components/ContactList.vue';
+import { getItem } from '../../../qzui/util/storageHelper';
+import { ElMessage } from 'element-plus';
+import { addPersonInCustomGroup, getCustomPersonGroupList } from '../../../api/customGroup.js';
+import { getUserByServiceId } from '../../../api/index.js';
 
 export default {
     name: 'ContactListView',
@@ -139,6 +160,10 @@ export default {
     },
     data() {
         return {
+            visible: false,
+            selectUserInfo: {},
+            groupList: [],
+            userinfo: JSON.parse(getItem('userinfo')) || {},
             sharedContactState: store.state.contact,
             contactItemView: markRaw(ContactItemView),
             rootOrganizations: [],
@@ -203,6 +228,37 @@ export default {
         },
         onContactContextMenuClose() {
             this.sharedContactState.contextMenuUserInfo = null;
+        },
+
+        addUserToGroup(userInfo) {
+            this.visible = true;
+            this.selectUserInfo = userInfo;
+            getCustomPersonGroupList({
+                userId: this.userinfo.id,
+            }).then((res) => {
+                this.groupList = res.data || [];
+            });
+        },
+        async addUserToGroupSubmit() {
+            if (!this.selectUserInfo.groupId) {
+                ElMessage.error('请选择分组');
+                return;
+            }
+            const userInfo = await getUserByServiceId(this.selectUserInfo.uid);
+            let data = {
+                groupId: this.selectUserInfo.groupId,
+                personId: userInfo.data.id,
+                userId: this.userinfo.id,
+            };
+            addPersonInCustomGroup(data).then((res) => {
+                if (res.code == 0) {
+                    ElMessage.success('添加成功');
+                    this.visible = false;
+                    emitter.emit('global-reload-ContactList');
+                } else {
+                    ElMessage.error('添加失败');
+                }
+            });
         },
     },
     computed: {
