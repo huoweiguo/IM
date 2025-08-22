@@ -98,7 +98,7 @@ const getCurrentChatroomInfo = (chatroomId) => {
         0,
         (info) => {
             chatroomInfo.value = info;
-            console.log('getChatroomInfo success', info);
+            console.log('加入聊天室成功', info);
             // 获取聊天室信息成功后，加入聊天室
             joinChatroom(chatroomId);
             store.setCurrentChatroom(info);
@@ -123,6 +123,7 @@ onMounted(() => {
 onUnmounted(() => {
     // 组件卸载时，离开当前聊天室
     if (curChatRoomId.value) {
+        console.log('离开聊天室成功', curChatRoomId.value);
         quitChatroom(curChatRoomId.value);
     }
 });

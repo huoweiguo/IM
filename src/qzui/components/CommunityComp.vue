@@ -535,6 +535,8 @@ watch(
         }
     }
 );
+
+reloadData();
 </script>
 
 <style lang="scss" scoped>

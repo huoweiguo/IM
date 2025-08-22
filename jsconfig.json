@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".", // 基础路径（通常为项目根目录）
+    "paths": {
+      "@/*": ["src/*"] // 关键：将 @ 映射到 src 文件夹
+    }
+  },
+  "include": ["src/**/*"], // 包含需要识别的文件目录
+  "exclude": ["node_modules"] // 排除不需要处理的目录
+}

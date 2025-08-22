@@ -53,7 +53,7 @@ onMounted(() => {
         setItem('userinfo', JSON.stringify(res.data));
 
         // 检查是否是新用户
-        if (res.data.isNewUser === 1) {
+        if (res.data.isNewUser === 0) {
             router.push('/selectSex');
             return;
         }
@@ -66,7 +66,7 @@ onMounted(() => {
             wfc.connect(userId, token);
 
             let connectionStatus = wfc.getConnectionStatus();
-            if (connectionStatus == -7) {
+            if (connectionStatus < 0) {
                 ElMessage.error('登录过期，请重新登录');
                 logout();
                 router.push('/');
