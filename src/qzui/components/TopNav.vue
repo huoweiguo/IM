@@ -1,23 +1,25 @@
 <template>
     <div class="group-chat-nav" :class="{ pr140: sharedMiscState.isElectronWindowsOrLinux }">
-        <el-tabs class="tabs" v-model="activeId" @tab-click="switchTab" @edit="addGroup">
-            <template #add-icon>
-                <el-icon><Plus /></el-icon>
-            </template>
-            <el-tab-pane v-for="(item, index) in defaultNavlist" :key="index" :label="item.name" :name="item.id"></el-tab-pane>
-            <el-tab-pane v-for="(item, index) in navlist" :key="index" :label="item.name" :name="`${item.id}`">
-                <template #label>
-                    <el-dropdown trigger="contextmenu">
-                        <span> {{ item.name }} </span>
-                        <template #dropdown>
-                            <el-dropdown-menu>
-                                <el-dropdown-item @click="deleteGroup(item.id)">删除分组</el-dropdown-item>
-                            </el-dropdown-menu>
-                        </template>
-                    </el-dropdown>
+        <view class="tabs-box">
+            <el-tabs class="tabs" v-model="activeId" @tab-click="switchTab" @edit="addGroup">
+                <template #add-icon>
+                    <el-icon><Plus /></el-icon>
                 </template>
-            </el-tab-pane>
-        </el-tabs>
+                <el-tab-pane v-for="(item, index) in defaultNavlist" :key="index" :label="item.name" :name="item.id"></el-tab-pane>
+                <el-tab-pane v-for="(item, index) in navlist" :key="index" :label="item.name" :name="`${item.id}`">
+                    <template #label>
+                        <el-dropdown trigger="contextmenu">
+                            <span class="group-name"> {{ item.name }} </span>
+                            <template #dropdown>
+                                <el-dropdown-menu>
+                                    <el-dropdown-item @click="deleteGroup(item.id)">删除分组</el-dropdown-item>
+                                </el-dropdown-menu>
+                            </template>
+                        </el-dropdown>
+                    </template>
+                </el-tab-pane>
+            </el-tabs>
+        </view>
         <view class="window-move" style="flex: 1; height: 100%"></view>
         <a class="addbtn" @click="addGroup"><img src="../assets/add.png" /></a>
     </div>
@@ -77,6 +79,12 @@ const addGroup = () => {
                 ElMessage.error('请输入分组名称');
                 return;
             }
+
+            if (groupName.length > 8) {
+                ElMessage.error('分组名称最多8个字符');
+                return;
+            }
+
             createCustomChatGroup({
                 userId: userinfo.id,
                 groupName,
@@ -126,19 +134,41 @@ onMounted(() => {
 .group-chat-nav {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     height: 40px;
     border-bottom: 1px solid #ccc;
     overflow: hidden;
     gap: 20px;
-    padding: 0 20px;
+    padding: 0 10px;
+    width: calc(100vw - 63px);
 
     &.pr140 {
         padding-right: 140px;
     }
 }
+.tabs-box {
+    overflow: hidden;
+}
 .tabs {
+    max-width: 100%;
+    margin: 0;
+    :deep(.el-tabs__header) {
+        margin: 0;
+    }
     :deep(.el-tabs__item) {
         padding: 0 10px;
+        .group-name {
+            color: #333;
+            // max-width: 6em;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        &.is-active {
+            .group-name {
+                color: #5a9cf8;
+            }
+        }
     }
     :deep(.el-tabs__nav-wrap:after) {
         display: none;

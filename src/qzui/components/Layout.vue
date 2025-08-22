@@ -53,7 +53,7 @@ onMounted(() => {
         setItem('userinfo', JSON.stringify(res.data));
 
         // 检查是否是新用户
-        if (res.data.isNewUser === 0) {
+        if (res.data.isNewUser === 1) {
             router.push('/selectSex');
             return;
         }

@@ -1,5 +1,5 @@
 <template>
-    <nav class="chat-slider">
+    <nav class="chat-slider" :class="{ win: sharedMiscState.isElectronWindowsOrLinux }">
         <img :src="store.state.contact?.selfUserInfo?.portrait" class="avatar" id="infoTrigger" alt="用户头像" @click="onClickPortrait" />
 
         <ul class="nav-list nav-list--main window-move">
@@ -35,6 +35,7 @@ import { createNewWindow } from '../util/electronHelper';
 import { ipcRenderer, isElectron } from '../../platform';
 import IpcEventType from '../../ipcEventType';
 import 'tippy.js/dist/tippy.css'; // optional for styling
+const sharedMiscState = store.state.misc;
 
 const route = useRoute();
 const router = useRouter();
@@ -98,6 +99,10 @@ const logout = () => {
     background-color: #2e2e2e;
     padding: 40px 0;
     box-sizing: border-box;
+
+    &.win {
+        padding: 20px;
+    }
 
     .avatar {
         width: 40px;
