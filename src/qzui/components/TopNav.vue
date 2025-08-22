@@ -9,7 +9,10 @@
                 <el-tab-pane v-for="(item, index) in navlist" :key="index" :label="item.name" :name="`${item.id}`">
                     <template #label>
                         <el-dropdown trigger="contextmenu">
-                            <span class="group-name"> {{ item.name }} </span>
+                            <el-badge :is-dot="!!item.unread">
+                                <span class="group-name"> {{ item.name }} </span>
+                            </el-badge>
+
                             <template #dropdown>
                                 <el-dropdown-menu>
                                     <el-dropdown-item @click="deleteGroup(item.id)">删除分组</el-dropdown-item>
@@ -26,7 +29,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import store from '../../store';
 import { getItem } from '../../qzui/util/storageHelper';
 import { ElMessage, ElMessageBox } from 'element-plus';
@@ -45,6 +48,20 @@ const defaultNavlist = [
     { name: '公域群', id: 'public' },
 ];
 
+const unread = computed(() => {
+    let messageIds = [];
+    store.state.conversation.conversationInfoList.forEach((info) => {
+        if (info.isSilent) {
+            return;
+        }
+        if (info.unreadCount.unread > 0) {
+            messageIds.push(info.target);
+        }
+    });
+
+    return messageIds;
+});
+
 const switchTab = (data) => {
     activeId.value = data.paneName;
     router.push(`/home?activeId=${data.paneName}`);
@@ -53,15 +70,16 @@ const switchTab = (data) => {
 const getCustomGroupList = () => {
     getCustomChatGroupList({
         userId: userinfo.id,
-    }).then((res) => {
+    }).then(async (res) => {
         if (res.code == 0) {
             let groupList = [];
-            res.data.forEach((item) => {
+            for (const item of res.data) {
                 groupList.push({
                     name: item.groupName,
                     id: item.groupId,
+                    unread: 0,
                 });
-            });
+            }
             navlist.value = groupList;
         }
     });
