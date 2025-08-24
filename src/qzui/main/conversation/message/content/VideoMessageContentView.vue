@@ -1,22 +1,25 @@
 <template>
     <div class="video-content-container">
-        <video @click.prevent="preview(message)" preload="metadata"
-               controls
-               draggable="true"
-               @dragstart="dragVideo($event)"
-               controlsList="nodownload"
-               disablePictureInPicture
-               :poster="'data:video/jpeg;base64,' + message.messageContent.thumbnail"
-               :src="videoUrl +'#t=0.1'"/>
+        <video
+            @click.prevent="preview(message)"
+            preload="metadata"
+            controls
+            draggable="true"
+            @dragstart="dragVideo($event)"
+            controlsList="nodownload"
+            disablePictureInPicture
+            :poster="'data:video/jpeg;base64,' + message.messageContent.thumbnail"
+            :src="videoUrl + '#t=0.1'"
+        />
     </div>
 </template>
 
 <script>
-import Message from "../../../../../wfc/messages/message";
-import {previewMM} from "../../../../../platformHelper";
+import Message from '../../../../../wfc/messages/message';
+import { previewMM } from '../../../../../platformHelper';
 
 export default {
-    name: "VideoMessageContentView",
+    name: 'VideoMessageContentView',
     props: {
         message: {
             type: Message,
@@ -26,7 +29,7 @@ export default {
             default: false,
             type: Boolean,
             required: false,
-        }
+        },
     },
     methods: {
         preview(message) {
@@ -39,8 +42,8 @@ export default {
 
         dragVideo(event) {
             let video = this.message.messageContent;
-            event.dataTransfer.setData('URL', video.remotePath)
-        }
+            event.dataTransfer.setData('URL', video.remotePath);
+        },
     },
 
     computed: {
@@ -48,11 +51,11 @@ export default {
             if (this.message.messageContent.file && this.message.messageContent.file.path) {
                 return this.message.messageContent.file;
             } else {
-                return this.message.messageContent.remotePath
+                return this.message.messageContent.remotePath;
             }
-        }
-    }
-}
+        },
+    },
+};
 </script>
 
 <style lang="css" scoped>
@@ -78,5 +81,4 @@ export default {
 .left-arrow:before {
     border-left-color: white;
 }
-
 </style>
