@@ -29,6 +29,7 @@
                         class="avatar"
                         draggable="false"
                         :src="messageSenderPortrait"
+                        @error="imgUrlAlt"
                     />
                 </div>
                 <!--消息内容 根据情况，if-else-->
@@ -68,6 +69,8 @@ import wfc from '../../../../wfc/client/wfc';
 import ConversationType from '../../../../wfc/model/conversationType';
 import ChannelCardView from '../../contact/ChannelCardView';
 import GroupMemberType from '../../../../wfc/model/groupMemberType';
+import Config from '../../../../config';
+import { createNewWindow } from '@/qzui/util/electronHelper';
 
 export default {
     name: 'NormalInMessageContentView',
@@ -89,6 +92,10 @@ export default {
             // } else {
             //     wfc.getUserInfo(userId, true);
             // }
+            createNewWindow({
+                height: 750,
+                url: `#/otherInfo?serviceId=${userId}`,
+            });
         },
         closeUserCard() {
             console.log('closeUserCard');
@@ -104,6 +111,9 @@ export default {
 
         onContextMenuClosed() {
             this.highLight = false;
+        },
+        imgUrlAlt(e) {
+            e.target.src = Config.DEFAULT_PORTRAIT_URL;
         },
     },
     mounted() {

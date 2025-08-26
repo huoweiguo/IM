@@ -1,12 +1,10 @@
 <template>
     <div class="participant-list-container" ref="rootContainer">
-        <div v-if="true" @click="invite"
-             class="action-item">
+        <div v-if="true" @click="invite" class="action-item">
             <div class="icon">+</div>
             <p>邀请新参与者</p>
         </div>
-        <div v-if="false" @click="invite"
-             class="action-item">
+        <div v-if="false" @click="invite" class="action-item">
             <div class="icon">-</div>
             <p>移除参与者</p>
         </div>
@@ -24,23 +22,22 @@
                     trigger="manual"
                 >
                     <template #content>
-                        <UserCardView :user-info="participant"/>
+                        <UserCardView :user-info="participant" />
                     </template>
                 </tippy>
-                <div class="participant-user"
-                     @click.stop.prevent="showContextMenu($event, participant)"
-                     :ref="'userCardTippy-'+participant.uid"
-                     v-bind:class="{active: participant.uid === currentParticipant.uid && participant._isScreenSharing === currentParticipant._isScreenSharing}"
-                     :id="'user-'+participant.uid">
+                <div
+                    class="participant-user"
+                    @click.stop.prevent="showContextMenu($event, participant)"
+                    :ref="'userCardTippy-' + participant.uid"
+                    v-bind:class="{ active: participant.uid === currentParticipant.uid && participant._isScreenSharing === currentParticipant._isScreenSharing }"
+                    :id="'user-' + participant.uid"
+                >
                     <div class="avatar-container">
-                        <img class="avatar" :src="participant.portrait" alt="">
-                        <div v-if=" selfUserId === session.host && !participant._isHost" @click.stop="kickoff(participant)"
-                             class="icon">
-                            -
-                        </div>
+                        <img class="avatar" :src="participant.portrait" alt="" />
+                        <div v-if="selfUserId === session.host && !participant._isHost" @click.stop="kickoff(participant)" class="icon">-</div>
                     </div>
                     <div class="name-desc">
-                        <p class="single-line name"> {{ participantName(participant) }}</p>
+                        <p class="single-line name">{{ participantName(participant) }}</p>
                         <p class="single-line desc">{{ participantDesc(participant) }}</p>
                     </div>
                     <div class="audio-video">
@@ -57,28 +54,27 @@
             <button :disabled="conferenceManager.isMuteAll" @click="requestMuteAll">全员静音</button>
             <button :disabled="!conferenceManager.isMuteAll" @click="requestUnMuteAll">取消全员静音</button>
         </div>
-        <vue-context ref="menu" v-slot="{data:participant}" :close-on-scroll="true" v-on:close="onContextMenuClose">
-            <li v-for="(item,i) in buildParticipantContextMenu(participant)" :key="i">
+        <vue-context ref="menu" v-slot="{ data: participant }" :close-on-scroll="true" v-on:close="onContextMenuClose">
+            <li v-for="(item, i) in buildParticipantContextMenu(participant)" :key="i">
                 <a @click.prevent="item.handler" v-bind:style="item.styleObject">{{ item.title }}</a>
             </li>
         </vue-context>
-
     </div>
 </template>
 
 <script>
-import ConferenceInviteMessageContent from "../../../wfc/av/messages/conferenceInviteMessageContent";
-import Message from "../../../wfc/messages/message";
-import {isElectron} from "../../../platform";
-import ForwardType from "../../main/conversation/message/forward/ForwardType";
-import localStorageEmitter from "../../../ipc/localStorageEmitter";
-import UserCardView from "../../main/user/UserCardView";
-import conferenceManager from "./conferenceManager";
-import LocalStorageIpcEventType from "../../../ipc/localStorageIpcEventType";
-import wfc from "../../../wfc/client/wfc";
+import ConferenceInviteMessageContent from '../../../wfc/av/messages/conferenceInviteMessageContent';
+import Message from '../../../wfc/messages/message';
+import { isElectron } from '../../../platform';
+import ForwardType from '../../main/conversation/message/forward/ForwardType';
+import localStorageEmitter from '../../../ipc/localStorageEmitter';
+import UserCardView from '../../main/user/UserCardView';
+import conferenceManager from './conferenceManager';
+import LocalStorageIpcEventType from '../../../ipc/localStorageIpcEventType';
+import wfc from '../../../wfc/client/wfc';
 
 export default {
-    name: "ConferenceParticipantListView",
+    name: 'ConferenceParticipantListView',
     props: {
         participants: {
             type: Array,
@@ -87,7 +83,7 @@ export default {
         session: {
             type: Object,
             required: true,
-        }
+        },
     },
     data() {
         return {
@@ -95,21 +91,32 @@ export default {
             selfUserId: conferenceManager.selfUserId,
             isContextMenuShow: false,
             currentParticipant: {},
-        }
+        };
     },
     components: {
-        UserCardView
+        UserCardView,
     },
     methods: {
         invite() {
             let callSession = this.session;
 
-            let inviteMessageContent = new ConferenceInviteMessageContent(callSession.callId, conferenceManager.conferenceInfo.owner, callSession.title, callSession.desc, callSession.startTime, callSession.audioOnly, callSession.defaultAudience, callSession.advance, callSession.pin, conferenceManager.conferenceInfo.password)
+            let inviteMessageContent = new ConferenceInviteMessageContent(
+                callSession.callId,
+                conferenceManager.conferenceInfo.owner,
+                callSession.title,
+                callSession.desc,
+                callSession.startTime,
+                callSession.audioOnly,
+                callSession.defaultAudience,
+                callSession.advance,
+                callSession.pin,
+                conferenceManager.conferenceInfo.password
+            );
             console.log('invite', inviteMessageContent);
             let message = new Message(null, inviteMessageContent);
             this.$forwardMessage({
                 forwardType: ForwardType.NORMAL,
-                messages: [message]
+                messages: [message],
             });
             this.showParticipantList = false;
         },
@@ -127,8 +134,8 @@ export default {
                 },
                 confirmCallback: () => {
                     this.session.requestChangeMode(user.uid, !user._isAudience);
-                }
-            })
+                },
+            });
         },
 
         kickoff(user) {
@@ -139,9 +146,9 @@ export default {
                     // do nothing
                 },
                 confirmCallback: () => {
-                    this.session.kickoffParticipant(user.uid)
-                }
-            })
+                    this.session.kickoffParticipant(user.uid);
+                },
+            });
         },
 
         participantName(user) {
@@ -160,12 +167,12 @@ export default {
         participantDesc(user) {
             let desc = '';
             if (user.uid === conferenceManager.selfUserId) {
-                desc = "我"
+                desc = '我';
                 if (user.uid === conferenceManager.conferenceInfo.owner) {
-                    desc += "、主持人"
+                    desc += '、主持人';
                 }
             } else if (user.uid === conferenceManager.conferenceInfo.owner) {
-                desc = "主持人"
+                desc = '主持人';
             } else if (user._isScreenSharing) {
                 desc = '屏幕共享';
             }
@@ -204,54 +211,53 @@ export default {
                         items.push({
                             title: '开启音频',
                             handler: () => {
-                                this.$eventBus.$emit('muteAudio', false)
-                            }
-                        })
+                                this.$eventBus.$emit('muteAudio', false);
+                            },
+                        });
                     }
 
                     if (participant._isVideoMuted) {
                         items.push({
                             title: '开启视频',
                             handler: () => {
-                                this.$eventBus.$emit('muteVideo', false)
-                            }
-                        })
+                                this.$eventBus.$emit('muteVideo', false);
+                            },
+                        });
                     }
-
                 } else {
                     if (!participant._isAudioMuted) {
                         items.push({
                             title: '关闭音频',
                             handler: () => {
-                                this.$eventBus.$emit('muteAudio', true)
+                                this.$eventBus.$emit('muteAudio', true);
                             },
                             styleObject: {
                                 color: 'red',
-                            }
-                        })
+                            },
+                        });
                     }
                     if (!participant._isVideoMuted) {
                         items.push({
                             title: '关闭视频',
                             handler: () => {
-                                this.$eventBus.$emit('muteVideo', true)
+                                this.$eventBus.$emit('muteVideo', true);
                             },
                             styleObject: {
                                 color: 'red',
-                            }
-                        })
+                            },
+                        });
                     }
                     if (!participant._isVideoMuted && !participant._isAudioMuted) {
                         items.push({
                             title: '关闭音视频',
                             handler: () => {
-                                this.$eventBus.$emit('muteAudio', true)
-                                this.$eventBus.$emit('muteVideo', true)
+                                this.$eventBus.$emit('muteAudio', true);
+                                this.$eventBus.$emit('muteVideo', true);
                             },
                             styleObject: {
                                 color: 'red',
-                            }
-                        })
+                            },
+                        });
                     }
                 }
             }
@@ -261,31 +267,31 @@ export default {
                         items.push({
                             title: '邀请发言',
                             handler: () => {
-                                conferenceManager.requestMemberMute(participant.uid, true, false)
+                                conferenceManager.requestMemberMute(participant.uid, true, false);
                             },
-                        })
+                        });
                     } else if (!participant._isAudience && !participant._isAudioMuted) {
                         items.push({
                             title: '取消发言',
                             handler: () => {
-                                conferenceManager.requestMemberMute(participant.uid, true, true)
+                                conferenceManager.requestMemberMute(participant.uid, true, true);
                             },
-                        })
+                        });
                     }
                     if (participant._isAudience || participant._isVideoMuted) {
                         items.push({
                             title: '邀请打开摄像头',
                             handler: () => {
-                                conferenceManager.requestMemberMute(participant.uid, false, false)
+                                conferenceManager.requestMemberMute(participant.uid, false, false);
                             },
-                        })
+                        });
                     } else if (!participant._isAudience && !participant._isVideoMuted) {
                         items.push({
                             title: '关闭摄像头',
                             handler: () => {
-                                conferenceManager.requestMemberMute(participant.uid, false, true)
+                                conferenceManager.requestMemberMute(participant.uid, false, true);
                             },
-                        })
+                        });
                     }
                 }
                 if (participant.uid !== selfUid) {
@@ -294,7 +300,7 @@ export default {
                         handler: () => {
                             this.kickoff(participant);
                         },
-                    })
+                    });
                 }
                 if (conferenceManager.conferenceInfo.focus === participant.uid) {
                     items.push({
@@ -302,14 +308,14 @@ export default {
                         handler: () => {
                             conferenceManager.requestCancelFocus();
                         },
-                    })
+                    });
                 } else {
                     items.push({
                         title: '设置为焦点用户',
                         handler: () => {
-                            conferenceManager.requestFocus(participant.uid)
+                            conferenceManager.requestFocus(participant.uid);
                         },
-                    })
+                    });
                 }
             }
             return items;
@@ -323,8 +329,8 @@ export default {
                 return;
             }
             let ne = {
-                type: 'contextmenu'
-            }
+                type: 'contextmenu',
+            };
 
             ne.clientX = event.clientX - this.$refs.rootContainer.parentElement.offsetLeft;
             // 160 menu width
@@ -357,9 +363,9 @@ export default {
             // TODO dialog
             let unmute = true;
             this.conferenceManager.requestUnmuteAll(true, unmute);
-        }
-    }
-}
+        },
+    },
+};
 </script>
 
 <style scoped>
@@ -467,5 +473,4 @@ export default {
 .action-container button {
     padding: 5px 10px;
 }
-
 </style>

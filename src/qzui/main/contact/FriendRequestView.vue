@@ -1,13 +1,13 @@
 <template>
     <div class="friend-request-container" @click.stop="">
-        <img class="avatar" :src="userInfo.portrait" alt="">
+        <img class="avatar" :src="userInfo.portrait" @error="imgUrlAlt" />
         <div class="info-action-container">
             <div class="info-container">
                 <p class="title">{{ $t('friend_request.request') }}</p>
                 <p class="desc">{{ $t('friend_request.send_request_tip', [userInfo.displayName]) }}</p>
             </div>
             <label>
-                <input type="text" :placeholder="defaultReason" v-model="reason">
+                <input type="text" :placeholder="defaultReason" v-model="reason" />
             </label>
             <div class="action-container">
                 <button class="cancel" @click="cancel">{{ $t('common.cancel') }}</button>
@@ -15,55 +15,65 @@
             </div>
         </div>
     </div>
-
 </template>
 
 <script>
-import wfc from "../../../wfc/client/wfc";
-import store from "../../../store";
+import wfc from '../../../wfc/client/wfc';
+import store from '../../../store';
+import Config from '../../../config';
 
 export default {
-    name: "FriendRequestView",
+    name: 'FriendRequestView',
     props: {
         userInfo: {
             type: Object,
             required: true,
-        }
+        },
     },
     data() {
         return {
             reason: '',
             sharedContactState: store.state.contact,
-        }
+        };
     },
     methods: {
         cancel() {
-            this.$modal.hide('friend-request-modal')
+            this.$modal.hide('friend-request-modal');
         },
         invite() {
-            wfc.sendFriendRequest(this.userInfo.uid, this.reason, null, () => {
-                // TODO
-                console.log('send friendRequest success', this.userInfo.uid)
-            }, (err) => {
-                // TODO
-            });
-            this.$modal.hide('friend-request-modal')
-        }
+            wfc.sendFriendRequest(
+                this.userInfo.uid,
+                this.reason,
+                null,
+                () => {
+                    // TODO
+                    console.log('send friendRequest success', this.userInfo.uid);
+                },
+                (err) => {
+                    // TODO
+                }
+            );
+            this.$modal.hide('friend-request-modal');
+        },
+
+        imgUrlAlt(e) {
+            e.target.src = Config.DEFAULT_PORTRAIT_URL;
+        },
     },
     computed: {
         defaultReason() {
             let userInfo = this.sharedContactState.selfUserInfo;
             return this.$t('friend_request.im') + userInfo.displayName;
-        }
-    }
-}
+        },
+    },
+};
 </script>
 
 <style lang="css" scoped>
 .friend-request-container {
     display: flex;
     flex-direction: row;
-    margin: 40px 30px 30px 30px
+    margin: 40px 30px 30px 30px;
 }
 
 .avatar {
@@ -144,5 +154,4 @@ export default {
 .info-action-container .action-container .confirm:active {
     background-color: #3168e0;
 }
-
 </style>

@@ -1,22 +1,19 @@
 <template>
-    <div class="participant-video-item"
-         v-bind:class="{highlight: participant._volume > 0}">
-        <video v-if="!participant._isAudience && !participant._isVideoMuted && participant._stream"
-               @dblclick="onDbClickVideo"
-               class="video"
-               v-bind:style="{objectFit:participant._isScreenSharing ? 'contain' : 'fit'}"
-               :srcObject.prop="participant._stream"
-               playsInline
-               :muted="participant.uid === selfUserId"
-               autoPlay/>
-        <div v-else
-             class="avatar-container">
-            <img class="avatar" :src="participant.portrait" :alt="participant">
+    <div class="participant-video-item" v-bind:class="{ highlight: participant._volume > 0 }">
+        <video
+            v-if="!participant._isAudience && !participant._isVideoMuted && participant._stream"
+            @dblclick="onDbClickVideo"
+            class="video"
+            v-bind:style="{ objectFit: participant._isScreenSharing ? 'contain' : 'fit' }"
+            :srcObject.prop="participant._stream"
+            playsInline
+            :muted="participant.uid === selfUserId"
+            autoPlay
+        />
+        <div v-else class="avatar-container">
+            <img class="avatar" :src="participant.portrait" :alt="participant" />
         </div>
-        <audio v-if="!participant._isAudience && participant.uid !== selfUserId && participant._stream"
-               :srcObject.prop="participant._stream"
-               :muted="participant.uid === selfUserId"
-               autoPlay/>
+        <audio v-if="!participant._isAudience && participant.uid !== selfUserId && participant._stream" :srcObject.prop="participant._stream" :muted="participant.uid === selfUserId" autoPlay />
         <div v-if="!participant._isVideoMuted" class="video-stream-tip-container">
             <p>{{ '双击视频，将其设置为焦点' }}</p>
         </div>
@@ -27,31 +24,30 @@
             <div>{{ userName }}</div>
         </div>
     </div>
-
 </template>
 
 <script>
-import CallState from "../../../wfc/av/engine/callState";
-import VideoType from "../../../wfc/av/engine/videoType";
-import conferenceManager from "./conferenceManager";
+import CallState from '../../../wfc/av/engine/callState';
+import VideoType from '../../../wfc/av/engine/videoType';
+import conferenceManager from './conferenceManager';
 
 export default {
-    name: "ConferenceParticipantVideoView",
+    name: 'ConferenceParticipantVideoView',
     props: {
         participant: {
             type: Object,
-            required: true
+            required: true,
         },
         session: {
             type: Object,
             required: true,
-        }
+        },
     },
     data() {
         return {
             status: CallState.STATUS_CONNECTING,
             selfUserId: conferenceManager.selfUserId,
-        }
+        };
     },
     // created() {
     //     console.log('------------- videoView created', this.participant.uid);
@@ -83,7 +79,7 @@ export default {
                 if (conferenceManager.conferenceInfo.focus) {
                     this.$notify({
                         text: '主持人已设置了焦点用户',
-                        type: 'warn'
+                        type: 'warn',
                     });
                 } else {
                     conferenceManager.localFocusUser = this.participant;
@@ -93,7 +89,7 @@ export default {
 
         switchVideoType(userId, screenSharing) {
             if (!this.session) {
-                return
+                return;
             }
             let subscriber = this.session.getSubscriber(userId, screenSharing);
             if (subscriber) {
@@ -116,19 +112,19 @@ export default {
             }
             // The order is significant - the default capture devices will be listed first.
             // navigator.mediaDevices.enumerateDevices()
-            navigator.mediaDevices.enumerateDevices().then(devices => {
-                devices = devices.filter(d => d.kind === 'videoinput');
+            navigator.mediaDevices.enumerateDevices().then((devices) => {
+                devices = devices.filter((d) => d.kind === 'videoinput');
                 if (devices.length < 2) {
-                    console.log('switchCamera error, no more video input device')
+                    console.log('switchCamera error, no more video input device');
                     return;
                 }
                 this.videoInputDeviceIndex++;
                 if (this.videoInputDeviceIndex >= devices.length) {
                     this.videoInputDeviceIndex = 0;
                 }
-                this.session.setVideoInputDeviceId(devices[this.videoInputDeviceIndex].deviceId)
+                this.session.setVideoInputDeviceId(devices[this.videoInputDeviceIndex].deviceId);
                 console.log('setVideoInputDeviceId', devices[this.videoInputDeviceIndex]);
-            })
+            });
         },
     },
     computed: {
@@ -145,9 +141,9 @@ export default {
                 name = user.name;
             }
             return name;
-        }
-    }
-}
+        },
+    },
+};
 </script>
 
 <style scoped>
@@ -166,7 +162,7 @@ export default {
 }
 
 .participant-video-item.highlight {
-    border: 2px solid #1FCA6A;
+    border: 2px solid #1fca6a;
 }
 
 .participant-video-item .video-stream-tip-container {
@@ -233,5 +229,4 @@ export default {
     max-height: 20px;
     color: white;
 }
-
 </style>
