@@ -25,8 +25,14 @@
 
 <script setup>
 import { ref } from 'vue';
-import { searchAllUsersByParams, searchAllUserInfo } from '@/api/index.js';
+import { searchAllUsersByParams, searchAllUserInfo, getUserById } from '@/api/index.js';
 import defaultAvatar from '@/qzui/assets/user.png';
+import Conversation from '../../wfc/model/conversation';
+import ConversationType from '../../wfc/model/conversationType';
+import { ipcRenderer } from '../../platform';
+import IpcEventType from '../../ipcEventType';
+import store from '../../store';
+import { createNewWindow } from '../util/electronHelper';
 
 const userList = ref([]);
 const searchUserKeyword = ref('');
@@ -68,7 +74,39 @@ const searchUser = () => {
 };
 
 const viewUserDetail = (user) => {
-    console.log('查看用户详情:', user);
+    getUserById(user.id).then((res) => {
+        if (res.code == 0) {
+            console.log('查看用户详情:', res.data.serviceId);
+            createNewWindow({
+                height: 750,
+                url: `#/otherInfo?serviceId=${res.data.serviceId}`,
+            });
+            // 私聊
+            // handleChat(res.data.serviceId);
+        }
+    });
+};
+
+// 私聊
+const handleChat = (serviceId) => {
+    // 私聊
+    let conversation = new Conversation(ConversationType.Single, serviceId, 0);
+
+    let hash = window.location.hash;
+    let url = window.location.origin;
+    if (hash) {
+        url = window.location.href.replace(hash, '#/conversation-window');
+    } else {
+        url += '/conversation-window';
+    }
+    ipcRenderer.send(IpcEventType.showConversationFloatPage, {
+        url: url,
+        type: conversation.type,
+        target: conversation.target,
+        line: conversation.line,
+    });
+
+    store.addFloatingConversation(conversation);
 };
 
 getAllUser();

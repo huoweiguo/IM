@@ -3,7 +3,7 @@
         <!-- 头部信息 -->
         <div class="header">
             <img class="avatar" v-if="userInfo.avatar" :src="userInfo.avatar" alt="头像" />
-            <img class="avatar" v-else :src="userInfo?.serverInfo?.portrait" alt="默认头像" />
+            <img class="avatar" v-else :src="userInfo?.serverInfo?.portrait" @error="(e) => (e.target.src = defaultAvatar)" alt="默认头像" />
             <div class="user-info">
                 <div class="nickname-row">
                     <span class="nickname">{{ userInfo.realName }}</span>
@@ -98,6 +98,7 @@ import Conversation from '../../wfc/model/conversation';
 import ConversationType from '../../wfc/model/conversationType';
 import { ipcRenderer } from '../../platform';
 import IpcEventType from '../../ipcEventType';
+import defaultAvatar from '@/qzui/assets/user.png';
 
 const route = useRoute();
 const serviceId = route.query.serviceId;

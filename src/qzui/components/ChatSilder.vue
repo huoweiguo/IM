@@ -1,6 +1,6 @@
 <template>
     <nav class="chat-slider" :class="{ win: sharedMiscState.isElectronWindowsOrLinux }">
-        <img :src="store.state.contact?.selfUserInfo?.portrait" class="avatar" id="infoTrigger" alt="用户头像" @click="onClickPortrait" />
+        <img :src="store.state.contact?.selfUserInfo?.portrait" class="avatar" id="infoTrigger" alt="用户头像" @error="(e) => (e.target.src = defaultAvatar)" @click="onClickPortrait" />
 
         <ul class="nav-list nav-list--main window-move">
             <li v-for="item in navItems" :key="item.path" :class="['nav-item', { 'is-active': route.path === item.path }]" @click="navigate(item.path)">
@@ -35,8 +35,9 @@ import { createNewWindow } from '../util/electronHelper';
 import { ipcRenderer, isElectron } from '../../platform';
 import IpcEventType from '../../ipcEventType';
 import 'tippy.js/dist/tippy.css'; // optional for styling
-const sharedMiscState = store.state.misc;
+import defaultAvatar from '@/qzui/assets/user.png';
 
+const sharedMiscState = store.state.misc;
 const route = useRoute();
 const router = useRouter();
 const sharedContactState = store.state.contact;
