@@ -14,7 +14,22 @@
             class="contact-detail-container"
         />
         <div v-else class="contact-empty-container">
-            <h1 style="font-size: 30px; color: #f0f0f0; text-shadow: 1px 1px 0 #fff">圈子</h1>
+            <AllUsers />
+        </div>
+        <div
+            class="close-btn"
+            @click="close"
+            v-if="
+                sharedContactState.currentGroup ||
+                sharedContactState.currentChannel ||
+                sharedContactState.currentOrganization ||
+                sharedContactState.currentExternalDomain ||
+                sharedContactState.currentChatroom ||
+                sharedContactState.currentFriend ||
+                sharedContactState.currentFriendRequest
+            "
+        >
+            <el-icon><Close /></el-icon>
         </div>
     </div>
 </template>
@@ -22,6 +37,7 @@
 <script>
 import ContactListPanel from './ContactListPanel.vue';
 import GroupDetailView from './contact/GroupDetailView.vue';
+import AllUsers from '@/qzui/components/AllUsers.vue';
 import store from '../../store';
 import UserDetailView from './contact/UserDetailView.vue';
 import FriendRequestDetailView from './contact/FrienRequestDetailView.vue';
@@ -50,6 +66,18 @@ export default {
         GroupDetailView,
         ContactListPanel,
         OrganizationDetailView,
+        AllUsers,
+    },
+    methods: {
+        close() {
+            this.sharedContactState.currentGroup = null;
+            this.sharedContactState.currentChannel = null;
+            this.sharedContactState.currentOrganization = null;
+            this.sharedContactState.currentExternalDomain = null;
+            this.sharedContactState.currentChatroom = null;
+            this.sharedContactState.currentFriend = null;
+            this.sharedContactState.currentFriendRequest = null;
+        },
     },
 };
 </script>
@@ -89,5 +117,14 @@ ul {
 .contact-empty-container h1 {
     font-size: 17px;
     font-weight: normal;
+}
+.close-btn {
+    height: 40px;
+    width: 40px;
+    text-align: center;
+    line-height: 40px;
+}
+.close-btn:hover {
+    background-color: rgba(0, 0, 0, 0.1);
 }
 </style>
